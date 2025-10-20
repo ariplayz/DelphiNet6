@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AvaloniaProject">
+    <option name="projectPerEditor">
+      <map>
+        <entry key="DelphiNet6/Views/MainView.axaml" value="DelphiNet6.Desktop/DelphiNet6.Desktop.csproj" />
+      </map>
+    </option>
+  </component>
+</project>
