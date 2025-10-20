@@ -19,11 +19,29 @@
                   <!-- Header  -->
                   <StackPanel Orientation="Horizontal" Background="{DynamicResource PrimaryHeaderBackground}" HorizontalAlignment="Stretch">
                     <Label FontSize="60" Margin="0 0 0 0">DelphiNet</Label>
-                    <Label FontSize="20" HorizontalAlignment="Left" Margin="0 3 0 0" VerticalAlignment="Bottom">6.0</Label>
+                    <Label FontSize="20" HorizontalAlignment="Left" Margin="0 0 0 5 " VerticalAlignment="Bottom">6.0</Label>
                   </StackPanel>
                   <StackPanel Orientation="Horizontal" Background="{DynamicResource PrimaryHeaderBackground}">
                       <Button Content="Dashboard"></Button>
-                      <DropDownButton Content="Home Menu"></DropDownButton>
+                      <DropDownButton Content="Home Menu">
+                          <DropDownButton.Flyout>
+                              <MenuFlyout>
+                                  <MenuItem Header="Ethics Reports">
+                                     <DropDownButton.Flyout>
+                                         <MenuFlyout>
+                                                <MenuItem Header="Write/Review Reports"></MenuItem>
+                                                <MenuItem Header="Person Report History"></MenuItem>
+                                                <MenuItem Header="Campus Ethics Reports"></MenuItem>
+                                         </MenuFlyout>
+                                     </DropDownButton.Flyout>
+                                  </MenuItem>
+                                  <MenuItem Header="Old Math Facts"></MenuItem>
+                                  <MenuItem Header="Hard to Find Words"></MenuItem>
+                                  <MenuItem Header="Meal Menus"></MenuItem>
+                                  <MenuItem Header="New MFC"></MenuItem>
+                              </MenuFlyout>
+                          </DropDownButton.Flyout>
+                      </DropDownButton>
                       <DropDownButton Content="Students and School"></DropDownButton>
                       <DropDownButton Content="Parents"></DropDownButton>
                       <Button Content="Problem?"></Button>
@@ -31,9 +49,9 @@
               </StackPanel>
           </Panel>
           
-          <Grid ColumnDefinitions="400 *" ColumnSpacing="20" ColumnSpan="400">
-              <Label Grid.Column="1">Schedule</Label>
-              <Label Grid.Column="2">Program</Label>
+          <Grid ColumnDefinitions="400, 400, 400" ColumnSpacing="20">
+              <TextBlock Grid.Column="0" Grid.Row="0" Margin="0 5 0 0" Background="{DynamicResource PrimaryBackground}" FontSize="20">Schedule</TextBlock>
+              <TextBlock Grid.Column="1" Grid.Row="0" Margin="0  5 0 0" Background="{DynamicResource PrimaryBackground}" FontSize="20">Program</TextBlock>
           </Grid>
       </StackPanel>
   </ScrollViewer>
