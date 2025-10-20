@@ -11,9 +11,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5d2d919a-c5a4-4c98-b7ce-c48c8d29cdd2" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.DelphiNet6/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.DelphiNet6/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DelphiNet6.Browser/DelphiNet6.Browser.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6.Browser/DelphiNet6.Browser.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DelphiNet6.Browser/wwwroot/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6.Browser/wwwroot/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DelphiNet6.Browser/wwwroot/logo.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DelphiNet6.Browser/wwwroot/app.css" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6.Browser/wwwroot/app.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DelphiNet6/Views/MainView.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/Views/MainView.axaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

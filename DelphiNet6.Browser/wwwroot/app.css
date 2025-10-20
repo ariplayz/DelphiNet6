@@ -3,7 +3,7 @@
     position: absolute;
     height: 100%;
     width: 100%;
-    background: white;
+    background: #002317;
     font-family: 'Outfit', sans-serif;
     justify-content: center;
     align-items: center;
@@ -14,29 +14,29 @@
 /* Light theme styles */
 @media (prefers-color-scheme: light) {
     .avalonia-splash {
-        background: white;
+        background: #002317;
     }
 
     .avalonia-splash h2 {
-        color: #1b2a4e;
+        color: ##002317;
     }
 
     .avalonia-splash a {
-        color: #0D6EFD;
+        color: #002317;
     }
 }
 
 @media (prefers-color-scheme: dark) {
     .avalonia-splash {
-        background: #1b2a4e;
+        background: #002317;
     }
 
     .avalonia-splash h2 {
-        color: white;
+        color: #002317;
     }
 
     .avalonia-splash a {
-        color: white;
+        color: #002317;
     }
 }
 

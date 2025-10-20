@@ -19,7 +19,7 @@
                   <!-- Header  -->
                   <StackPanel Orientation="Horizontal" Background="{DynamicResource PrimaryHeaderBackground}" HorizontalAlignment="Stretch">
                     <Label FontSize="60" Margin="0 0 0 0">DelphiNet</Label>
-                    <Label FontSize="20" HorizontalAlignment="Left" Margin="0 5 0 0" VerticalAlignment="Bottom">6.0</Label>
+                    <Label FontSize="20" HorizontalAlignment="Left" Margin="0 3 0 0" VerticalAlignment="Bottom">6.0</Label>
                   </StackPanel>
                   <StackPanel Orientation="Horizontal" Background="{DynamicResource PrimaryHeaderBackground}">
                       <Button Content="Dashboard"></Button>
@@ -31,9 +31,9 @@
               </StackPanel>
           </Panel>
           
-          <Grid ColumnDefinitions="480">
-              <Label Grid.Column="0" Grid.ColumnSpan="400">Schedule</Label>
-              <Label Grid.Column="1" Grid.ColumnSpan="400">Program</Label>
+          <Grid ColumnDefinitions="400 *" ColumnSpacing="20" ColumnSpan="400">
+              <Label Grid.Column="1">Schedule</Label>
+              <Label Grid.Column="2">Program</Label>
           </Grid>
       </StackPanel>
   </ScrollViewer>
