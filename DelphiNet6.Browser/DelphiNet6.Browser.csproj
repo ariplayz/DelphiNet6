@@ -13,4 +13,8 @@
     <ItemGroup>
         <ProjectReference Include="..\DelphiNet6\DelphiNet6.csproj"/>
     </ItemGroup>
+
+    <ItemGroup>
+      <AvaloniaResource Include="wwwroot\logo.jpg" />
+    </ItemGroup>
 </Project>

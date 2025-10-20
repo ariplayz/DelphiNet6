@@ -14,27 +14,27 @@
 
   <ScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
       <StackPanel>
-          <Panel Background="{DynamicResource PrimaryHeaderBackground}">
-                    <StackPanel Orientation="Vertical" Background="{DynamicResource PrimaryHeaderBackground}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                        <StackPanel Orientation="Vertical" Background="{DynamicResource PrimaryHeaderBackground}" Height="145" Width="800" HorizontalAlignment="Stretch">
-                            <!-- Header  -->
-                            <StackPanel Orientation="Horizontal" Background="{DynamicResource PrimaryHeaderBackground}" HorizontalAlignment="Stretch">
-                                <TextBlock FontSize="60">DelphiNet</TextBlock>
-                                <TextBlock FontSize="20">6.0</TextBlock>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal" Background="{DynamicResource PrimaryHeaderBackground}">
-                                <Button Content="Dashboard"></Button>
-                                <DropDownButton Content="Home Menu"></DropDownButton>
-                                <DropDownButton Content="Students and School"></DropDownButton>
-                                <DropDownButton Content="Parents"></DropDownButton>
-                                <Button Content="Problem?"></Button>
-                            </StackPanel>
-                        
-                        </StackPanel>
-                    </StackPanel>
-                </Panel>
+          <Panel Background="{DynamicResource PrimaryHeaderBackground}" HorizontalAlignment="Stretch">
+              <StackPanel Orientation="Vertical" Background="{DynamicResource PrimaryHeaderBackground}" Height="145" Width="800" HorizontalAlignment="Left" Margin="30 0 0 0">
+                  <!-- Header  -->
+                  <StackPanel Orientation="Horizontal" Background="{DynamicResource PrimaryHeaderBackground}" HorizontalAlignment="Stretch">
+                    <Label FontSize="60" Margin="0 0 0 0">DelphiNet</Label>
+                    <Label FontSize="20" HorizontalAlignment="Left" Margin="0 5 0 0" VerticalAlignment="Bottom">6.0</Label>
+                  </StackPanel>
+                  <StackPanel Orientation="Horizontal" Background="{DynamicResource PrimaryHeaderBackground}">
+                      <Button Content="Dashboard"></Button>
+                      <DropDownButton Content="Home Menu"></DropDownButton>
+                      <DropDownButton Content="Students and School"></DropDownButton>
+                      <DropDownButton Content="Parents"></DropDownButton>
+                      <Button Content="Problem?"></Button>
+                  </StackPanel>
+              </StackPanel>
+          </Panel>
           
-          <Label>Body</Label>
+          <Grid ColumnDefinitions="480">
+              <Label Grid.Column="0" Grid.ColumnSpan="400">Schedule</Label>
+              <Label Grid.Column="1" Grid.ColumnSpan="400">Program</Label>
+          </Grid>
       </StackPanel>
   </ScrollViewer>
 </UserControl>
