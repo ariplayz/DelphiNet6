@@ -6,45 +6,44 @@
     <projectFile>DelphiNet6.Desktop/DelphiNet6.Desktop.csproj</projectFile>
     <projectFile kind="XamarinIOS">DelphiNet6.iOS/DelphiNet6.iOS.csproj</projectFile>
   </component>
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="5d2d919a-c5a4-4c98-b7ce-c48c8d29cdd2" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DelphiNet6.Browser/DelphiNet6.Browser.csproj" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DelphiNet6.Browser/Program.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DelphiNet6.Browser/Properties/AssemblyInfo.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DelphiNet6.Browser/Properties/launchSettings.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DelphiNet6.Browser/runtimeconfig.template.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DelphiNet6.Browser/wwwroot/app.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DelphiNet6.Browser/wwwroot/favicon.ico" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DelphiNet6.Browser/wwwroot/index.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DelphiNet6.Browser/wwwroot/main.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DelphiNet6.sln" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DelphiNet6/App.axaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DelphiNet6/App.axaml.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DelphiNet6/Assets/avalonia-logo.ico" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DelphiNet6/DelphiNet6.csproj" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DelphiNet6/ViewLocator.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DelphiNet6/ViewModels/MainViewModel.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DelphiNet6/ViewModels/ViewModelBase.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DelphiNet6/Views/MainView.axaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DelphiNet6/Views/MainView.axaml.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DelphiNet6/Views/MainWindow.axaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DelphiNet6/Views/MainWindow.axaml.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Directory.Packages.props" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.DelphiNet6/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.DelphiNet6/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DelphiNet6/App.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/App.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DelphiNet6/Views/MainView.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/Views/MainView.axaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="DpaMonitoringSettings">
+    <option name="firstShow" value="false" />
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "ariplayz"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/ariplayz/DelphiNet6.git",
+    "accountId": "c4ed5b47-620a-44d2-abae-6b35ec7437c0"
+  }
+}]]></component>
   <component name="InvalidFacetManager">
     <ignored-facets>
       <facet id="DelphiNet6.Android/invalid/Android Facet - DelphiNet6.Android" />
     </ignored-facets>
   </component>
+  <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProjectColorInfo"><![CDATA[{
   "associatedIndex": 1
 }]]></component>
@@ -55,12 +54,18 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    ".NET Launch Settings Profile.DelphiNet6.Browser.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
     "git-widget-placeholder": "master",
     "junie.onboarding.icon.badge.shown": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
     "settings.editor.selected.configurable": "preferences.pluginManager",
     "to.speed.mode.migration.done": "true",
     "vue.rearranger.settings.migration": "true"
@@ -93,16 +98,28 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1760981818100</updated>
-      <workItem from="1760981821436" duration="103000" />
+      <workItem from="1760981821436" duration="3564000" />
     </task>
+    <task id="LOCAL-00001" summary="add">
+      <option name="closed" value="true" />
+      <created>1760982190363</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1760982190363</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
   <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+    <MESSAGE value="add" />
+    <option name="LAST_COMMIT_MESSAGE" value="add" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
