@@ -13,27 +13,28 @@
   </Design.DataContext>
 
   <ScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-      <StackPanel Orientation="Vertical" Background="{DynamicResource PrimaryHeaderBackground}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-          <StackPanel Orientation="Vertical" Background="{DynamicResource PrimaryHeaderBackground}" Height="145" Width="800" HorizontalAlignment="Stretch">
-              <!-- Header  -->
-              <StackPanel Orientation="Horizontal" Background="{DynamicResource PrimaryHeaderBackground}" HorizontalAlignment="Stretch">
-                  <TextBlock FontSize="60">DelphiNet</TextBlock>
-                  <TextBlock FontSize="20">6.0</TextBlock>
-              </StackPanel>
-              <StackPanel Orientation="Horizontal" Background="{DynamicResource PrimaryHeaderBackground}">
-                  <Button Content="Dashboard"></Button>
-                  <DropDownButton Content="Home Menu"></DropDownButton>
-                  <DropDownButton Content="Students and School"></DropDownButton>
-                  <DropDownButton Content="Parents"></DropDownButton>
-                  <Button Content="Problem?"></Button>
-              </StackPanel>
-              
-          </StackPanel>
+      <StackPanel>
+          <Panel Background="{DynamicResource PrimaryHeaderBackground}">
+                    <StackPanel Orientation="Vertical" Background="{DynamicResource PrimaryHeaderBackground}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                        <StackPanel Orientation="Vertical" Background="{DynamicResource PrimaryHeaderBackground}" Height="145" Width="800" HorizontalAlignment="Stretch">
+                            <!-- Header  -->
+                            <StackPanel Orientation="Horizontal" Background="{DynamicResource PrimaryHeaderBackground}" HorizontalAlignment="Stretch">
+                                <TextBlock FontSize="60">DelphiNet</TextBlock>
+                                <TextBlock FontSize="20">6.0</TextBlock>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Background="{DynamicResource PrimaryHeaderBackground}">
+                                <Button Content="Dashboard"></Button>
+                                <DropDownButton Content="Home Menu"></DropDownButton>
+                                <DropDownButton Content="Students and School"></DropDownButton>
+                                <DropDownButton Content="Parents"></DropDownButton>
+                                <Button Content="Problem?"></Button>
+                            </StackPanel>
+                        
+                        </StackPanel>
+                    </StackPanel>
+                </Panel>
           
-          <StackPanel Orientation="Vertical" Background="{DynamicResource PrimaryBackground}">
-              <!-- Body  -->
-              
-          </StackPanel>
+          <Label>Body</Label>
       </StackPanel>
   </ScrollViewer>
 </UserControl>

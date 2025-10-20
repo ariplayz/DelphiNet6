@@ -12,7 +12,7 @@
   <component name="ChangeListManager">
     <list default="true" id="5d2d919a-c5a4-4c98-b7ce-c48c8d29cdd2" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.DelphiNet6/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.DelphiNet6/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DelphiNet6/App.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/App.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DelphiNet6/Styles/AppDefaultStyles.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/Styles/AppDefaultStyles.axaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DelphiNet6/Views/MainView.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/Views/MainView.axaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -38,6 +38,9 @@
     "accountId": "c4ed5b47-620a-44d2-abae-6b35ec7437c0"
   }
 }]]></component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="mock:///Users/aricummings/RiderProjects/DelphiNet6/DelphiNet6/App.axaml" root0="SKIP_HIGHLIGHTING" />
+  </component>
   <component name="InvalidFacetManager">
     <ignored-facets>
       <facet id="DelphiNet6.Android/invalid/Android Facet - DelphiNet6.Android" />
@@ -98,7 +101,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1760981818100</updated>
-      <workItem from="1760981821436" duration="3564000" />
+      <workItem from="1760981821436" duration="4217000" />
     </task>
     <task id="LOCAL-00001" summary="add">
       <option name="closed" value="true" />
@@ -108,7 +111,15 @@
       <option name="project" value="LOCAL" />
       <updated>1760982190363</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="add">
+      <option name="closed" value="true" />
+      <created>1760987975124</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1760987975124</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

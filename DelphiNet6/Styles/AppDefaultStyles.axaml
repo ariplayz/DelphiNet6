@@ -88,12 +88,39 @@
     
     <Style Selector="Button">
         <Setter Property="Foreground" Value="{DynamicResource PrimaryForeground}"></Setter>
-        <Setter Property="FontSize" Value="30"></Setter>
+        <Setter Property="FontSize" Value="20"></Setter>
         <Setter Property="Background" Value="{DynamicResource PrimaryBackground}"></Setter>
         <Setter Property="CornerRadius" Value="7"></Setter>
         <Setter Property="HorizontalAlignment" Value="Left"></Setter>
         <Setter Property="VerticalAlignment" Value="Center"></Setter>
         <Setter Property="Margin" Value="0 0 0 0"></Setter>
+    </Style>
+    
+    <Style Selector="DropDownButton">
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryForeground}"></Setter>
+        <Setter Property="Background" Value="{DynamicResource PrimaryBackground}"></Setter>
+        <Setter Property="FontSize" Value="20"></Setter>
+        <Setter Property="CornerRadius" Value="7"></Setter>
+        <Setter Property="HorizontalAlignment" Value="Left"></Setter>
+        <Setter Property="VerticalAlignment" Value="Center"></Setter>
+        <Setter Property="Margin" Value="0 0 0 0"></Setter>
+    </Style>
+    
+    <Style Selector="DropDownButton /template/ ContentPresenter">
+        <Setter Property="RenderTransform" Value="scale(1)"></Setter>
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.1"></BrushTransition>
+                <BrushTransition Property="Foreground" Duration="0:0:0.1"></BrushTransition>
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.1"></TransformOperationsTransition>
+            </Transitions>
+        </Setter>
+    </Style>
+    
+    <Style Selector="DropDownButton:pointerover /template/ ContentPresenter">
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryHoverForeground}"></Setter>
+        <Setter Property="Background" Value="{DynamicResource PrimaryHoverBackground}"></Setter>
+        <Setter Property="RenderTransform" Value="scale(1.05)"></Setter>
     </Style>
     
     <Style Selector="Label.icon">
