@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:DelphiNet6.ViewModels"
+             xmlns:UserControl="clr-namespace:DelphiNet6.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="DelphiNet6.Views.MainView"
              x:DataType="vm:MainViewModel">
@@ -41,7 +42,7 @@
           
           <Grid ColumnDefinitions="400, 400" RowDefinitions="500, 500" ColumnSpacing="20" RowSpacing="20">
              <Grid ColumnDefinitions="400, 400, 400" ColumnSpacing="20">
-                  <TextBlock Grid.Column="0" Grid.Row="0" Margin="0 5 0 0" Background="{DynamicResource PrimaryBackground}" FontSize="20" HorizontalAlignment="Center">Schedule</TextBlock>
+                  <UserControl:ProgramWidget Grid.Column="0" Grid.Row="0" Margin="0 5 0 0" VerticalAlignment="Center"/>
                   <TextBlock Grid.Column="1" Grid.Row="0" Margin="0  5 0 0" Background="{DynamicResource PrimaryBackground}" FontSize="20" VerticalAlignment="Center">Program</TextBlock>
               </Grid>
          </Grid>

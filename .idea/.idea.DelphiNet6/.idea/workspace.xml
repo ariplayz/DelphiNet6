@@ -11,13 +11,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5d2d919a-c5a4-4c98-b7ce-c48c8d29cdd2" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/DelphiNet6/Controls/ProgramWidget.axaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DelphiNet6/Controls/ProgramWidget.axaml.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.DelphiNet6/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.DelphiNet6/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DelphiNet6/App.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/App.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DelphiNet6/Controls/ProgramWidget.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/Controls/ProgramWidget.axaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DelphiNet6/DelphiNet6.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/DelphiNet6.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DelphiNet6/Styles/AppDefaultStyles.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/Styles/AppDefaultStyles.axaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DelphiNet6/Views/MainView.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/Views/MainView.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DelphiNet6/Views/MainView.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/Views/MainView.axaml.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -110,7 +108,8 @@
       <workItem from="1760997755837" duration="1239000" />
       <workItem from="1761019027089" duration="130000" />
       <workItem from="1761019194422" duration="2599000" />
-      <workItem from="1761066382802" duration="1008000" />
+      <workItem from="1761066382802" duration="1023000" />
+      <workItem from="1761071828364" duration="1885000" />
     </task>
     <task id="LOCAL-00001" summary="add">
       <option name="closed" value="true" />
@@ -168,7 +167,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761060603190</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="add">
+      <option name="closed" value="true" />
+      <created>1761067398908</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1761067398908</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -178,13 +185,13 @@
   <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="add" />
     <MESSAGE value="basi c" />
     <MESSAGE value="almost" />
     <MESSAGE value="add dropdowns" />
     <MESSAGE value="verticality complex" />
     <MESSAGE value="changes" />
-    <option name="LAST_COMMIT_MESSAGE" value="changes" />
+    <MESSAGE value="add" />
+    <option name="LAST_COMMIT_MESSAGE" value="add" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
