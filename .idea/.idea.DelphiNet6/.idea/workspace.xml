@@ -11,8 +11,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5d2d919a-c5a4-4c98-b7ce-c48c8d29cdd2" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/DelphiNet6/Controls/Sidebar.axaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DelphiNet6/Controls/Sidebar.axaml.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DelphiNet6/Models/Program.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DelphiNet6/Models/User.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.DelphiNet6/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.DelphiNet6/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DelphiNet6/Controls/ProgramWidget.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/Controls/ProgramWidget.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DelphiNet6/Views/MainView.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/Views/MainView.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DelphiNet6/Views/MainWindow.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/Views/MainWindow.axaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,6 +45,10 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/DelphiNet6/Controls/ProgramWidget.axaml" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/DelphiNet6/Controls/ProgramWidget.axaml.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DelphiNet6/Controls/Sidebar.axaml" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DelphiNet6/Controls/Sidebar.axaml.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DelphiNet6/Models/Program.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DelphiNet6/Models/User.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="InvalidFacetManager">
     <ignored-facets>
@@ -107,7 +116,8 @@
       <workItem from="1761019194422" duration="2599000" />
       <workItem from="1761066382802" duration="1023000" />
       <workItem from="1761071828364" duration="1908000" />
-      <workItem from="1761077017069" duration="456000" />
+      <workItem from="1761077017069" duration="495000" />
+      <workItem from="1761077790512" duration="3078000" />
     </task>
     <task id="LOCAL-00001" summary="add">
       <option name="closed" value="true" />
@@ -181,7 +191,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761073756475</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="save">
+      <option name="closed" value="true" />
+      <created>1761077479446</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1761077479447</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -198,7 +216,8 @@
     <MESSAGE value="changes" />
     <MESSAGE value="add" />
     <MESSAGE value="lok" />
-    <option name="LAST_COMMIT_MESSAGE" value="lok" />
+    <MESSAGE value="save" />
+    <option name="LAST_COMMIT_MESSAGE" value="save" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

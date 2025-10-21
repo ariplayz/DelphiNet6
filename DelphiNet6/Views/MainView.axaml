@@ -15,38 +15,13 @@
 
   <ScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
       <StackPanel Orientation="Horizontal">
-          
-          <Panel Background="{DynamicResource PrimaryHeaderBackground}" HorizontalAlignment="Stretch">
-              <StackPanel Orientation="Vertical" Background="{DynamicResource PrimaryHeaderBackground}" Width="250" HorizontalAlignment="Left" Margin="20 0 0 0">
-                  <!-- Header  -->
-                  <Image Source="/Assets/Images/logo.png"></Image>
-                  <StackPanel Orientation="Vertical" Background="{DynamicResource PrimaryHeaderBackground}">
-                      <Button Content="Dashboard"></Button>
-                      <DropDownButton Content="Home Menu">
-                          <DropDownButton.Flyout>
-                              <MenuFlyout>
-                                  <MenuItem Header="Ethics Reports"></MenuItem>
-                                  <MenuItem Header="Old Math Facts"></MenuItem>
-                                  <MenuItem Header="Hard to Find Words"></MenuItem>
-                                  <MenuItem Header="Meal Menus"></MenuItem>
-                                  <MenuItem Header="New MFC"></MenuItem>
-                              </MenuFlyout>
-                          </DropDownButton.Flyout>
-                      </DropDownButton>
-                      <DropDownButton Content="Students and School"></DropDownButton>
-                      <DropDownButton Content="Parents"></DropDownButton>
-                      <Button Content="Problem?"></Button>
-                  </StackPanel>
-              </StackPanel>
-          </Panel>
-          
+          <UserControl:Sidebar VerticalAlignment="Stretch" HorizontalAlignment="Left"/>
           <Grid ColumnDefinitions="400, 400" RowDefinitions="500, 500" ColumnSpacing="20" RowSpacing="20">
              <Grid ColumnDefinitions="400, 400, 400" ColumnSpacing="20">
                   <UserControl:ProgramWidget Grid.Column="0" Grid.Row="0" Margin="0 5 0 0" VerticalAlignment="Center"/>
                   <TextBlock Grid.Column="1" Grid.Row="0" Margin="0  5 0 0" Background="{DynamicResource PrimaryBackground}" FontSize="20" VerticalAlignment="Center">Program</TextBlock>
               </Grid>
          </Grid>
-          
       </StackPanel>
   </ScrollViewer>
 </UserControl>
