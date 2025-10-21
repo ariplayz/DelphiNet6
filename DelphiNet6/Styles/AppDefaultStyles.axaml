@@ -103,7 +103,7 @@
         <Setter Property="CornerRadius" Value="7"></Setter>
         <Setter Property="HorizontalAlignment" Value="Left"></Setter>
         <Setter Property="VerticalAlignment" Value="Center"></Setter>
-        <Setter Property="Margin" Value="0 0 0 0"></Setter>
+        <Setter Property="Margin" Value="0 2.5 0 2.5"></Setter>
     </Style>
     
     <Style Selector="DropDownButton /template/ ContentPresenter">

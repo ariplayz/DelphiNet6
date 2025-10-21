@@ -15,8 +15,8 @@
              </Application.Styles>
 
              <Application.Resources>
-                 <SolidColorBrush x:Key="PrimaryBackground">#002317</SolidColorBrush>
-                 <SolidColorBrush x:Key="PrimaryHeaderBackground">#005236</SolidColorBrush>
+                 <SolidColorBrush x:Key="PrimaryBackground">#014f34</SolidColorBrush>
+                 <SolidColorBrush x:Key="PrimaryHeaderBackground">#002418</SolidColorBrush>
                  <SolidColorBrush x:Key="PrimaryForeground">#CFCFCF</SolidColorBrush>
                  <LinearGradientBrush x:Key="PrimaryBackgroundGradient" StartPoint="0%, 0%" EndPoint="100%, 0%">
                      <GradientStop Offset="0" Color="#025236"></GradientStop>

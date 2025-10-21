@@ -16,7 +16,7 @@
       <StackPanel Orientation="Horizontal">
           
           <Panel Background="{DynamicResource PrimaryHeaderBackground}" HorizontalAlignment="Stretch">
-              <StackPanel Orientation="Vertical" Background="{DynamicResource PrimaryHeaderBackground}" Width="145" HorizontalAlignment="Left" Margin="20 0 0 0">
+              <StackPanel Orientation="Vertical" Background="{DynamicResource PrimaryHeaderBackground}" Width="250" HorizontalAlignment="Left" Margin="20 0 0 0">
                   <!-- Header  -->
                   <Image Source="/Assets/Images/logo.png"></Image>
                   <StackPanel Orientation="Vertical" Background="{DynamicResource PrimaryHeaderBackground}">

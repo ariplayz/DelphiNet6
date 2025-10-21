@@ -10,7 +10,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5d2d919a-c5a4-4c98-b7ce-c48c8d29cdd2" name="Changes" comment="" />
+    <list default="true" id="5d2d919a-c5a4-4c98-b7ce-c48c8d29cdd2" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/DelphiNet6/Controls/ProgramWidget.axaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DelphiNet6/Controls/ProgramWidget.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.DelphiNet6/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.DelphiNet6/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DelphiNet6/App.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/App.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DelphiNet6/DelphiNet6.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/DelphiNet6.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DelphiNet6/Styles/AppDefaultStyles.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/Styles/AppDefaultStyles.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DelphiNet6/Views/MainView.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/Views/MainView.axaml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -35,8 +43,8 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="mock:///Users/aricummings/RiderProjects/DelphiNet6/DelphiNet6/App.axaml" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Users/aricummings/RiderProjects/DelphiNet6/DelphiNet6/Styles/AppDefaultStyles.axaml" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DelphiNet6/Controls/ProgramWidget.axaml" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DelphiNet6/Controls/ProgramWidget.axaml.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="InvalidFacetManager">
     <ignored-facets>
@@ -101,7 +109,8 @@
       <workItem from="1760981821436" duration="5073000" />
       <workItem from="1760997755837" duration="1239000" />
       <workItem from="1761019027089" duration="130000" />
-      <workItem from="1761019194422" duration="2528000" />
+      <workItem from="1761019194422" duration="2599000" />
+      <workItem from="1761066382802" duration="1008000" />
     </task>
     <task id="LOCAL-00001" summary="add">
       <option name="closed" value="true" />
@@ -151,7 +160,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761021382245</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="changes">
+      <option name="closed" value="true" />
+      <created>1761060603190</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1761060603190</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -166,7 +183,8 @@
     <MESSAGE value="almost" />
     <MESSAGE value="add dropdowns" />
     <MESSAGE value="verticality complex" />
-    <option name="LAST_COMMIT_MESSAGE" value="verticality complex" />
+    <MESSAGE value="changes" />
+    <option name="LAST_COMMIT_MESSAGE" value="changes" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

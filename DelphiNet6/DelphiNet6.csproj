@@ -12,6 +12,8 @@
         <AvaloniaResource Include="Styles\AppDefaultStyles.axaml" />
 	<Resource Include="Assets\Images\logo.png" />
 	<AvaloniaResource Include="Assets\Images\logo.png" />
+	<AvaloniaXaml Remove="Controls\ProgramWidget.axaml" />
+	<AvaloniaResource Include="Controls\ProgramWidget.axaml" />
     </ItemGroup>
 
     <ItemGroup>
