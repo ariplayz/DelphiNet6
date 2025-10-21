@@ -13,28 +13,18 @@
   </Design.DataContext>
 
   <ScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-      <StackPanel>
+      <StackPanel Orientation="Horizontal">
+          
           <Panel Background="{DynamicResource PrimaryHeaderBackground}" HorizontalAlignment="Stretch">
-              <StackPanel Orientation="Vertical" Background="{DynamicResource PrimaryHeaderBackground}" Height="145" Width="800" HorizontalAlignment="Left" Margin="30 0 0 0">
+              <StackPanel Orientation="Vertical" Background="{DynamicResource PrimaryHeaderBackground}" Width="145" HorizontalAlignment="Left" Margin="20 0 0 0">
                   <!-- Header  -->
-                  <StackPanel Orientation="Horizontal" Background="{DynamicResource PrimaryHeaderBackground}" HorizontalAlignment="Stretch">
-                    <Label FontSize="60" Margin="0 0 0 0">DelphiNet</Label>
-                    <Label FontSize="20" HorizontalAlignment="Left" Margin="0 0 0 5 " VerticalAlignment="Bottom">6.0</Label>
-                  </StackPanel>
-                  <StackPanel Orientation="Horizontal" Background="{DynamicResource PrimaryHeaderBackground}">
+                  <Image Source="/Assets/Images/logo.png"></Image>
+                  <StackPanel Orientation="Vertical" Background="{DynamicResource PrimaryHeaderBackground}">
                       <Button Content="Dashboard"></Button>
                       <DropDownButton Content="Home Menu">
                           <DropDownButton.Flyout>
                               <MenuFlyout>
-                                  <MenuItem Header="Ethics Reports">
-                                     <DropDownButton.Flyout>
-                                         <MenuFlyout>
-                                                <MenuItem Header="Write/Review Reports"></MenuItem>
-                                                <MenuItem Header="Person Report History"></MenuItem>
-                                                <MenuItem Header="Campus Ethics Reports"></MenuItem>
-                                         </MenuFlyout>
-                                     </DropDownButton.Flyout>
-                                  </MenuItem>
+                                  <MenuItem Header="Ethics Reports"></MenuItem>
                                   <MenuItem Header="Old Math Facts"></MenuItem>
                                   <MenuItem Header="Hard to Find Words"></MenuItem>
                                   <MenuItem Header="Meal Menus"></MenuItem>
@@ -49,10 +39,13 @@
               </StackPanel>
           </Panel>
           
-          <Grid ColumnDefinitions="400, 400, 400" ColumnSpacing="20">
-              <TextBlock Grid.Column="0" Grid.Row="0" Margin="0 5 0 0" Background="{DynamicResource PrimaryBackground}" FontSize="20">Schedule</TextBlock>
-              <TextBlock Grid.Column="1" Grid.Row="0" Margin="0  5 0 0" Background="{DynamicResource PrimaryBackground}" FontSize="20">Program</TextBlock>
-          </Grid>
+          <Grid ColumnDefinitions="400, 400" RowDefinitions="500, 500" ColumnSpacing="20" RowSpacing="20">
+             <Grid ColumnDefinitions="400, 400, 400" ColumnSpacing="20">
+                  <TextBlock Grid.Column="0" Grid.Row="0" Margin="0 5 0 0" Background="{DynamicResource PrimaryBackground}" FontSize="20" HorizontalAlignment="Center">Schedule</TextBlock>
+                  <TextBlock Grid.Column="1" Grid.Row="0" Margin="0  5 0 0" Background="{DynamicResource PrimaryBackground}" FontSize="20" VerticalAlignment="Center">Program</TextBlock>
+              </Grid>
+         </Grid>
+          
       </StackPanel>
   </ScrollViewer>
 </UserControl>
