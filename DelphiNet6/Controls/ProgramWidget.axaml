@@ -10,6 +10,8 @@
         </Panel>
        
         <Grid ColumnDefinitions="230, 110, 60" RowDefinitions="*" Background="{DynamicResource PrimaryBackgroundGradient}">
+            <ProgressBar Grid.Row="0" Height="40" CornerRadius="12" Foreground="LightBlue" Minimum="0" Maximum="100" ShowProgressText="True" x:Name="ProgramProgress">
+            </ProgressBar>
         </Grid>
     </StackPanel>
 </UserControl>

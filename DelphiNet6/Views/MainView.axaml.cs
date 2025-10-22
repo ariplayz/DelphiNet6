@@ -8,7 +8,6 @@ public partial class MainView : UserControl
     public MainView()
     {
         InitializeComponent();
-        int giggidy;
-        giggidy = Int32.MaxValue;
+        databaseInterface.initializeDB();
     }
 }
