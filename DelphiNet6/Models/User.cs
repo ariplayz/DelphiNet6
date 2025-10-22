@@ -5,7 +5,7 @@ namespace DelphiNet6.Models;
 
 public class User
 {
-    public static int Identifier { get; set; }
+    public static int Identifier;
     
     bool CheckLoginStatus()
     {
@@ -31,18 +31,5 @@ public class User
 
         // Execute query and get the result set (list of rows)
         var resultSet = db.ExecuteQuery(selectQuery, selectParameters);
-
-        // Check if the query returned at least one user
-        if (resultSet.Count > 0)
-        {
-            // Assuming the 'identifier' column exists in the user table
-            var userRow = resultSet[0];
-            Identifier = Convert.ToInt32(userRow["identifier"]); // Set the Identifier from the database
-            Console.WriteLine($"Authentication successful: User ID {Identifier}");
-        }
-        else
-        {
-            Console.WriteLine("Invalid username or password.");
-        }
     }
 }
