@@ -6,7 +6,7 @@ public class User
 {
     public static int Identifier { get; set; }
 
-    public void Authenticate(string username, string password)
+    public static void Authenticate(string username, string password)
     {
          var db = new databaseInterface("db_credentials.txt");
         string selectQuery = "SELECT * FROM users WHERE username = @username AND password = @password";
