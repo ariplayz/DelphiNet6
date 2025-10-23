@@ -11,10 +11,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5d2d919a-c5a4-4c98-b7ce-c48c8d29cdd2" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/DelphiNet6/Models/Cookie.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.DelphiNet6/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.DelphiNet6/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DelphiNet6/Controls/Sidebar.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/Controls/Sidebar.axaml.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DelphiNet6/Views/MainView.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/Views/MainView.axaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DelphiNet6/Views/MainView.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/Views/MainView.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DelphiNet6.Browser/DelphiNet6.Browser.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6.Browser/DelphiNet6.Browser.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DelphiNet6/DelphiNet6.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/DelphiNet6.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DelphiNet6/Models/User.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/Models/User.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Directory.Packages.props" beforeDir="false" afterPath="$PROJECT_DIR$/Directory.Packages.props" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,6 +48,7 @@
     <setting file="file://$PROJECT_DIR$/DelphiNet6/Controls/ProgramWidget.axaml.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/DelphiNet6/Controls/Sidebar.axaml" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/DelphiNet6/Controls/Sidebar.axaml.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DelphiNet6/Models/Cookie.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/DelphiNet6/Models/Program.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/DelphiNet6/Models/User.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/DelphiNet6/databaseInterface.cs" root0="FORCE_HIGHLIGHTING" />
@@ -133,7 +136,7 @@
       <workItem from="1761195452683" duration="813000" />
       <workItem from="1761233337965" duration="373000" />
       <workItem from="1761240622271" duration="2067000" />
-      <workItem from="1761250659704" duration="4888000" />
+      <workItem from="1761250659704" duration="6456000" />
     </task>
     <task id="LOCAL-00001" summary="add">
       <option name="closed" value="true" />
@@ -287,7 +290,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761254363899</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="fix static context errors">
+      <option name="closed" value="true" />
+      <created>1761256089289</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1761256089289</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -314,7 +325,8 @@
     <MESSAGE value="fix errors" />
     <MESSAGE value="fix login screen" />
     <MESSAGE value="add to authenticate method" />
-    <option name="LAST_COMMIT_MESSAGE" value="add to authenticate method" />
+    <MESSAGE value="fix static context errors" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix static context errors" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

@@ -8,6 +8,8 @@
 
     <ItemGroup>
         <PackageReference Include="Avalonia.Browser"/>
+        <PackageReference Include="Microsoft.AspNetCore" />
+        <PackageReference Include="Microsoft.AspNetCore.Http" />
         <PackageReference Include="MySqlConnector" />
     </ItemGroup>
 

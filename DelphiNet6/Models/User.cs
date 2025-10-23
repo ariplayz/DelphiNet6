@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using DelphiNet6.Views;
+using DelphiNet6;
+using Microsoft.AspNetCore.Http;
+using DelphiNet6.Controls;
 
 namespace DelphiNet6.Models;
 
@@ -17,7 +20,7 @@ public class User
         get => Identifier != 0;
     }
 
-    public static void DoAuth(string username, string password)
+    public static void DoAuth(string username, string password, HttpContext httpContext)
     {
         // Create the database interface to interact with the database
         var db = new databaseInterface("db_credentials.txt");
@@ -28,8 +31,8 @@ public class User
         // Dictionary for SQL parameters
         var selectParameters = new Dictionary<string, object>
         {
-            { "@username", username }, // Corrected syntax (removed semicolon)
-            { "@password", password }  // Corrected syntax (removed semicolon)
+            { "@username", username },
+            { "@password", password }
         };
 
         // Execute query and get the result set (list of rows)
@@ -41,7 +44,7 @@ public class User
             {
                 Username = name.ToString();
             }
-            
+
             if (dictionary.TryGetValue("identifier", out var identifier))
             {
                 Identifier = identifier is int ? (int)identifier : 0;
@@ -61,11 +64,13 @@ public class User
             {
                 LastName = lastname.ToString();
             }
-            
+
+            // Update the cookie with the user's identifier after authentication
+            Cookie.SetCookie(httpContext, Identifier);
+
             break;
         }
         
         MainView.SetLoginOverlay();
-
     }
 }
