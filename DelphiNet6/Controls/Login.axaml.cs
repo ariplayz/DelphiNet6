@@ -15,10 +15,10 @@ public partial class Login : UserControl
         InitializeComponent();
     }
 
-    private void authenticate(object sender, RoutedEventArgs e)
+    private void authenticatebutton(object sender, RoutedEventArgs e)
     {
         string username = usernameIn.Text;
         string password = passwordIn.Text;
-        User.Authenticate(username, password);
+        User.DoAuth(username, password);
     }
 }

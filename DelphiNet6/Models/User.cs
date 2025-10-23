@@ -6,15 +6,13 @@ namespace DelphiNet6.Models;
 public class User
 {
     public static int Identifier;
-    
-    bool CheckLoginStatus()
+
+    public static bool LoginStatus
     {
-        // Ensure Identifier is properly checked (Identifier is an integer, so it can't be null)
-        return Identifier != default(int); // default(int) is 0
-        public static bool LoginStatus = Identifier != default(int);
+        get => Identifier != 0;
     }
 
-    public static void Authenticate(string username, string password)
+    public static void DoAuth(string username, string password)
     {
         // Create the database interface to interact with the database
         var db = new databaseInterface("db_credentials.txt");

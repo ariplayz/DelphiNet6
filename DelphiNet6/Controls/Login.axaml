@@ -9,7 +9,7 @@
             <TextBlock FontSize="30">Enter your DelphiNet Credentials</TextBlock>
             <TextBox x:Name="usernameIn" CornerRadius="7"></TextBox>
             <TextBox x:Name="passwordIn" CornerRadius="7"></TextBox>
-            <Button Click="authenticate" CornerRadius="7"></Button>
+            <Button Click="authenticatebutton" CornerRadius="7"></Button>
         </StackPanel>
     </Panel>
 </UserControl>
