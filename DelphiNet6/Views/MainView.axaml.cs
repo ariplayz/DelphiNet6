@@ -19,7 +19,10 @@ public partial class MainView : UserControl
         // Locate elements in the UI
         _loginOverlay = this.FindControl<Panel>("LoginOverlay");
         _mainContentScrollViewer = this.FindControl<ScrollViewer>("MainContentScrollViewer");
-
+        
+        var sidebar = this.FindControl<Sidebar>("Sidebar");
+        Sidebar.UpdateSidebarUserID(sidebar);
+        
         SetLoginOverlay();
     }
 

@@ -10,7 +10,7 @@
         <!-- Main content layer -->
         <ScrollViewer x:Name="MainContentScrollViewer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <StackPanel Orientation="Horizontal">
-                <UserControl:Sidebar VerticalAlignment="Stretch" HorizontalAlignment="Left"/>
+                <UserControl:Sidebar VerticalAlignment="Stretch" HorizontalAlignment="Left" x:Name="Sidebar"/>
                 <Grid ColumnDefinitions="400, 400" RowDefinitions="500, 500" ColumnSpacing="20" RowSpacing="20">
                     <Grid ColumnDefinitions="400, 400, 400" ColumnSpacing="20">
                         <UserControl:ProgramWidget Grid.Column="0" Grid.Row="0" Margin="0 5 0 0" VerticalAlignment="Center"/>
