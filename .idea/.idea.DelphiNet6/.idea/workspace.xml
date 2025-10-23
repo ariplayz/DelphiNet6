@@ -11,12 +11,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5d2d919a-c5a4-4c98-b7ce-c48c8d29cdd2" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/DelphiNet6/Models/Cookie.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.DelphiNet6/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.DelphiNet6/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DelphiNet6.Browser/DelphiNet6.Browser.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6.Browser/DelphiNet6.Browser.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DelphiNet6/DelphiNet6.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/DelphiNet6.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DelphiNet6/Controls/Login.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/Controls/Login.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DelphiNet6/Controls/Sidebar.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/Controls/Sidebar.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DelphiNet6/Models/Cookie.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/Models/Cookie.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DelphiNet6/Models/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/Models/Program.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DelphiNet6/Models/User.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/Models/User.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Directory.Packages.props" beforeDir="false" afterPath="$PROJECT_DIR$/Directory.Packages.props" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DelphiNet6/Views/MainView.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/Views/MainView.axaml.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -136,7 +137,7 @@
       <workItem from="1761195452683" duration="813000" />
       <workItem from="1761233337965" duration="373000" />
       <workItem from="1761240622271" duration="2067000" />
-      <workItem from="1761250659704" duration="6456000" />
+      <workItem from="1761250659704" duration="7625000" />
     </task>
     <task id="LOCAL-00001" summary="add">
       <option name="closed" value="true" />
@@ -298,7 +299,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761256089289</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="cookies">
+      <option name="closed" value="true" />
+      <created>1761257810172</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1761257810172</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -326,7 +335,8 @@
     <MESSAGE value="fix login screen" />
     <MESSAGE value="add to authenticate method" />
     <MESSAGE value="fix static context errors" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix static context errors" />
+    <MESSAGE value="cookies" />
+    <option name="LAST_COMMIT_MESSAGE" value="cookies" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

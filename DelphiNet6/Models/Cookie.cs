@@ -11,10 +11,10 @@ public class Cookie
         {
             Path = "/",
             HttpOnly = true,
-            Secure = true,
-            Expires = DateTime.Now.AddDays(1) // Cookie expires after one day
+            Secure = true, // Set this to false if not using HTTPS (for development purposes)
+            Expires = DateTime.Now.AddDays(1) // Cookie expiration time
         };
-        httpContext.Response.Cookies.Append("DelphiNetAuth", User.Identifier.ToString(), cookieOptions);
+        httpContext.Response.Cookies.Append("DelphiNetAuth", userIdentifier.ToString(), cookieOptions);
     }
     
     public static string GetCookie(HttpContext httpContext)
@@ -23,6 +23,6 @@ public class Cookie
         {
             return value;
         }
-        return null; // Cookie not found
+        return null; // Return null if no cookie is found
     }
 }

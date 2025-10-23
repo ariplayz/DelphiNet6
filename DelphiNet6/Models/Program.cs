@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System;
+using System.IO;
 using DelphiNet6;
 
 namespace DelphiNet6.Models;
@@ -8,7 +9,8 @@ public class Program
 {
     public void initializeProgramDB()
     {
-        var db = new databaseInterface("db_credentials.txt");
+        var credsPath = Path.Combine(AppContext.BaseDirectory, "db_credentials.txt");
+        var db = new databaseInterface(credsPath);
         string selectQuery = "SELECT * FROM users WHERE identifier = @identifier";
         var selectParameters = new Dictionary<string, object>
         {

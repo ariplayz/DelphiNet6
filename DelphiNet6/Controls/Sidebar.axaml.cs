@@ -12,18 +12,15 @@ public partial class Sidebar : UserControl
         InitializeComponent();
     }
 
-    public static void UpdateSidebarUserID(Sidebar sidebarInstance)
+    public void UpdateSidebarUserID()
     {
-        if (sidebarInstance != null)
+        if (User.Identifier == 0)
         {
-            if (User.Identifier.ToString() == "0")
-            {
-                sidebarInstance.IdentifierDisplay.Text = "User Not Logged In";
-            }
-            else
-            {
-                sidebarInstance.IdentifierDisplay.Text = $"Your User ID is: {User.Identifier.ToString()}";
-            }
+            IdentifierDisplay.Text = "User Not Logged In";
+        }
+        else
+        {
+            IdentifierDisplay.Text = $"Your User ID is: {User.Identifier}";
         }
     }
 }

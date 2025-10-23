@@ -1,7 +1,5 @@
 using System;
 using Avalonia.Controls;
-using Avalonia.Layout;
-using Avalonia.VisualTree;
 using DelphiNet6.Controls;
 using DelphiNet6.Models;
 
@@ -19,16 +17,27 @@ public partial class MainView : UserControl
         // Locate elements in the UI
         _loginOverlay = this.FindControl<Panel>("LoginOverlay");
         _mainContentScrollViewer = this.FindControl<ScrollViewer>("MainContentScrollViewer");
-        
+
+        // Perform auto-login using the User class
+        PerformAutoLogin();
+
+        // Update the sidebar
         var sidebar = this.FindControl<Sidebar>("Sidebar");
-        Sidebar.UpdateSidebarUserID(sidebar);
-        
+        sidebar?.UpdateSidebarUserID();
+
+        // Update UI based on login status
         SetLoginOverlay();
+    }
+
+    private void PerformAutoLogin()
+    {
+        // Auto-login using local storage (no HttpContext)
+        User.TryAutoLogin();
     }
 
     public static void SetLoginOverlay()
     {
-        // If the user is logged in, hide the login overlay; otherwise, show it and disable the main content
+        // Show or hide the login overlay based on the user's login status
         UpdateUI(User.LoginStatus);
     }
 

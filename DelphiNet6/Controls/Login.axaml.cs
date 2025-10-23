@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.VisualTree;
 using DelphiNet6.Models;
 using DelphiNet6.Controls;
 using DelphiNet6;
@@ -21,7 +22,26 @@ public partial class Login : UserControl
     {
         string username = usernameIn.Text;
         string password = passwordIn.Text;
-        User.DoAuth(username, password);
-        MainView.SetLoginOverlay();
+        
+        var success = User.DoAuth(username, password);
+        if (success)
+        {
+            MainView.SetLoginOverlay();
+
+            // Update the sidebar text after successful login
+            var top = TopLevel.GetTopLevel(this);
+            if (top is Window w)
+            {
+                if (w.Content is MainView mv)
+                {
+                    var sidebar = mv.FindControl<Sidebar>("Sidebar");
+                    sidebar?.UpdateSidebarUserID();
+                }
+            }
+        }
+        else
+        {
+            // Optionally show an error message in the future
+        }
     }
 }
