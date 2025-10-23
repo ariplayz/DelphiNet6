@@ -25,6 +25,9 @@
                 <DropDownButton Content="Parents"></DropDownButton>
                 <Button Content="Problem?"></Button>
             </StackPanel>
+            
+            
+            <TextBlock Background="{DynamicResource PrimaryHeaderBackground}" VerticalAlignment="Bottom" Padding="10" HorizontalAlignment="Center" x:Name="IdentifierDisplay" ></TextBlock>
         </StackPanel>
     </Panel>
 </UserControl>

@@ -12,9 +12,10 @@
   <component name="ChangeListManager">
     <list default="true" id="5d2d919a-c5a4-4c98-b7ce-c48c8d29cdd2" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.DelphiNet6/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.DelphiNet6/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DelphiNet6/Controls/Login.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/Controls/Login.axaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DelphiNet6/ViewModels/MainViewModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/ViewModels/MainViewModel.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DelphiNet6/Views/MainView.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/Views/MainView.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DelphiNet6/Controls/Login.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/Controls/Login.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DelphiNet6/Controls/Sidebar.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/Controls/Sidebar.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DelphiNet6/Controls/Sidebar.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/Controls/Sidebar.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DelphiNet6/Models/User.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/Models/User.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DelphiNet6/Views/MainView.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/Views/MainView.axaml.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -133,7 +134,8 @@
       <workItem from="1761166905653" duration="380000" />
       <workItem from="1761195452683" duration="813000" />
       <workItem from="1761233337965" duration="373000" />
-      <workItem from="1761240622271" duration="1956000" />
+      <workItem from="1761240622271" duration="2067000" />
+      <workItem from="1761250659704" duration="3423000" />
     </task>
     <task id="LOCAL-00001" summary="add">
       <option name="closed" value="true" />
@@ -271,7 +273,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761196269312</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="fix login screen">
+      <option name="closed" value="true" />
+      <created>1761242963827</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1761242963827</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -296,7 +306,8 @@
     <MESSAGE value="add login check" />
     <MESSAGE value="fix" />
     <MESSAGE value="fix errors" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix errors" />
+    <MESSAGE value="fix login screen" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix login screen" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

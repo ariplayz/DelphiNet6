@@ -9,8 +9,8 @@ namespace DelphiNet6.Views;
 
 public partial class MainView : UserControl
 {
-    private Panel? _loginOverlay;
-    private ScrollViewer? _mainContentScrollViewer;
+    private static Panel? _loginOverlay;
+    private static ScrollViewer? _mainContentScrollViewer;
 
     public MainView()
     {
@@ -23,13 +23,13 @@ public partial class MainView : UserControl
         SetLoginOverlay();
     }
 
-    private void SetLoginOverlay()
+    public static void SetLoginOverlay()
     {
         // If the user is logged in, hide the login overlay; otherwise, show it and disable the main content
         UpdateUI(User.LoginStatus);
     }
 
-    private void UpdateUI(bool isUserLoggedIn)
+    public static void UpdateUI(bool isUserLoggedIn)
     {
         if (_loginOverlay != null)
         {
