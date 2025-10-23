@@ -2,26 +2,27 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="clr-namespace:DelphiNet6.ViewModels"
              xmlns:UserControl="clr-namespace:DelphiNet6.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="DelphiNet6.Views.MainView"
-             x:DataType="vm:MainViewModel">
-  <Design.DataContext>
-    <!-- This only sets the DataContext for the previewer in an IDE,
-         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-    <vm:MainViewModel />
-  </Design.DataContext>
+             x:Class="DelphiNet6.Views.MainView">
 
-  <ScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-      <StackPanel Orientation="Horizontal">
-          <UserControl:Sidebar VerticalAlignment="Stretch" HorizontalAlignment="Left"/>
-          <Grid ColumnDefinitions="400, 400" RowDefinitions="500, 500" ColumnSpacing="20" RowSpacing="20">
-             <Grid ColumnDefinitions="400, 400, 400" ColumnSpacing="20">
-                  <UserControl:ProgramWidget Grid.Column="0" Grid.Row="0" Margin="0 5 0 0" VerticalAlignment="Center"/>
-                  <TextBlock Grid.Column="1" Grid.Row="0" Margin="0  5 0 0" Background="{DynamicResource PrimaryBackground}" FontSize="20" VerticalAlignment="Center">Program</TextBlock>
-              </Grid>
-         </Grid>
-      </StackPanel>
-  </ScrollViewer>
+    <Grid>
+        <!-- Main content layer -->
+        <ScrollViewer x:Name="MainContentScrollViewer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <StackPanel Orientation="Horizontal">
+                <UserControl:Sidebar VerticalAlignment="Stretch" HorizontalAlignment="Left"/>
+                <Grid ColumnDefinitions="400, 400" RowDefinitions="500, 500" ColumnSpacing="20" RowSpacing="20">
+                    <Grid ColumnDefinitions="400, 400, 400" ColumnSpacing="20">
+                        <UserControl:ProgramWidget Grid.Column="0" Grid.Row="0" Margin="0 5 0 0" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="1" Grid.Row="0" Margin="0  5 0 0" Background="{DynamicResource PrimaryBackground}" FontSize="20" VerticalAlignment="Center">Program</TextBlock>
+                    </Grid>
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Login overlay layer on top of everything -->
+        <Panel x:Name="LoginOverlay" Background="#666666cc" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsVisible="False">
+            <UserControl:Login HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Panel>
+    </Grid>
 </UserControl>

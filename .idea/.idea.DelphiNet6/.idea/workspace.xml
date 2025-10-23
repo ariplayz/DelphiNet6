@@ -13,8 +13,9 @@
     <list default="true" id="5d2d919a-c5a4-4c98-b7ce-c48c8d29cdd2" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.DelphiNet6/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.DelphiNet6/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DelphiNet6/Controls/Login.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/Controls/Login.axaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DelphiNet6/Controls/Login.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/Controls/Login.axaml.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DelphiNet6/Models/User.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/Models/User.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DelphiNet6/ViewModels/MainViewModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/ViewModels/MainViewModel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DelphiNet6/Views/MainView.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/Views/MainView.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DelphiNet6/Views/MainView.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DelphiNet6/Views/MainView.axaml.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,30 +69,30 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    ".NET Launch Settings Profile.DelphiNet6.Browser.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "master",
-    "junie.onboarding.icon.badge.shown": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.keymap",
-    "to.speed.mode.migration.done": "true",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;.NET Launch Settings Profile.DelphiNet6.Browser.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "mariadb"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;mariadb&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="DelphiNet6.Browser" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/DelphiNet6.Browser/DelphiNet6.Browser.csproj" />
@@ -130,7 +131,9 @@
       <workItem from="1761146785080" duration="8835000" />
       <workItem from="1761162861668" duration="1545000" />
       <workItem from="1761166905653" duration="380000" />
-      <workItem from="1761195452683" duration="739000" />
+      <workItem from="1761195452683" duration="813000" />
+      <workItem from="1761233337965" duration="373000" />
+      <workItem from="1761240622271" duration="1956000" />
     </task>
     <task id="LOCAL-00001" summary="add">
       <option name="closed" value="true" />
@@ -260,7 +263,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761167614351</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="fix errors">
+      <option name="closed" value="true" />
+      <created>1761196269312</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1761196269312</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -284,7 +295,8 @@
     <MESSAGE value="more things" />
     <MESSAGE value="add login check" />
     <MESSAGE value="fix" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix" />
+    <MESSAGE value="fix errors" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix errors" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
