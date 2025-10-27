@@ -20,9 +20,9 @@ public partial class Login : UserControl
 
     private void authenticatebutton(object sender, RoutedEventArgs e)
     {
-        string username = usernameIn.Text;
-        string password = passwordIn.Text;
-        
+        var username = usernameIn?.Text ?? string.Empty;
+        var password = passwordIn?.Text ?? string.Empty;
+
         var success = User.DoAuth(username, password);
         if (success)
         {

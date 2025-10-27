@@ -25,7 +25,7 @@ public class databaseInterface
     }
 
     // Method to execute non-query commands like INSERT, UPDATE, DELETE
-    public void ExecuteNonQuery(string query, Dictionary<string, object> parameters = null)
+    public void ExecuteNonQuery(string query, Dictionary<string, object>? parameters = null)
     {
         try
         {
@@ -56,7 +56,7 @@ public class databaseInterface
     }
 
     // Method to execute queries that return results like SELECT
-    public List<Dictionary<string, object>> ExecuteQuery(string query, Dictionary<string, object> parameters = null)
+    public List<Dictionary<string, object>> ExecuteQuery(string query, Dictionary<string, object>? parameters = null)
     {
         var results = new List<Dictionary<string, object>>();
 

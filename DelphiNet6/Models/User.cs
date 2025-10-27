@@ -6,13 +6,13 @@ using DelphiNet6;
 
 namespace DelphiNet6.Models;
 
-public class User
+public class  User
 {
     public static int Identifier;
-    public static string Username;
-    public static string Form;
-    public static string FirstName;
-    public static string LastName;
+    public static string? Username;
+    public static string? Form;
+    public static string? FirstName;
+    public static string? LastName;
 
     private static readonly IAuthStorage Storage = new FileAuthStorage();
 

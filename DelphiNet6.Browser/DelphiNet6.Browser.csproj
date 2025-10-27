@@ -6,6 +6,11 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <!-- Remove NativeFileReference items when not building native/AOT to avoid SDK warning -->
+    <ItemGroup Condition="'$(WasmBuildNative)' != 'true' and '$(RunAOTCompilation)' != 'true'">
+        <NativeFileReference Remove="@(NativeFileReference)" />
+    </ItemGroup>
+
     <ItemGroup>
         <PackageReference Include="Avalonia.Browser"/>
         <PackageReference Include="Microsoft.AspNetCore" />
