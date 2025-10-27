@@ -24,8 +24,6 @@
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
         <PackageReference Include="CommunityToolkit.Mvvm"/>
-        <PackageReference Include="Microsoft.AspNetCore" />
-        <PackageReference Include="Microsoft.AspNetCore.Http" />
         <PackageReference Include="MySqlConnector" />
     </ItemGroup>
 </Project>

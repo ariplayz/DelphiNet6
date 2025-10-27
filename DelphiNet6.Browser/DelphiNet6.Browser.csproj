@@ -6,15 +6,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
-    <!-- Remove NativeFileReference items when not building native/AOT to avoid SDK warning -->
-    <ItemGroup Condition="'$(WasmBuildNative)' != 'true' and '$(RunAOTCompilation)' != 'true'">
-        <NativeFileReference Remove="@(NativeFileReference)" />
-    </ItemGroup>
-
     <ItemGroup>
         <PackageReference Include="Avalonia.Browser"/>
-        <PackageReference Include="Microsoft.AspNetCore" />
-        <PackageReference Include="Microsoft.AspNetCore.Http" />
         <PackageReference Include="MySqlConnector" />
     </ItemGroup>
 
@@ -25,4 +18,11 @@
     <ItemGroup>
       <AvaloniaResource Include="wwwroot\logo.jpg" />
     </ItemGroup>
+
+    <!-- Strip NativeFileReference items early to avoid SDK warning about not linking native refs -->
+    <Target Name="StripNativeFileReferenceEarly" BeforeTargets="ResolveReferences">
+      <ItemGroup>
+        <NativeFileReference Remove="@(NativeFileReference)" />
+      </ItemGroup>
+    </Target>
 </Project>

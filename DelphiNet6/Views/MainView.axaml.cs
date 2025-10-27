@@ -17,10 +17,6 @@ public partial class MainView : UserControl
         // Locate elements in the UI
         _loginOverlay = this.FindControl<Panel>("LoginOverlay");
         _mainContentScrollViewer = this.FindControl<ScrollViewer>("MainContentScrollViewer");
-
-        // Perform auto-login using the User class
-        PerformAutoLogin();
-
         // Update the sidebar
         var sidebar = this.FindControl<Sidebar>("Sidebar");
         sidebar?.UpdateSidebarUserID();
@@ -28,13 +24,6 @@ public partial class MainView : UserControl
         // Update UI based on login status
         SetLoginOverlay();
     }
-
-    private void PerformAutoLogin()
-    {
-        // Auto-login using local storage (no HttpContext)
-        User.TryAutoLogin();
-    }
-
     public static void SetLoginOverlay()
     {
         // Show or hide the login overlay based on the user's login status
