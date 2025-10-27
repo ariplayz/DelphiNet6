@@ -10,23 +10,43 @@ namespace DelphiNet6;
 
 public class databaseInterface
 {
-    private string _connectionString;
+    private readonly string _connectionString;
+    private readonly bool _isConfigured;
 
     // Constructor that loads the connection string from a file
     public databaseInterface(string credentialsFilePath)
     {
-        if (!File.Exists(credentialsFilePath))
+        try
         {
-            throw new FileNotFoundException("The credentials file was not found.");
-        }
+            if (!File.Exists(credentialsFilePath))
+            {
+                // Credentials file missing; mark DB as not configured to avoid crashing the UI
+                _connectionString = string.Empty;
+                _isConfigured = false;
+                return;
+            }
 
-        // Read the connection string from the file
-        _connectionString = File.ReadAllText(credentialsFilePath).Trim();
+            // Read the connection string from the file
+            _connectionString = File.ReadAllText(credentialsFilePath).Trim();
+            _isConfigured = !string.IsNullOrWhiteSpace(_connectionString);
+        }
+        catch
+        {
+            // Any error reading credentials should not prevent the UI from loading
+            _connectionString = string.Empty;
+            _isConfigured = false;
+        }
     }
 
     // Method to execute non-query commands like INSERT, UPDATE, DELETE
-    public void ExecuteNonQuery(string query, Dictionary<string, object> parameters = null)
+    public void ExecuteNonQuery(string query, Dictionary<string, object>? parameters = null)
     {
+        if (!_isConfigured)
+        {
+            // Silently no-op when DB is not configured
+            return;
+        }
+
         try
         {
             using (var connection = new MySqlConnection(_connectionString))
@@ -56,9 +76,15 @@ public class databaseInterface
     }
 
     // Method to execute queries that return results like SELECT
-    public List<Dictionary<string, object>> ExecuteQuery(string query, Dictionary<string, object> parameters = null)
+    public List<Dictionary<string, object>> ExecuteQuery(string query, Dictionary<string, object>? parameters = null)
     {
         var results = new List<Dictionary<string, object>>();
+
+        if (!_isConfigured)
+        {
+            // Return empty set if DB is not configured
+            return results;
+        }
 
         try
         {

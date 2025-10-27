@@ -8,8 +8,6 @@
 
     <ItemGroup>
         <PackageReference Include="Avalonia.Browser"/>
-        <PackageReference Include="Microsoft.AspNetCore" />
-        <PackageReference Include="Microsoft.AspNetCore.Http" />
         <PackageReference Include="MySqlConnector" />
     </ItemGroup>
 
@@ -20,4 +18,11 @@
     <ItemGroup>
       <AvaloniaResource Include="wwwroot\logo.jpg" />
     </ItemGroup>
+
+    <!-- Strip NativeFileReference items early to avoid SDK warning about not linking native refs -->
+    <Target Name="StripNativeFileReferenceEarly" BeforeTargets="ResolveReferences">
+      <ItemGroup>
+        <NativeFileReference Remove="@(NativeFileReference)" />
+      </ItemGroup>
+    </Target>
 </Project>

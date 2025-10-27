@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="dataSourceStorageLocal" created-in="DB-252.26830.46">
+    <data-source name="delphinet6@localhost" uuid="877bb75c-21ca-4e37-aeb4-5ee5cb0d5b0b">
+      <database-info product="MariaDB" version="12.0.2-MariaDB" jdbc-version="4.2" driver-name="MariaDB Connector/J" driver-version="3.3.3" dbms="MARIADB" exact-version="12.0.2" exact-driver-version="3.3">
+        <extra-name-characters>#@</extra-name-characters>
+        <identifier-quote-string>`</identifier-quote-string>
+      </database-info>
+      <case-sensitivity plain-identifiers="lower" quoted-identifiers="lower" />
+      <secret-storage>master_key</secret-storage>
+      <user-name>delphinet6</user-name>
+      <schema-mapping>
+        <introspection-scope>
+          <node kind="schema" qname="delphinet6" />
+        </introspection-scope>
+      </schema-mapping>
+    </data-source>
+  </component>
+</project>

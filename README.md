@@ -25,7 +25,7 @@ DelphiNet6 is a work‑in‑progress replacement for DelphiNet v5 used by The De
 
 Highlights at a glance:
 - Track students' programs, schedules, roll calls, attendance points, and related data
-- Authentication and basic session storage (see Models: AuthStorage, Cookie, User)
+- Authentication and basic session storage (see Models: AuthStorage, User)
 - One UI, two targets: Desktop (net9.0) and Browser via WebAssembly (net9.0‑browser)
 - MVVM structure with Views, ViewModels, Styles, and reusable Controls
 
@@ -66,7 +66,7 @@ Status: Early development (WIP). Interfaces, models, and flows are likely to cha
 - Desktop and Browser (WASM) targets
 - MVVM‑style organization (Views, ViewModels, Styles)
 - Example UI elements: Login control, Sidebar, Main view
-- Simple models for authentication state and cookies
+- Simple models for authentication state
 
 
 ## Tech Stack
@@ -145,7 +145,7 @@ You can serve that folder with any static file server.
 - DelphiNet6/
   - Assets/ — fonts and images
   - Controls/ — custom Avalonia controls (e.g., Login, Sidebar)
-  - Models/ — app models (AuthStorage, Cookie, User, Program)
+  - Models/ — app models (AuthStorage, User, Program)
   - Styles/ — global styles and themes
   - ViewModels/ — view‑models for MVVM
   - Views/ — XAML views (e.g., MainView)
