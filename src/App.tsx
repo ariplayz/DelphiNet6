@@ -13,8 +13,7 @@ import AdminPrograms from "./AdminPrograms";
 
 export interface User {
   username: string;
-  role: 'student' | 'staff' | 'admin' | 'courseroom-supervisor';
-  isAbsenceChecker?: boolean;
+  roles: string[];
 }
 
 function App() {

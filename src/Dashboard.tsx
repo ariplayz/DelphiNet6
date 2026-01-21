@@ -116,7 +116,7 @@ function Dashboard({ user }: DashboardProps) {
     return (
         <div style={{ padding: '20px' }}>
             <h1 style={{ color: 'var(--primary)', marginBottom: '30px' }}>Dashboard - Welcome, {user.username}!</h1>
-            {user.role === 'student' ? renderStudentDashboard() : renderSupervisorDashboard()}
+            {user.roles.includes('student') ? renderStudentDashboard() : renderSupervisorDashboard()}
             
             <style>{`
                 .widget {

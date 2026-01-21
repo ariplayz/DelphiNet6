@@ -23,6 +23,7 @@ function AdminClasses() {
     const [supervisor, setSupervisor] = useState('');
     const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
     const [schedule, setSchedule] = useState<ClassSchedule[]>([]);
+    const [editingClassId, setEditingClassId] = useState<string | null>(null);
 
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -35,10 +36,31 @@ function AdminClasses() {
         fetchData();
     }, []);
 
-    const handleAddClass = async (e: React.FormEvent) => {
+    const resetForm = () => {
+        setName('');
+        setLimit(20);
+        setSupervisor('');
+        setSelectedStudents([]);
+        setSchedule([]);
+        setEditingClassId(null);
+    };
+
+    const handleEdit = (cls: ClassData) => {
+        setEditingClassId(cls.id);
+        setName(cls.name);
+        setLimit(cls.studentLimit);
+        setSupervisor(cls.supervisor);
+        setSelectedStudents(cls.roster || []);
+        setSchedule(cls.schedule || []);
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const res = await fetch('/api/classes', {
-            method: 'POST',
+        const url = editingClassId ? `/api/classes/${editingClassId}` : '/api/classes';
+        const method = editingClassId ? 'PUT' : 'POST';
+
+        const res = await fetch(url, {
+            method,
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
                 name, 
@@ -49,12 +71,10 @@ function AdminClasses() {
             })
         });
         if (res.ok) {
-            setName('');
-            setLimit(20);
-            setSupervisor('');
-            setSelectedStudents([]);
-            setSchedule([]);
+            resetForm();
             fetchData();
+        } else {
+            alert('Failed to save class');
         }
     };
 
@@ -96,8 +116,8 @@ function AdminClasses() {
 
     return (
         <div style={{ padding: '20px', width: '100%', maxWidth: '1000px' }}>
-            <h2>Manage Classes</h2>
-            <form onSubmit={handleAddClass} style={{ 
+            <h2>{editingClassId ? `Edit Class: ${name}` : 'Manage Classes'}</h2>
+            <form onSubmit={handleSubmit} style={{ 
                 display: 'flex', 
                 flexDirection: 'column', 
                 gap: '15px', 
@@ -115,14 +135,14 @@ function AdminClasses() {
                 <select value={supervisor} onChange={e => setSupervisor(e.target.value)} required>
                     <option value="">-- Select Supervisor --</option>
                     {users.map(u => (
-                        <option key={u.username} value={u.username}>{u.username} ({u.role})</option>
+                        <option key={u.username} value={u.username}>{u.username} ({u.roles.join(', ')})</option>
                     ))}
                 </select>
 
                 <div style={{ border: '1px solid var(--border)', padding: '10px', borderRadius: '4px' }}>
                     <strong>Roster (Students)</strong>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '5px', maxHeight: '150px', overflowY: 'auto', marginTop: '5px' }}>
-                        {users.filter(u => u.role === 'student').map(u => (
+                        {users.filter(u => u.roles.includes('student')).map(u => (
                             <label key={u.username} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                                 <input 
                                     type="checkbox" 
@@ -158,7 +178,10 @@ function AdminClasses() {
                     ))}
                 </div>
 
-                <button type="submit">Create Class</button>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                    <button type="submit" style={{ flex: 1 }}>{editingClassId ? 'Update Class' : 'Create Class'}</button>
+                    {editingClassId && <button type="button" onClick={resetForm} style={{ backgroundColor: 'transparent' }}>Cancel</button>}
+                </div>
             </form>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
@@ -173,12 +196,15 @@ function AdminClasses() {
                                 <div key={s.day}>{s.day}: {s.times.join(', ')}</div>
                             ))}
                         </div>
-                        <button onClick={async () => {
-                            if (confirm('Delete class?')) {
-                                await fetch(`/api/classes/${c.id}`, { method: 'DELETE' });
-                                fetchData();
-                            }
-                        }} style={{ marginTop: '10px', color: '#ff5252' }}>Delete</button>
+                        <div style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
+                            <button onClick={() => handleEdit(c)}>Edit</button>
+                            <button onClick={async () => {
+                                if (confirm('Delete class?')) {
+                                    await fetch(`/api/classes/${c.id}`, { method: 'DELETE' });
+                                    fetchData();
+                                }
+                            }} style={{ color: '#ff5252' }}>Delete</button>
+                        </div>
                     </div>
                 ))}
             </div>

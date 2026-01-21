@@ -55,13 +55,28 @@ const initFile = (file, content = []) => {
 };
 
 initFile(DATA_FILE);
-initFile(USERS_FILE, [{ username: 'admin', password: 'Password01', role: 'admin' }]);
+initFile(USERS_FILE, [{ username: 'admin', password: 'admin', roles: ['admin'] }]);
 initFile(STAFF_FILE);
 initFile(CLASSES_FILE);
 initFile(ROLLCALLS_FILE);
 initFile(ABSENCES_FILE);
 initFile(PROGRAM_TEMPLATES_FILE);
 initFile(STUDENT_PROGRAMS_FILE);
+
+// Migration for existing users
+const usersForMigration = readJSON(USERS_FILE);
+let usersChanged = false;
+const migratedUsers = usersForMigration.map(u => {
+    if (u.role && !u.roles) {
+        u.roles = [u.role];
+        if (u.isAbsenceChecker) u.roles.push('absence-checker');
+        delete u.role;
+        delete u.isAbsenceChecker;
+        usersChanged = true;
+    }
+    return u;
+});
+if (usersChanged) writeJSON(USERS_FILE, migratedUsers);
 
 // Helper to read/write JSON files
 const readJSON = (file) => {
@@ -98,7 +113,7 @@ app.post('/api/login', (req, res) => {
     
     if (user) {
         res.cookie('session', user.username, { maxAge: 7 * 24 * 60 * 60 * 1000, httpOnly: true });
-        res.json({ username: user.username, role: user.role, isAbsenceChecker: user.isAbsenceChecker });
+        res.json({ username: user.username, roles: user.roles });
     } else {
         res.status(401).json({ error: 'Invalid credentials' });
     }
@@ -116,7 +131,7 @@ app.get('/api/me', (req, res) => {
     const users = readJSON(USERS_FILE);
     const user = users.find(u => u.username === session);
     if (user) {
-        res.json({ username: user.username, role: user.role, isAbsenceChecker: user.isAbsenceChecker });
+        res.json({ username: user.username, roles: user.roles });
     } else {
         res.status(401).json({ error: 'Invalid session' });
     }
@@ -124,12 +139,12 @@ app.get('/api/me', (req, res) => {
 
 // User management (Admin only)
 app.get('/api/users', auth, (req, res) => {
-    if (req.user.role !== 'admin' && req.user.role !== 'courseroom-supervisor') return res.status(403).json({ error: 'Forbidden' });
-    res.json(readJSON(USERS_FILE).map(u => ({ username: u.username, role: u.role, isAbsenceChecker: u.isAbsenceChecker })));
+    if (!req.user.roles.includes('admin') && !req.user.roles.includes('courseroom-supervisor')) return res.status(403).json({ error: 'Forbidden' });
+    res.json(readJSON(USERS_FILE).map(u => ({ username: u.username, roles: u.roles })));
 });
 
 app.post('/api/users', auth, (req, res) => {
-    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Forbidden' });
+    if (!req.user.roles.includes('admin')) return res.status(403).json({ error: 'Forbidden' });
     const newUser = req.body;
     const users = readJSON(USERS_FILE);
     if (users.find(u => u.username === newUser.username)) {
@@ -137,11 +152,28 @@ app.post('/api/users', auth, (req, res) => {
     }
     users.push(newUser);
     writeJSON(USERS_FILE, users);
-    res.status(201).json({ username: newUser.username, role: newUser.role, isAbsenceChecker: newUser.isAbsenceChecker });
+    res.status(201).json({ username: newUser.username, roles: newUser.roles });
+});
+
+app.put('/api/users/:username', auth, (req, res) => {
+    if (!req.user.roles.includes('admin')) return res.status(403).json({ error: 'Forbidden' });
+    const { username } = req.params;
+    let users = readJSON(USERS_FILE);
+    const index = users.findIndex(u => u.username === username);
+    if (index === -1) return res.status(404).send();
+    
+    // Update fields
+    const updatedUser = { ...users[index], ...req.body };
+    // Prevent changing username for now as it's the key
+    updatedUser.username = users[index].username;
+    
+    users[index] = updatedUser;
+    writeJSON(USERS_FILE, users);
+    res.json({ username: updatedUser.username, roles: updatedUser.roles });
 });
 
 app.delete('/api/users/:username', auth, (req, res) => {
-    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Forbidden' });
+    if (!req.user.roles.includes('admin')) return res.status(403).json({ error: 'Forbidden' });
     const { username } = req.params;
     if (username === 'admin') return res.status(400).json({ error: 'Cannot delete default admin' });
     let users = readJSON(USERS_FILE);
@@ -156,7 +188,7 @@ app.get('/api/classes', auth, (req, res) => {
 });
 
 app.post('/api/classes', auth, (req, res) => {
-    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Forbidden' });
+    if (!req.user.roles.includes('admin')) return res.status(403).json({ error: 'Forbidden' });
     const newClass = { id: Date.now().toString(), ...req.body };
     const classes = readJSON(CLASSES_FILE);
     classes.push(newClass);
@@ -165,7 +197,7 @@ app.post('/api/classes', auth, (req, res) => {
 });
 
 app.put('/api/classes/:id', auth, (req, res) => {
-    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Forbidden' });
+    if (!req.user.roles.includes('admin')) return res.status(403).json({ error: 'Forbidden' });
     const { id } = req.params;
     let classes = readJSON(CLASSES_FILE);
     const index = classes.findIndex(c => c.id === id);
@@ -176,7 +208,7 @@ app.put('/api/classes/:id', auth, (req, res) => {
 });
 
 app.delete('/api/classes/:id', auth, (req, res) => {
-    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Forbidden' });
+    if (!req.user.roles.includes('admin')) return res.status(403).json({ error: 'Forbidden' });
     const { id } = req.params;
     let classes = readJSON(CLASSES_FILE);
     classes = classes.filter(c => c.id !== id);
@@ -194,7 +226,7 @@ app.post('/api/rollcalls', auth, (req, res) => {
     const classes = readJSON(CLASSES_FILE);
     const cls = classes.find(c => c.id === req.body.classId);
     if (!cls) return res.status(404).json({ error: 'Class not found' });
-    if (req.user.role !== 'admin' && cls.supervisor !== req.user.username) {
+    if (!req.user.roles.includes('admin') && cls.supervisor !== req.user.username) {
         return res.status(403).json({ error: 'Forbidden' });
     }
     
@@ -202,11 +234,6 @@ app.post('/api/rollcalls', auth, (req, res) => {
     const newRollcall = { id: Date.now().toString(), timestamp: new Date().toISOString(), ...req.body };
     rollcalls.push(newRollcall);
     writeJSON(ROLLCALLS_FILE, rollcalls);
-    
-    // Automatic points for attendance are not directly stored as point slips yet, 
-    // but the points are mentioned: Here 0, Late 2, Absent 4.
-    // The issue says "There needs to be a list of all the absences each week with forms next to them"
-    // So we store the rollcall and then absences can be derived or explicitly stored.
     
     res.status(201).json(newRollcall);
 });
@@ -219,7 +246,7 @@ app.put('/api/rollcalls/:id', auth, (req, res) => {
     
     const classes = readJSON(CLASSES_FILE);
     const cls = classes.find(c => c.id === rollcalls[index].classId);
-    if (req.user.role !== 'admin' && cls.supervisor !== req.user.username) {
+    if (!req.user.roles.includes('admin') && cls.supervisor !== req.user.username) {
         return res.status(403).json({ error: 'Forbidden' });
     }
 
@@ -234,7 +261,7 @@ app.get('/api/absences', auth, (req, res) => {
 });
 
 app.post('/api/absences', auth, (req, res) => {
-    if (req.user.role !== 'admin' && !req.user.isAbsenceChecker) {
+    if (!req.user.roles.includes('admin') && !req.user.roles.includes('absence-checker')) {
         return res.status(403).json({ error: 'Forbidden' });
     }
     const absences = readJSON(ABSENCES_FILE);
@@ -245,7 +272,7 @@ app.post('/api/absences', auth, (req, res) => {
 });
 
 app.put('/api/absences/:id', auth, (req, res) => {
-    if (req.user.role !== 'admin' && !req.user.isAbsenceChecker) {
+    if (!req.user.roles.includes('admin') && !req.user.roles.includes('absence-checker')) {
         return res.status(403).json({ error: 'Forbidden' });
     }
     const { id } = req.params;
@@ -268,7 +295,7 @@ app.get('/api/program-templates', auth, (req, res) => {
 });
 
 app.post('/api/program-templates', auth, (req, res) => {
-    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Forbidden' });
+    if (!req.user.roles.includes('admin')) return res.status(403).json({ error: 'Forbidden' });
     const templates = readJSON(PROGRAM_TEMPLATES_FILE);
     const newTemplate = { id: Date.now().toString(), ...req.body };
     templates.push(newTemplate);
@@ -277,7 +304,7 @@ app.post('/api/program-templates', auth, (req, res) => {
 });
 
 app.put('/api/program-templates/:id', auth, (req, res) => {
-    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Forbidden' });
+    if (!req.user.roles.includes('admin')) return res.status(403).json({ error: 'Forbidden' });
     const { id } = req.params;
     let templates = readJSON(PROGRAM_TEMPLATES_FILE);
     const index = templates.findIndex(t => t.id === id);
@@ -288,7 +315,7 @@ app.put('/api/program-templates/:id', auth, (req, res) => {
 });
 
 app.delete('/api/program-templates/:id', auth, (req, res) => {
-    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Forbidden' });
+    if (!req.user.roles.includes('admin')) return res.status(403).json({ error: 'Forbidden' });
     const { id } = req.params;
     let templates = readJSON(PROGRAM_TEMPLATES_FILE);
     templates = templates.filter(t => t.id !== id);
@@ -299,14 +326,14 @@ app.delete('/api/program-templates/:id', auth, (req, res) => {
 // Student Programs
 app.get('/api/student-programs', auth, (req, res) => {
     const programs = readJSON(STUDENT_PROGRAMS_FILE);
-    if (req.user.role === 'student') {
+    if (req.user.roles.includes('student')) {
         return res.json(programs.filter(p => p.studentUsername === req.user.username));
     }
     res.json(programs);
 });
 
 app.post('/api/student-programs', auth, (req, res) => {
-    if (req.user.role !== 'admin' && req.user.role !== 'courseroom-supervisor') {
+    if (!req.user.roles.includes('admin') && !req.user.roles.includes('courseroom-supervisor')) {
         return res.status(403).json({ error: 'Forbidden' });
     }
     const programs = readJSON(STUDENT_PROGRAMS_FILE);
@@ -323,15 +350,15 @@ app.put('/api/student-programs/:id', auth, (req, res) => {
     if (index === -1) return res.status(404).send();
 
     const program = programs[index];
-    if (req.user.role === 'student' && program.studentUsername !== req.user.username) {
+    if (req.user.roles.includes('student') && program.studentUsername !== req.user.username) {
         return res.status(403).json({ error: 'Forbidden' });
     }
-    if (req.user.role !== 'admin' && req.user.role !== 'courseroom-supervisor' && req.user.role !== 'student') {
+    if (!req.user.roles.includes('admin') && !req.user.roles.includes('courseroom-supervisor') && !req.user.roles.includes('student')) {
         return res.status(403).json({ error: 'Forbidden' });
     }
 
     // Students can only update status/startDate of courses
-    if (req.user.role === 'student') {
+    if (req.user.roles.includes('student')) {
         // Simple merge for now, frontend should send correct subset
         programs[index] = { ...programs[index], courses: req.body.courses };
     } else {
@@ -343,7 +370,7 @@ app.put('/api/student-programs/:id', auth, (req, res) => {
 });
 
 app.delete('/api/student-programs/:id', auth, (req, res) => {
-    if (req.user.role !== 'admin' && req.user.role !== 'courseroom-supervisor') {
+    if (!req.user.roles.includes('admin') && !req.user.roles.includes('courseroom-supervisor')) {
         return res.status(403).json({ error: 'Forbidden' });
     }
     const { id } = req.params;
@@ -360,7 +387,7 @@ app.get('/api/dashboard-stats', auth, (req, res) => {
     const absences = readJSON(ABSENCES_FILE);
     const classes = readJSON(CLASSES_FILE);
 
-    if (req.user.role === 'student') {
+    if (req.user.roles.includes('student')) {
         const userSlips = slips.filter(s => s.name === req.user.username);
         const userPrograms = programs.filter(p => p.studentUsername === req.user.username);
         const userAbsences = absences.filter(a => a.studentName === req.user.username);
@@ -377,7 +404,7 @@ app.get('/api/dashboard-stats', auth, (req, res) => {
         let supervisorStudents = [...new Set(supervisorClasses.flatMap(c => c.students || []))];
 
         // If they are a courseroom supervisor, they also supervise students they've assigned programs to
-        if (req.user.role === 'courseroom-supervisor' || req.user.role === 'admin') {
+        if (req.user.roles.includes('courseroom-supervisor') || req.user.roles.includes('admin')) {
             const studentsWithPrograms = programs.map(p => p.studentUsername);
             supervisorStudents = [...new Set([...supervisorStudents, ...studentsWithPrograms])];
         }
@@ -408,11 +435,11 @@ app.get('/api/dashboard-stats', auth, (req, res) => {
 app.post('/api/slips', auth, (req, res) => {
     const newSlip = req.body;
     // Students can only enter points for themselves
-    if (req.user.role === 'student' && newSlip.name !== req.user.username) {
+    if (req.user.roles.includes('student') && newSlip.name !== req.user.username) {
         return res.status(403).json({ error: 'Can only enter points for yourself' });
     }
     // Staff cannot enter points
-    if (req.user.role === 'staff') {
+    if (req.user.roles.includes('staff')) {
         return res.status(403).json({ error: 'Staff cannot enter points' });
     }
 

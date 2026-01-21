@@ -15,7 +15,7 @@ interface ViewPointsProps {
 }
 
 function ViewPoints({ pointsSlips, currentUser }: ViewPointsProps) {
-    const [selectedStaff, setSelectedStaff] = useState(currentUser.role === 'student' ? currentUser.username : '');
+    const [selectedStaff, setSelectedStaff] = useState(currentUser.roles.includes('student') ? currentUser.username : '');
     const [activeTab, setActiveTab] = useState('table');
     const tableContainerRef = useRef<HTMLDivElement>(null);
 
@@ -58,7 +58,7 @@ function ViewPoints({ pointsSlips, currentUser }: ViewPointsProps) {
     const maxPoints = Math.max(...filteredSlips.map(p => p.points), 0);
 
     return (
-        <div className="main-content" style={{ alignItems: 'stretch' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', width: '100%' }}>
             <h1 style={{ color: 'var(--primary)', alignSelf: 'center' }}>View Points</h1>
 
             <div style={{ alignSelf: 'center', textAlign: 'center', backgroundColor: 'var(--surface)', padding: '20px', borderRadius: '8px', border: '1px solid var(--primary)', width: '100%', maxWidth: '600px', boxShadow: '0 4px 6px rgba(0,0,0,0.2)' }}>
@@ -115,7 +115,7 @@ function ViewPoints({ pointsSlips, currentUser }: ViewPointsProps) {
                     <table style={{ borderCollapse: 'collapse', width: 'max-content' }}>
                         <thead>
                             <tr>
-                                <th style={{ border: '1px solid var(--border)', padding: '12px', backgroundColor: 'var(--surface-light)', color: 'var(--primary)', position: 'sticky', left: 0, zIndex: 1 }}>Staff Member</th>
+                                <th style={{ border: '1px solid var(--border)', padding: '12px', backgroundColor: 'var(--surface-light)', color: 'var(--primary)', position: 'sticky', left: 0, zIndex: 1 }}>Student</th>
                                 {dates.map(date => (
                                     <th key={date.toISOString()} colSpan={2} style={{ 
                                         border: '1px solid var(--border)', 
@@ -159,7 +159,7 @@ function ViewPoints({ pointsSlips, currentUser }: ViewPointsProps) {
             ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', backgroundColor: 'var(--surface)', padding: '30px', borderRadius: '8px', border: '1px solid var(--border)' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        <label htmlFor="staff-select" style={{ color: 'var(--text-dim)' }}>Select Staff Member:</label>
+                        <label htmlFor="staff-select" style={{ color: 'var(--text-dim)' }}>Select Student:</label>
                         <select
                             id="staff-select"
                             value={selectedStaff}
@@ -232,7 +232,7 @@ function ViewPoints({ pointsSlips, currentUser }: ViewPointsProps) {
                         </div>
                     ) : (
                         <p style={{ color: 'var(--text-dim)', textAlign: 'center', padding: '40px' }}>
-                            {selectedStaff ? 'No data available for this staff member.' : 'Please select a staff member to see their performance graph.'}
+                            {selectedStaff ? 'No data available for this student.' : 'Please select a student to see their performance graph.'}
                         </p>
                     )}
                 </div>

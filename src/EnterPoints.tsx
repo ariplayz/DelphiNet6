@@ -16,7 +16,7 @@ function EnterPoints({ addSlip, userList, currentUser }: EnterPointsProps) {
         return `${year}-${month}-${day}`;
     };
 
-    const [name, setName] = useState(currentUser.role === 'student' ? currentUser.username : '');
+    const [name, setName] = useState(currentUser.roles.includes('student') ? currentUser.username : '');
     const [date, setDate] = useState(getLocalDateString(new Date()));
     const [points, setPoints] = useState('');
     const [hours, setHours] = useState('');
@@ -27,9 +27,9 @@ function EnterPoints({ addSlip, userList, currentUser }: EnterPointsProps) {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         
-        const finalName = currentUser.role === 'student' ? currentUser.username : name;
+        const finalName = currentUser.roles.includes('student') ? currentUser.username : name;
         
-        if (currentUser.role !== 'student') {
+        if (!currentUser.roles.includes('student')) {
             const matchedUser = userList.find(u => u.username.toLowerCase() === finalName.toLowerCase());
             if (!matchedUser) {
                 alert('Please enter a valid user name.');
@@ -50,13 +50,13 @@ function EnterPoints({ addSlip, userList, currentUser }: EnterPointsProps) {
         };
 
         addSlip(newSlip);
-        if (currentUser.role !== 'student') setName('');
+        if (!currentUser.roles.includes('student')) setName('');
         setPoints('');
         setHours('');
     };
 
     return (
-        <div className="main-content">
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
             <h1 style={{ color: 'var(--primary)' }}>Enter Points</h1>
 
             <form onSubmit={handleSubmit} style={{ 
@@ -83,10 +83,10 @@ function EnterPoints({ addSlip, userList, currentUser }: EnterPointsProps) {
                         onFocus={() => setShowSuggestions(true)}
                         onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                         placeholder="Type name..."
-                        disabled={currentUser.role === 'student'}
-                        style={{ padding: '12px', borderRadius: '4px', border: '1px solid var(--border)', backgroundColor: 'var(--surface-light)', color: 'var(--text)', fontSize: '16px', opacity: currentUser.role === 'student' ? 0.7 : 1 }}
+                        disabled={currentUser.roles.includes('student')}
+                        style={{ padding: '12px', borderRadius: '4px', border: '1px solid var(--border)', backgroundColor: 'var(--surface-light)', color: 'var(--text)', fontSize: '16px', opacity: currentUser.roles.includes('student') ? 0.7 : 1 }}
                     />
-                    {showSuggestions && currentUser.role !== 'student' && suggestions.length > 0 && (
+                    {showSuggestions && !currentUser.roles.includes('student') && suggestions.length > 0 && (
                         <div style={{ 
                             position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 10, 
                             backgroundColor: 'var(--surface-light)', border: '1px solid var(--border)', 

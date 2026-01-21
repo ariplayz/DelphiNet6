@@ -13,7 +13,7 @@ interface PointSlip {
 const API_URL = '/api';
 
 function Points({ user }: { user: User }) {
-    const [subScreen, setSubScreen] = useState<'view' | 'enter'>(user.role === 'staff' ? 'view' : 'view');
+    const [subScreen, setSubScreen] = useState<'view' | 'enter'>('view');
     // Staff can't enter, so they should definitely default to view. 
     // Actually, user said: "but the view tab defaults to theirs and the weekly stats is just the active person"
     // This probably refers to the student.
@@ -46,7 +46,7 @@ function Points({ user }: { user: User }) {
                 setUsersList(data);
             } else {
                 // Fallback for non-admins who can't fetch all users
-                setUsersList([{ username: user.username, role: user.role }]);
+                setUsersList([{ username: user.username, roles: user.roles }]);
             }
         } catch (err) {
             console.error('Fetch users error:', err);
@@ -104,7 +104,7 @@ function Points({ user }: { user: User }) {
                 >
                     View Points
                 </button>
-                {user.role !== 'staff' && (
+                {!user.roles.includes('staff') && (
                     <button 
                         style={navButtonStyle(subScreen === 'enter')} 
                         onClick={() => setSubScreen('enter')}

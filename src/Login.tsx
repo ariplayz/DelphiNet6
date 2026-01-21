@@ -42,7 +42,7 @@ function Login({ onLogin }: LoginProps) {
                 borderRadius: '12px',
                 boxShadow: '0 10px 25px rgba(0,0,0,0.5)',
             }}>
-                <h1 style={{ color: 'var(--primary)', textAlign: 'center', margin: '0 0 10px 0' }}>Staff Login</h1>
+                <h1 style={{ color: 'var(--primary)', textAlign: 'center', margin: '0 0 10px 0' }}>School Portal Login</h1>
                 {error && <p style={{ color: '#ff5252', textAlign: 'center' }}>{error}</p>}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
                     <label style={{ color: 'var(--text-dim)', fontSize: '0.9em' }}>Username:</label>

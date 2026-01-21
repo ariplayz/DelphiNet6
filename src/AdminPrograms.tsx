@@ -109,7 +109,7 @@ function AdminPrograms({ user }: { user: User }) {
         <div style={{ padding: '20px', width: '100%' }}>
             <h1 style={{ color: 'var(--primary)' }}>Program Management</h1>
             
-            {user.role === 'admin' && (
+            {user.roles.includes('admin') && (
                 <div style={{ marginBottom: '40px' }}>
                     <h2>Create Program Template</h2>
                     <form onSubmit={handleAddTemplate} style={{ display: 'flex', flexDirection: 'column', gap: '10px', backgroundColor: 'var(--surface)', padding: '20px', borderRadius: '8px', border: '1px solid var(--border)' }}>
@@ -127,7 +127,7 @@ function AdminPrograms({ user }: { user: User }) {
                 <form onSubmit={handleAssignProgram} style={{ display: 'flex', gap: '10px', backgroundColor: 'var(--surface)', padding: '20px', borderRadius: '8px', border: '1px solid var(--border)' }}>
                     <select value={selectedStudent} onChange={e => setSelectedStudent(e.target.value)} required>
                         <option value="">Select Student</option>
-                        {users.filter(u => u.role === 'student').map(u => (
+                        {users.filter(u => u.roles.includes('student')).map(u => (
                             <option key={u.username} value={u.username}>{u.username}</option>
                         ))}
                     </select>
