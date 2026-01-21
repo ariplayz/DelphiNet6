@@ -63,6 +63,19 @@ initFile(ABSENCES_FILE);
 initFile(PROGRAM_TEMPLATES_FILE);
 initFile(STUDENT_PROGRAMS_FILE);
 
+// Helper to read/write JSON files
+const readJSON = (file) => {
+    try {
+        return JSON.parse(fs.readFileSync(file, 'utf8'));
+    } catch (e) {
+        return [];
+    }
+};
+
+const writeJSON = (file, data) => {
+    fs.writeFileSync(file, JSON.stringify(data, null, 2));
+};
+
 // Migration for existing users
 const usersForMigration = readJSON(USERS_FILE);
 let usersChanged = false;
@@ -77,19 +90,6 @@ const migratedUsers = usersForMigration.map(u => {
     return u;
 });
 if (usersChanged) writeJSON(USERS_FILE, migratedUsers);
-
-// Helper to read/write JSON files
-const readJSON = (file) => {
-    try {
-        return JSON.parse(fs.readFileSync(file, 'utf8'));
-    } catch (e) {
-        return [];
-    }
-};
-
-const writeJSON = (file, data) => {
-    fs.writeFileSync(file, JSON.stringify(data, null, 2));
-};
 
 // Session middleware
 const auth = (req, res, next) => {
