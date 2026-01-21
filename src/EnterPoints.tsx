@@ -1,15 +1,14 @@
 import { useState } from 'react';
 
-interface Staff {
-    name: string;
-}
+import type { User } from './App';
 
 interface EnterPointsProps {
     addSlip: (newSlip: any) => void;
-    staffList: Staff[];
+    userList: any[];
+    currentUser: User;
 }
 
-function EnterPoints({ addSlip, staffList }: EnterPointsProps) {
+function EnterPoints({ addSlip, userList, currentUser }: EnterPointsProps) {
     const getLocalDateString = (date: Date) => {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -17,35 +16,41 @@ function EnterPoints({ addSlip, staffList }: EnterPointsProps) {
         return `${year}-${month}-${day}`;
     };
 
-    const [name, setName] = useState('');
+    const [name, setName] = useState(currentUser.role === 'student' ? currentUser.username : '');
     const [date, setDate] = useState(getLocalDateString(new Date()));
     const [points, setPoints] = useState('');
     const [hours, setHours] = useState('');
     const [showSuggestions, setShowSuggestions] = useState(false);
 
-    const suggestions = name ? staffList.filter(s => s.name.toLowerCase().includes(name.toLowerCase())) : [];
+    const suggestions = name ? userList.filter(u => u.username.toLowerCase().includes(name.toLowerCase())) : [];
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const matchedStaff = staffList.find(s => s.name.toLowerCase() === name.toLowerCase());
-        if (!matchedStaff) {
-            alert('Please enter a valid staff member name, or, contact an administrator to add new valid staff to the list.');
-            return;
+        
+        const finalName = currentUser.role === 'student' ? currentUser.username : name;
+        
+        if (currentUser.role !== 'student') {
+            const matchedUser = userList.find(u => u.username.toLowerCase() === finalName.toLowerCase());
+            if (!matchedUser) {
+                alert('Please enter a valid user name.');
+                return;
+            }
         }
+        
         if (!date || !points || !hours) {
             alert('Please fill in all fields');
             return;
         }
 
         const newSlip = {
-            name: matchedStaff.name,
+            name: finalName,
             date: new Date(date + 'T00:00:00'), // Ensure it's treated as local date
             points: parseFloat(points),
             hours: parseFloat(hours)
         };
 
         addSlip(newSlip);
-        setName('');
+        if (currentUser.role !== 'student') setName('');
         setPoints('');
         setHours('');
     };
@@ -68,7 +73,7 @@ function EnterPoints({ addSlip, staffList }: EnterPointsProps) {
                 boxSizing: 'border-box'
             }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', position: 'relative' }}>
-                    <label htmlFor="name" style={{ color: 'var(--text-dim)', fontSize: '0.9em' }}>Staff Name:</label>
+                    <label htmlFor="name" style={{ color: 'var(--text-dim)', fontSize: '0.9em' }}>Name:</label>
                     <input 
                         id="name"
                         type="text" 
@@ -77,18 +82,19 @@ function EnterPoints({ addSlip, staffList }: EnterPointsProps) {
                         onChange={(e) => { setName(e.target.value); setShowSuggestions(true); }} 
                         onFocus={() => setShowSuggestions(true)}
                         onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                        placeholder="Type staff name..."
-                        style={{ padding: '12px', borderRadius: '4px', border: '1px solid var(--border)', backgroundColor: 'var(--surface-light)', color: 'var(--text)', fontSize: '16px' }}
+                        placeholder="Type name..."
+                        disabled={currentUser.role === 'student'}
+                        style={{ padding: '12px', borderRadius: '4px', border: '1px solid var(--border)', backgroundColor: 'var(--surface-light)', color: 'var(--text)', fontSize: '16px', opacity: currentUser.role === 'student' ? 0.7 : 1 }}
                     />
-                    {showSuggestions && suggestions.length > 0 && (
+                    {showSuggestions && currentUser.role !== 'student' && suggestions.length > 0 && (
                         <div style={{ 
                             position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 10, 
                             backgroundColor: 'var(--surface-light)', border: '1px solid var(--border)', 
                             borderRadius: '4px', maxHeight: '150px', overflowY: 'auto' 
                         }}>
-                            {suggestions.map(s => (
-                                <div key={s.name} onClick={() => { setName(s.name); setShowSuggestions(false); }} style={{ padding: '12px', cursor: 'pointer', borderBottom: '1px solid var(--border)' }}>
-                                    {s.name}
+                            {suggestions.map(u => (
+                                <div key={u.username} onClick={() => { setName(u.username); setShowSuggestions(false); }} style={{ padding: '12px', cursor: 'pointer', borderBottom: '1px solid var(--border)' }}>
+                                    {u.username}
                                 </div>
                             ))}
                         </div>

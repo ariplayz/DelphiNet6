@@ -19,9 +19,24 @@
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 10px;
   align-items: center;
   padding: 20px 0;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+  color: var(--primary);
+  font-weight: bold;
+}
+
+.user-info small {
+  color: var(--text-dim);
+  font-weight: normal;
+  text-transform: capitalize;
 }
 
 .sidebar button {

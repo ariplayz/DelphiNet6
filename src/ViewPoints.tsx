@@ -7,19 +7,25 @@ interface PointSlip {
     hours: number;
 }
 
+import type { User } from './App';
+
 interface ViewPointsProps {
     pointsSlips: PointSlip[];
+    currentUser: User;
 }
 
-function ViewPoints({ pointsSlips }: ViewPointsProps) {
-    const [selectedStaff, setSelectedStaff] = useState('');
+function ViewPoints({ pointsSlips, currentUser }: ViewPointsProps) {
+    const [selectedStaff, setSelectedStaff] = useState(currentUser.role === 'student' ? currentUser.username : '');
     const [activeTab, setActiveTab] = useState('table');
     const tableContainerRef = useRef<HTMLDivElement>(null);
 
     const todayLocal = new Date();
     todayLocal.setHours(0, 0, 0, 0);
     const oneWeekAgo = new Date(todayLocal.getTime() - 7 * 24 * 60 * 60 * 1000);
-    const weeklySlips = pointsSlips.filter(p => p.date >= oneWeekAgo);
+    
+    // Weekly stats is just for the active person (if selected)
+    const statsUser = selectedStaff || currentUser.username;
+    const weeklySlips = pointsSlips.filter(p => p.name === statsUser && p.date >= oneWeekAgo);
     
     const totalPointsWeek = weeklySlips.reduce((sum, p) => sum + p.points, 0);
     const totalHoursWeek = weeklySlips.reduce((sum, p) => sum + p.hours, 0);
@@ -56,7 +62,7 @@ function ViewPoints({ pointsSlips }: ViewPointsProps) {
             <h1 style={{ color: 'var(--primary)', alignSelf: 'center' }}>View Points</h1>
 
             <div style={{ alignSelf: 'center', textAlign: 'center', backgroundColor: 'var(--surface)', padding: '20px', borderRadius: '8px', border: '1px solid var(--primary)', width: '100%', maxWidth: '600px', boxShadow: '0 4px 6px rgba(0,0,0,0.2)' }}>
-                <h3 style={{ margin: '0 0 15px 0', color: 'var(--primary)', fontSize: '1.3em' }}>Weekly Stats (Last 7 Days)</h3>
+                <h3 style={{ margin: '0 0 15px 0', color: 'var(--primary)', fontSize: '1.3em' }}>Weekly Stats for {statsUser}</h3>
                 <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                     <div>
                         <span style={{ color: 'var(--text-dim)' }}>Total Points:</span> <strong style={{ color: 'var(--text)' }}>{totalPointsWeek.toFixed(1)}</strong><br/>

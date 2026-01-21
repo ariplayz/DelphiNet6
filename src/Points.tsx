@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import type { User } from './App';
 import EnterPoints from './EnterPoints';
 import ViewPoints from './ViewPoints';
 
@@ -9,16 +10,16 @@ interface PointSlip {
     hours: number;
 }
 
-interface Staff {
-    name: string;
-}
-
 const API_URL = '/api';
 
-function Points() {
-    const [subScreen, setSubScreen] = useState<'view' | 'enter'>('view');
+function Points({ user }: { user: User }) {
+    const [subScreen, setSubScreen] = useState<'view' | 'enter'>(user.role === 'staff' ? 'view' : 'view');
+    // Staff can't enter, so they should definitely default to view. 
+    // Actually, user said: "but the view tab defaults to theirs and the weekly stats is just the active person"
+    // This probably refers to the student.
+    
     const [pointsSlips, setPointsSlips] = useState<PointSlip[]>([]);
-    const [staffList, setStaffList] = useState<Staff[]>([]);
+    const [usersList, setUsersList] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     const fetchSlips = async () => {
@@ -37,22 +38,25 @@ function Points() {
         }
     };
 
-    const fetchStaff = async () => {
+    const fetchUsers = async () => {
         try {
-            const response = await fetch(`${API_URL}/staff`);
+            const response = await fetch(`${API_URL}/users`);
             if (response.ok) {
                 const data = await response.json();
-                setStaffList(data);
+                setUsersList(data);
+            } else {
+                // Fallback for non-admins who can't fetch all users
+                setUsersList([{ username: user.username, role: user.role }]);
             }
         } catch (err) {
-            console.error('Fetch staff error:', err);
+            console.error('Fetch users error:', err);
         }
     };
 
     useEffect(() => {
         const loadData = async () => {
             setLoading(true);
-            await Promise.all([fetchSlips(), fetchStaff()]);
+            await Promise.all([fetchSlips(), fetchUsers()]);
             setLoading(false);
         };
         loadData();
@@ -71,6 +75,9 @@ function Points() {
             if (response.ok) {
                 await fetchSlips();
                 setSubScreen('view');
+            } else {
+                const err = await response.json();
+                alert(err.error || 'Failed to add slip');
             }
         } catch (err) {
             console.error('Add slip error:', err);
@@ -97,20 +104,22 @@ function Points() {
                 >
                     View Points
                 </button>
-                <button 
-                    style={navButtonStyle(subScreen === 'enter')} 
-                    onClick={() => setSubScreen('enter')}
-                >
-                    Enter Points
-                </button>
+                {user.role !== 'staff' && (
+                    <button 
+                        style={navButtonStyle(subScreen === 'enter')} 
+                        onClick={() => setSubScreen('enter')}
+                    >
+                        Enter Points
+                    </button>
+                )}
             </div>
 
             {loading ? (
                 <div style={{ padding: '40px', textAlign: 'center' }}>Loading...</div>
             ) : subScreen === 'view' ? (
-                <ViewPoints pointsSlips={pointsSlips} />
+                <ViewPoints pointsSlips={pointsSlips} currentUser={user} />
             ) : (
-                <EnterPoints addSlip={addSlip} staffList={staffList} />
+                <EnterPoints addSlip={addSlip} userList={usersList} currentUser={user} />
             )}
         </div>
     );
