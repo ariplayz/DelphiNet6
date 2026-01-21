@@ -29,7 +29,15 @@ function Sidebar({ setScreen, user, onLogout }: SidebarProps) {
             <button onClick={() => setScreen('dashboard')}>Dashboard</button>
             <button onClick={() => setScreen('points')}>Points</button>
             
-            {isSupervisor && (
+            {user.role === 'student' && (
+                <button onClick={() => setScreen('programs')}>My Programs</button>
+            )}
+
+            {(user.role === 'admin' || user.role === 'courseroom-supervisor') && (
+                <button onClick={() => setScreen('admin-programs')}>Manage Programs</button>
+            )}
+            
+            {(isSupervisor || user.role === 'courseroom-supervisor') && (
                 <button onClick={() => setScreen('roll-call')}>Roll Call</button>
             )}
 

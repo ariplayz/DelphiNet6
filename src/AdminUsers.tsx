@@ -5,7 +5,7 @@ function AdminUsers() {
     const [users, setUsers] = useState<User[]>([]);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [role, setRole] = useState<'student' | 'staff' | 'admin'>('student');
+    const [role, setRole] = useState<'student' | 'staff' | 'admin' | 'courseroom-supervisor'>('student');
     const [isAbsenceChecker, setIsAbsenceChecker] = useState(false);
 
     const fetchUsers = () => {
@@ -61,6 +61,7 @@ function AdminUsers() {
                     <option value="student">Student</option>
                     <option value="staff">Staff</option>
                     <option value="admin">Admin</option>
+                    <option value="courseroom-supervisor">Courseroom Supervisor</option>
                 </select>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <input type="checkbox" checked={isAbsenceChecker} onChange={e => setIsAbsenceChecker(e.target.checked)} />

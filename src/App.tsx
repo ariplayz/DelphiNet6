@@ -8,10 +8,12 @@ import AdminUsers from "./AdminUsers";
 import AdminClasses from "./AdminClasses";
 import RollCall from "./RollCall";
 import Absences from "./Absences";
+import Programs from "./Programs";
+import AdminPrograms from "./AdminPrograms";
 
 export interface User {
   username: string;
-  role: 'student' | 'staff' | 'admin';
+  role: 'student' | 'staff' | 'admin' | 'courseroom-supervisor';
   isAbsenceChecker?: boolean;
 }
 
@@ -46,12 +48,14 @@ function App() {
     <div className="app-container">
       <Sidebar setScreen={setScreen} user={user} onLogout={handleLogout} />
       <div className="main-content">
-        {screen === 'dashboard' && <Dashboard />}
+        {screen === 'dashboard' && <Dashboard user={user} />}
         {screen === 'points' && <Points user={user} />}
         {screen === 'admin-users' && <AdminUsers />}
         {screen === 'admin-classes' && <AdminClasses />}
         {screen === 'roll-call' && <RollCall user={user} />}
         {screen === 'absences' && <Absences />}
+        {screen === 'programs' && <Programs user={user} />}
+        {screen === 'admin-programs' && <AdminPrograms user={user} />}
       </div>
     </div>
   );

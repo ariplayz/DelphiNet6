@@ -19,6 +19,8 @@ const STAFF_FILE = path.join(DATA_DIR, 'staff.json');
 const CLASSES_FILE = path.join(DATA_DIR, 'classes.json');
 const ROLLCALLS_FILE = path.join(DATA_DIR, 'rollcalls.json');
 const ABSENCES_FILE = path.join(DATA_DIR, 'absences.json');
+const PROGRAM_TEMPLATES_FILE = path.join(DATA_DIR, 'program_templates.json');
+const STUDENT_PROGRAMS_FILE = path.join(DATA_DIR, 'student_programs.json');
 const WEB_ROOT = process.env.WEB_ROOT || path.join(__dirname, '../dist');
 
 app.use(cors({
@@ -58,6 +60,8 @@ initFile(STAFF_FILE);
 initFile(CLASSES_FILE);
 initFile(ROLLCALLS_FILE);
 initFile(ABSENCES_FILE);
+initFile(PROGRAM_TEMPLATES_FILE);
+initFile(STUDENT_PROGRAMS_FILE);
 
 // Helper to read/write JSON files
 const readJSON = (file) => {
@@ -120,7 +124,7 @@ app.get('/api/me', (req, res) => {
 
 // User management (Admin only)
 app.get('/api/users', auth, (req, res) => {
-    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Forbidden' });
+    if (req.user.role !== 'admin' && req.user.role !== 'courseroom-supervisor') return res.status(403).json({ error: 'Forbidden' });
     res.json(readJSON(USERS_FILE).map(u => ({ username: u.username, role: u.role, isAbsenceChecker: u.isAbsenceChecker })));
 });
 
@@ -258,6 +262,149 @@ app.get('/api/slips', auth, (req, res) => {
     res.json(readJSON(DATA_FILE));
 });
 
+// Program Templates
+app.get('/api/program-templates', auth, (req, res) => {
+    res.json(readJSON(PROGRAM_TEMPLATES_FILE));
+});
+
+app.post('/api/program-templates', auth, (req, res) => {
+    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Forbidden' });
+    const templates = readJSON(PROGRAM_TEMPLATES_FILE);
+    const newTemplate = { id: Date.now().toString(), ...req.body };
+    templates.push(newTemplate);
+    writeJSON(PROGRAM_TEMPLATES_FILE, templates);
+    res.status(201).json(newTemplate);
+});
+
+app.put('/api/program-templates/:id', auth, (req, res) => {
+    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Forbidden' });
+    const { id } = req.params;
+    let templates = readJSON(PROGRAM_TEMPLATES_FILE);
+    const index = templates.findIndex(t => t.id === id);
+    if (index === -1) return res.status(404).send();
+    templates[index] = { ...templates[index], ...req.body };
+    writeJSON(PROGRAM_TEMPLATES_FILE, templates);
+    res.json(templates[index]);
+});
+
+app.delete('/api/program-templates/:id', auth, (req, res) => {
+    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Forbidden' });
+    const { id } = req.params;
+    let templates = readJSON(PROGRAM_TEMPLATES_FILE);
+    templates = templates.filter(t => t.id !== id);
+    writeJSON(PROGRAM_TEMPLATES_FILE, templates);
+    res.status(204).send();
+});
+
+// Student Programs
+app.get('/api/student-programs', auth, (req, res) => {
+    const programs = readJSON(STUDENT_PROGRAMS_FILE);
+    if (req.user.role === 'student') {
+        return res.json(programs.filter(p => p.studentUsername === req.user.username));
+    }
+    res.json(programs);
+});
+
+app.post('/api/student-programs', auth, (req, res) => {
+    if (req.user.role !== 'admin' && req.user.role !== 'courseroom-supervisor') {
+        return res.status(403).json({ error: 'Forbidden' });
+    }
+    const programs = readJSON(STUDENT_PROGRAMS_FILE);
+    const newProgram = { id: Date.now().toString(), ...req.body };
+    programs.push(newProgram);
+    writeJSON(STUDENT_PROGRAMS_FILE, programs);
+    res.status(201).json(newProgram);
+});
+
+app.put('/api/student-programs/:id', auth, (req, res) => {
+    const { id } = req.params;
+    let programs = readJSON(STUDENT_PROGRAMS_FILE);
+    const index = programs.findIndex(p => p.id === id);
+    if (index === -1) return res.status(404).send();
+
+    const program = programs[index];
+    if (req.user.role === 'student' && program.studentUsername !== req.user.username) {
+        return res.status(403).json({ error: 'Forbidden' });
+    }
+    if (req.user.role !== 'admin' && req.user.role !== 'courseroom-supervisor' && req.user.role !== 'student') {
+        return res.status(403).json({ error: 'Forbidden' });
+    }
+
+    // Students can only update status/startDate of courses
+    if (req.user.role === 'student') {
+        // Simple merge for now, frontend should send correct subset
+        programs[index] = { ...programs[index], courses: req.body.courses };
+    } else {
+        programs[index] = { ...programs[index], ...req.body };
+    }
+
+    writeJSON(STUDENT_PROGRAMS_FILE, programs);
+    res.json(programs[index]);
+});
+
+app.delete('/api/student-programs/:id', auth, (req, res) => {
+    if (req.user.role !== 'admin' && req.user.role !== 'courseroom-supervisor') {
+        return res.status(403).json({ error: 'Forbidden' });
+    }
+    const { id } = req.params;
+    let programs = readJSON(STUDENT_PROGRAMS_FILE);
+    programs = programs.filter(p => p.id !== id);
+    writeJSON(STUDENT_PROGRAMS_FILE, programs);
+    res.status(204).send();
+});
+
+app.get('/api/dashboard-stats', auth, (req, res) => {
+    const slips = readJSON(DATA_FILE);
+    const rollcalls = readJSON(ROLLCALLS_FILE);
+    const programs = readJSON(STUDENT_PROGRAMS_FILE);
+    const absences = readJSON(ABSENCES_FILE);
+    const classes = readJSON(CLASSES_FILE);
+
+    if (req.user.role === 'student') {
+        const userSlips = slips.filter(s => s.name === req.user.username);
+        const userPrograms = programs.filter(p => p.studentUsername === req.user.username);
+        const userAbsences = absences.filter(a => a.studentName === req.user.username);
+        const userClasses = classes.filter(c => c.students && c.students.includes(req.user.username));
+
+        res.json({
+            slips: userSlips,
+            programs: userPrograms,
+            absences: userAbsences,
+            classes: userClasses
+        });
+    } else {
+        const supervisorClasses = classes.filter(c => c.supervisor === req.user.username);
+        let supervisorStudents = [...new Set(supervisorClasses.flatMap(c => c.students || []))];
+
+        // If they are a courseroom supervisor, they also supervise students they've assigned programs to
+        if (req.user.role === 'courseroom-supervisor' || req.user.role === 'admin') {
+            const studentsWithPrograms = programs.map(p => p.studentUsername);
+            supervisorStudents = [...new Set([...supervisorStudents, ...studentsWithPrograms])];
+        }
+
+        const studentStats = supervisorStudents.map(student => {
+            const sSlips = slips.filter(s => s.name === student);
+            const sPrograms = programs.filter(p => p.studentUsername === student);
+            const sAbsences = absences.filter(a => a.studentName === student);
+            return {
+                username: student,
+                totalPoints: sSlips.reduce((sum, s) => sum + s.points, 0),
+                programsCount: sPrograms.length,
+                absencesCount: sAbsences.length
+            };
+        });
+
+        res.json({
+            studentStats,
+            classes: supervisorClasses,
+            rollcalls: rollcalls.filter(r => {
+                const cls = classes.find(c => c.id === r.classId);
+                return cls && cls.supervisor === req.user.username;
+            })
+        });
+    }
+});
+
 app.post('/api/slips', auth, (req, res) => {
     const newSlip = req.body;
     // Students can only enter points for themselves
@@ -290,7 +437,7 @@ app.get('*', (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on port ${PORT}`);
     console.log(`Saving data to: ${DATA_FILE}`);
 });
