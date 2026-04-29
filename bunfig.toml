@@ -20,6 +20,10 @@ exact = false
 # `.prisma/client` instead of the one we generated, which makes every
 # model-specific type (e.g. `Prisma.DormUpdateInput`) disappear.
 # See: https://github.com/prisma/prisma/issues/18934
+#
+# This can be revisited once Prisma ships a Bun-isolated-linker-aware client
+# (or once Bun's isolated linker exposes generated artifacts at the location
+# Prisma's path-based lookup expects).
 linker = "hoisted"
 
 [install.scopes]
