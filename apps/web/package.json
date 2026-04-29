@@ -10,13 +10,25 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@delphinet/shared-types": "workspace:*",
+    "@tanstack/react-query": "^5.100.6",
+    "@tanstack/react-query-devtools": "^5.100.6",
+    "axios": "^1.15.2",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.12.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^7.14.2",
+    "socket.io-client": "^4.8.3"
   },
   "devDependencies": {
+    "@tailwindcss/forms": "^0.5.11",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
+    "autoprefixer": "^10.5.0",
+    "postcss": "^8.5.12",
+    "tailwindcss": "^3.4.19",
     "typescript": "^5.5.4",
     "vite": "^5.4.1",
     "vitest": "^2.0.5"

@@ -1,0 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { @apply dark; }
+  body { @apply bg-bg-base text-text-primary font-sans antialiased; }
+  * { @apply border-border; }
+  ::-webkit-scrollbar { @apply w-1.5; }
+  ::-webkit-scrollbar-track { @apply bg-bg-base; }
+  ::-webkit-scrollbar-thumb { @apply bg-brand-muted rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-brand; }
+}

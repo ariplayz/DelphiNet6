@@ -1,32 +1,87 @@
 import React from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from './contexts/AuthContext';
+import { Spinner } from './components/ui/Spinner';
+import { AppLayout } from './layouts/AppLayout';
+import { AuthLayout } from './layouts/AuthLayout';
+import { LoginPage } from './pages/LoginPage';
+import { DashboardPage } from './pages/DashboardPage';
+import { NotFoundPage } from './pages/NotFoundPage';
+import { AdminUsersPage } from './pages/admin/AdminUsersPage';
+import { AdminRolesPage } from './pages/admin/AdminRolesPage';
+import { AdminStatsPage } from './pages/admin/AdminStatsPage';
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { user, isLoading } = useAuth();
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-bg-base flex items-center justify-center">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
+  if (!user) return <Navigate to="/login" replace />;
+  return <>{children}</>;
+}
+
+function PermissionRoute({ permission, children }: { permission: string; children: React.ReactNode }) {
+  const { user, isLoading, hasPermission } = useAuth();
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-bg-base flex items-center justify-center">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
+  if (!user) return <Navigate to="/login" replace />;
+  if (!hasPermission(permission)) return <Navigate to="/dashboard" replace />;
+  return <>{children}</>;
+}
 
 export default function App() {
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '1rem',
-      }}
-    >
-      <div
-        style={{
-          width: 64,
-          height: 64,
-          borderRadius: '50%',
-          background: '#016745',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
+    <Routes>
+      <Route element={<AuthLayout />}>
+        <Route path="/login" element={<LoginPage />} />
+      </Route>
+
+      <Route
+        element={
+          <ProtectedRoute>
+            <AppLayout />
+          </ProtectedRoute>
+        }
       >
-        <span style={{ color: '#E6F4EE', fontSize: 28, fontWeight: 700 }}>D</span>
-      </div>
-      <h1 style={{ margin: 0, fontSize: '2rem', fontWeight: 700, color: '#E6EDE9' }}>DelphiNet 6</h1>
-      <p style={{ margin: 0, color: '#9BA8A2' }}>School Portal — Loading…</p>
-    </div>
+        <Route index element={<Navigate to="/dashboard" replace />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route
+          path="/admin/users"
+          element={
+            <PermissionRoute permission="users.manage">
+              <AdminUsersPage />
+            </PermissionRoute>
+          }
+        />
+        <Route
+          path="/admin/roles"
+          element={
+            <PermissionRoute permission="roles.assign">
+              <AdminRolesPage />
+            </PermissionRoute>
+          }
+        />
+        <Route
+          path="/admin/stats"
+          element={
+            <PermissionRoute permission="analytics.view">
+              <AdminStatsPage />
+            </PermissionRoute>
+          }
+        />
+      </Route>
+
+      <Route path="*" element={<NotFoundPage />} />
+    </Routes>
   );
 }
+
