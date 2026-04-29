@@ -30,9 +30,9 @@ const schema = z.object({
 });
 type FormValues = z.infer<typeof schema>;
 
-const STATUS_BADGE: Record<string, 'warning' | 'info' | 'success'> = {
+const STATUS_BADGE: Record<string, 'warning' | 'brand' | 'success'> = {
   pending: 'warning',
-  reviewed: 'info',
+  reviewed: 'brand',
   resolved: 'success',
 };
 

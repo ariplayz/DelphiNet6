@@ -19,9 +19,9 @@ interface EthicsReport {
 const STATUS_OPTIONS = ['all', 'pending', 'reviewed', 'resolved'] as const;
 type StatusFilter = (typeof STATUS_OPTIONS)[number];
 
-const STATUS_BADGE: Record<string, 'warning' | 'info' | 'success'> = {
+const STATUS_BADGE: Record<string, 'warning' | 'brand' | 'success'> = {
   pending: 'warning',
-  reviewed: 'info',
+  reviewed: 'brand',
   resolved: 'success',
 };
 
