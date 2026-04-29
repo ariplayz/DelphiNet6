@@ -89,27 +89,27 @@ those too** before working in that area.
 ## 3. Build / run / test commands
 
 ```bash
-# pnpm binary lives here on dev workstations:
-export PATH="$HOME/.local/share/pnpm:$PATH"
+# bun binary lives here on dev workstations:
+export PATH="$HOME/.bun/bin:$PATH"
 
 # Install deps
-pnpm install
+bun install
 
 # Generate Prisma client (after schema changes)
-DATABASE_URL="postgresql://x:x@x/x" pnpm exec prisma generate --schema prisma/schema.prisma
+DATABASE_URL="postgresql://x:x@x/x" bunx prisma generate --schema prisma/schema.prisma
 
 # API typecheck (the canonical sanity check before committing)
 cd apps/api && npx tsc --noEmit
 
 # Web typecheck + bundle
-cd apps/web && npx tsc --noEmit && pnpm build
+cd apps/web && npx tsc --noEmit && bun run build
 
 # Full local stack
 docker compose up -d --build
 docker compose logs -f api
 
 # Seed (runs automatically inside the api container; manually:)
-DATABASE_URL="postgresql://delphinet:delphinet@localhost:5432/delphinet" tsx prisma/seed.ts
+DATABASE_URL="postgresql://delphinet:delphinet@localhost:5432/delphinet" bun run prisma/seed.ts
 ```
 
 > ⚠️ **Always run the API typecheck before committing.** Nest's runtime
@@ -237,7 +237,7 @@ The install script is **self-healing**:
 ## 10. Common gotchas (learned the hard way)
 
 1. **Prisma client missing types after schema changes**: regenerate with
-   `pnpm exec prisma generate --schema prisma/schema.prisma`. In Docker, the
+   `bunx prisma generate --schema prisma/schema.prisma`. In Docker, the
    `api.Dockerfile` regenerates twice (deps + builder stages) with `rm -rf`
    first, so this should "just work" — but if you add a new model and the
    build fails complaining about a missing `XxxWhereInput`, that's the cause.
@@ -247,7 +247,7 @@ The install script is **self-healing**:
    parent. Don't add `schoolId` to them.
 4. **WidgetLayout has composite unique `(userId, breakpoint)`**, not
    `(userId, schoolId)`.
-5. **`pnpm --filter delphinet6`** is required in the api Dockerfile to pull
+5. **`bun --filter delphinet6`** is required in the api Dockerfile to pull
    in the root devDeps (prisma CLI + tsx) needed by the entrypoint.
 6. **Postgres only honours `POSTGRES_PASSWORD` on first init.** If you regen
    `.env` on an existing volume, you'll get auth-failed loops. The install

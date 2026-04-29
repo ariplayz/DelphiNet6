@@ -1,23 +1,22 @@
-FROM node:22-alpine AS base
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
+# DelphiNet 6 — Web container (Bun edition)
+FROM oven/bun:1-alpine AS base
 
 FROM base AS deps
-WORKDIR /app
-COPY package.json pnpm-workspace.yaml pnpm-lock.yaml* ./
+WORKDIR /workspace
+COPY package.json bun.lock* bunfig.toml* ./
 COPY apps/web/package.json ./apps/web/
+COPY apps/api/package.json ./apps/api/
 COPY packages/shared-types/package.json ./packages/shared-types/
-RUN pnpm install --frozen-lockfile --filter @delphinet/web...
+COPY packages/eslint-config/package.json ./packages/eslint-config/
+RUN bun install --frozen-lockfile || bun install
 
 FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/apps/web/node_modules ./apps/web/node_modules
+WORKDIR /workspace
+COPY --from=deps /workspace ./
 COPY . .
-RUN pnpm --filter @delphinet/web build
+RUN bun --filter @delphinet/web build
 
 FROM nginx:alpine AS runner
-COPY --from=builder /app/apps/web/dist /usr/share/nginx/html
+COPY --from=builder /workspace/apps/web/dist /usr/share/nginx/html
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80

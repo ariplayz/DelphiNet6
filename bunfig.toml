@@ -1,0 +1,15 @@
+# Bun configuration for DelphiNet 6.
+#
+# DelphiNet 6 uses Bun (https://bun.sh) as its package manager and TypeScript
+# runtime. Bun handles native module rebuilds automatically for any package
+# listed in package.json#trustedDependencies (see root package.json).
+
+[install]
+# Auto-install peer deps so the workspace resolves cleanly without manual
+# overrides (was: auto-install-peers=true in the legacy .npmrc).
+auto = "auto"
+peer = true
+exact = false
+
+[install.scopes]
+# (no private registries today — placeholder for future Delphi-internal pkgs)

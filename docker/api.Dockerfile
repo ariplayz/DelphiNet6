@@ -1,79 +1,63 @@
 # ─────────────────────────────────────────────────────────────────────────────
-# DelphiNet 6 — API container
+# DelphiNet 6 — API container (Bun edition)
 #
-# Strategy: build the workspace, then use `pnpm deploy` to produce a fully
-# self-contained, hoisted bundle for @delphinet/api. This avoids the pnpm
-# symlinked-workspace gotcha where `node dist/main` from the wrong cwd cannot
-# resolve dependencies (e.g. reflect-metadata).
+# v1.2 of DelphiNet 6 uses Bun (https://bun.sh) as the package manager AND the
+# runtime. NestJS is compiled to JavaScript by `nest build` (which Bun executes
+# via its tsc/swc toolchain) and the compiled output is run with `bun run`.
 #
 # Layout in the final image:
-#   /app                     ← deployed bundle (apps/api package + flat node_modules)
+#   /app
 #     ├── dist/              ← built Nest output
 #     ├── package.json
-#     ├── node_modules/      ← all runtime deps, hoisted
-#     └── prisma/            ← schema + seed (copied here so cwd is /app)
+#     ├── node_modules/      ← all runtime deps
+#     └── prisma/            ← schema + seed (cwd at boot is /app)
 # ─────────────────────────────────────────────────────────────────────────────
 
-FROM node:22-alpine AS base
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable && apk add --no-cache openssl libc6-compat
+FROM oven/bun:1-alpine AS base
+RUN apk add --no-cache openssl libc6-compat python3 make g++
 
-# ─── deps: full workspace install (so we can build) ─────────────────────────
+# ─── deps: install the entire workspace so we can build ─────────────────────
 FROM base AS deps
 WORKDIR /workspace
-COPY package.json pnpm-workspace.yaml pnpm-lock.yaml* .npmrc* ./
+COPY package.json bun.lock* bunfig.toml* ./
 COPY apps/api/package.json ./apps/api/
+COPY apps/web/package.json ./apps/web/
 COPY packages/shared-types/package.json ./packages/shared-types/
+COPY packages/eslint-config/package.json ./packages/eslint-config/
 # Copy prisma BEFORE install so @prisma/client postinstall sees the schema.
 COPY prisma ./prisma
-RUN pnpm install --frozen-lockfile --filter @delphinet/api... --filter delphinet6
-RUN pnpm exec prisma generate --schema prisma/schema.prisma
+RUN bun install --frozen-lockfile || bun install
+RUN bunx prisma generate --schema prisma/schema.prisma
 
-# ─── builder: compile TS, then deploy a self-contained bundle ───────────────
+# ─── builder: compile TS, then prune to production deps ─────────────────────
 FROM base AS builder
 WORKDIR /workspace
 COPY --from=deps /workspace ./
 COPY . .
 # Re-generate the Prisma client against the freshly-copied schema in case the
 # deps stage cached an older one.
-RUN rm -rf node_modules/.prisma node_modules/.pnpm/@prisma+client*/node_modules/.prisma \
- && pnpm exec prisma generate --schema prisma/schema.prisma
-RUN pnpm --filter @delphinet/shared-types... build 2>/dev/null || true
-RUN pnpm --filter @delphinet/api build
+RUN bunx prisma generate --schema prisma/schema.prisma
+RUN bun --filter @delphinet/shared-types build 2>/dev/null || true
+RUN bun --filter @delphinet/api build
 
-# `pnpm deploy` creates /deploy/api with all of @delphinet/api's runtime
-# dependencies hoisted into a single flat node_modules. Module resolution
-# from /deploy/api/dist/main.js will Just Work.
-RUN pnpm --filter @delphinet/api deploy --prod --legacy /deploy/api
-
-# Make sure the freshly-generated Prisma client is present in the deployed
-# bundle (pnpm deploy copies node_modules but not the .prisma generated files
-# that live inside @prisma/client at runtime).
-RUN cp -r node_modules/.prisma /deploy/api/node_modules/.prisma 2>/dev/null || true \
- && cp -r node_modules/@prisma/client /deploy/api/node_modules/@prisma/client 2>/dev/null || true
-
-# ─── runner: minimal image with the deployed bundle + prisma CLI + tsx ──────
-FROM node:22-alpine AS runner
-RUN corepack enable && apk add --no-cache openssl libc6-compat wget
-
-# Install the CLI tools we need at boot (prisma + tsx) into an isolated
-# directory so they can't conflict with the deployed app's package.json.
-# The runtime app already bundles @prisma/client via pnpm deploy, so we only
-# need the CLI here.
-WORKDIR /opt/cli
-RUN echo '{"name":"delphinet-cli","private":true}' > package.json \
- && npm install --no-audit --no-fund --loglevel=error \
-      prisma@5.22.0 \
-      tsx@4.19.2 \
- && /opt/cli/node_modules/.bin/prisma --version
+# ─── runner: minimal image with only the API + runtime deps ─────────────────
+FROM oven/bun:1-alpine AS runner
+RUN apk add --no-cache openssl libc6-compat wget
 
 WORKDIR /app
 ENV NODE_ENV=production
-ENV PATH="/opt/cli/node_modules/.bin:/app/node_modules/.bin:${PATH}"
 
-# Self-contained app + dependencies.
-COPY --from=builder /deploy/api/ ./
+# Copy the built api app and its package.json/node_modules.
+# Because Bun hoists everything into a single root node_modules (like npm/yarn),
+# module resolution from /app/dist/main.js works as long as we ship the root
+# node_modules alongside the api package's own.
+COPY --from=builder /workspace/apps/api/dist ./dist
+COPY --from=builder /workspace/apps/api/package.json ./package.json
+COPY --from=builder /workspace/node_modules ./node_modules
+COPY --from=builder /workspace/apps/api/node_modules ./node_modules_api_local
+# Merge any api-local node_modules entries (workspace symlinks etc.) into the
+# hoisted tree without overwriting hoisted packages.
+RUN [ -d ./node_modules_api_local ] && cp -rn ./node_modules_api_local/. ./node_modules/ ; rm -rf ./node_modules_api_local || true
 
 # Prisma schema + seed live next to the bundle so the entrypoint can run them.
 COPY --from=builder /workspace/prisma ./prisma
