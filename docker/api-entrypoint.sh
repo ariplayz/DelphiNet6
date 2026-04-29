@@ -11,7 +11,7 @@
 
 log() { echo "── [api-entrypoint] $* ──"; }
 
-log "node $(node -v), prisma $(npx --no-install prisma --version 2>/dev/null | head -1)"
+log "node $(node -v), prisma $(prisma --version 2>/dev/null | head -1)"
 
 # ── Wait for Postgres ───────────────────────────────────────────────────────
 if [ -n "$DATABASE_URL" ]; then
@@ -27,13 +27,13 @@ fi
 
 # ── Schema push ─────────────────────────────────────────────────────────────
 log "prisma db push"
-if ! npx --no-install prisma db push --schema prisma/schema.prisma --skip-generate --accept-data-loss; then
+if ! prisma db push --schema prisma/schema.prisma --skip-generate --accept-data-loss; then
   echo "[api-entrypoint] WARNING: prisma db push failed; starting server anyway so logs are visible"
 fi
 
 # ── Seed (idempotent) ───────────────────────────────────────────────────────
 log "seeding (tsx prisma/seed.ts)"
-if ! npx --no-install tsx prisma/seed.ts; then
+if ! tsx prisma/seed.ts; then
   echo "[api-entrypoint] WARNING: seed failed; continuing"
 fi
 

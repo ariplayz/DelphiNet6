@@ -56,23 +56,27 @@ RUN cp -r node_modules/.prisma /deploy/api/node_modules/.prisma 2>/dev/null || t
 # ─── runner: minimal image with the deployed bundle + prisma CLI + tsx ──────
 FROM node:22-alpine AS runner
 RUN corepack enable && apk add --no-cache openssl libc6-compat wget
+
+# Install the CLI tools we need at boot (prisma + tsx) into an isolated
+# directory so they can't conflict with the deployed app's package.json.
+# The runtime app already bundles @prisma/client via pnpm deploy, so we only
+# need the CLI here.
+WORKDIR /opt/cli
+RUN echo '{"name":"delphinet-cli","private":true}' > package.json \
+ && npm install --no-audit --no-fund --loglevel=error \
+      prisma@5.22.0 \
+      tsx@4.19.2 \
+ && /opt/cli/node_modules/.bin/prisma --version
+
 WORKDIR /app
 ENV NODE_ENV=production
-ENV PATH="/app/node_modules/.bin:${PATH}"
+ENV PATH="/opt/cli/node_modules/.bin:/app/node_modules/.bin:${PATH}"
 
 # Self-contained app + dependencies.
 COPY --from=builder /deploy/api/ ./
 
 # Prisma schema + seed live next to the bundle so the entrypoint can run them.
 COPY --from=builder /workspace/prisma ./prisma
-
-# Install the CLI tools we need at boot (prisma + tsx). Pinning explicitly so
-# the runtime image never relies on the workspace's hoisted devDependencies.
-RUN npm install --no-save --no-audit --no-fund --silent \
-      prisma@5.22.0 \
-      tsx@4.19.2 \
-      @prisma/client@5.22.0 \
- && npx prisma --version
 
 COPY docker/api-entrypoint.sh /usr/local/bin/api-entrypoint.sh
 RUN chmod +x /usr/local/bin/api-entrypoint.sh
