@@ -349,4 +349,46 @@ export class ClassesService {
       endsAt: s.endsAt.toISOString(),
     }));
   }
+
+  /**
+   * Returns sessions in [from, to) for classes the user is enrolled in or
+   * supervises. Used by the /me/schedule page.
+   */
+  async getScheduleForUser(
+    schoolId: string,
+    userId: string,
+    from: Date,
+    to: Date,
+  ) {
+    const sessions = await this.prisma.classSession.findMany({
+      where: {
+        startsAt: { gte: from, lt: to },
+        class: {
+          schoolId,
+          OR: [
+            { supervisorUserId: userId },
+            { enrollments: { some: { studentUserId: userId, removedAt: null } } },
+          ],
+        },
+      },
+      orderBy: { startsAt: 'asc' },
+      include: {
+        class: {
+          select: { id: true, name: true, location: true, kind: true, supervisorUserId: true },
+        },
+      },
+    });
+
+    return sessions.map((s) => ({
+      id: s.id,
+      sourceId: s.classId,
+      sourceType: 'class' as const,
+      name: s.class.name,
+      location: s.class.location ?? null,
+      kind: s.class.kind as string,
+      startsAt: s.startsAt.toISOString(),
+      endsAt: s.endsAt.toISOString(),
+      role: s.class.supervisorUserId === userId ? ('supervisor' as const) : ('attendee' as const),
+    }));
+  }
 }

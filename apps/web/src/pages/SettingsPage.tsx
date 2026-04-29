@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
@@ -147,7 +147,7 @@ function ThemeEditor({
 }
 
 export function SettingsPage() {
-  const { themeKey, customThemes, allThemes, setActiveTheme, saveCustomTheme, deleteCustomTheme } = useTheme();
+  const { themeKey, allThemes, setActiveTheme, saveCustomTheme, deleteCustomTheme } = useTheme();
   const [editing, setEditing] = useState<ThemeDefinition | null>(null);
 
   const builtIns = allThemes.filter((t) => BUILT_IN_THEME_KEYS.has(t.key));
