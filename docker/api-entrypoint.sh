@@ -1,17 +1,42 @@
 #!/bin/sh
 # DelphiNet 6 API entrypoint
-# 1. Push the Prisma schema to the database (creates / updates tables)
-# 2. Seed the database (idempotent: built-in roles + default super admin)
-# 3. Start the Nest server
-set -e
+# 1. Wait for the database (in case compose's healthcheck races us).
+# 2. Push the Prisma schema (creates / updates tables).
+# 3. Seed (idempotent).
+# 4. Exec the Nest server.
+#
+# Migration / seed failures are logged but non-fatal — we still start the
+# server so `docker compose logs api` shows the real cause via the API
+# (instead of the container exiting and disappearing from the logs stream).
 
-echo "── [api-entrypoint] prisma db push ──"
-npx prisma db push --schema prisma/schema.prisma --skip-generate --accept-data-loss
+log() { echo "── [api-entrypoint] $* ──"; }
 
-echo "── [api-entrypoint] seeding (tsx prisma/seed.ts) ──"
-# Seed is idempotent (creates built-in roles + default super admin if missing).
-# Non-fatal: if seeding fails we still want the API to come up.
-npx --no-install tsx prisma/seed.ts || echo "[api-entrypoint] seed failed (non-fatal); continuing"
+log "node $(node -v), prisma $(npx --no-install prisma --version 2>/dev/null | head -1)"
 
-echo "── [api-entrypoint] starting Nest server ──"
+# ── Wait for Postgres ───────────────────────────────────────────────────────
+if [ -n "$DATABASE_URL" ]; then
+  log "waiting for database"
+  for i in $(seq 1 30); do
+    if node -e "const u=new URL(process.env.DATABASE_URL); require('net').createConnection({host:u.hostname,port:u.port||5432}).on('connect',()=>process.exit(0)).on('error',()=>process.exit(1));" 2>/dev/null; then
+      log "database reachable"
+      break
+    fi
+    sleep 1
+  done
+fi
+
+# ── Schema push ─────────────────────────────────────────────────────────────
+log "prisma db push"
+if ! npx --no-install prisma db push --schema prisma/schema.prisma --skip-generate --accept-data-loss; then
+  echo "[api-entrypoint] WARNING: prisma db push failed; starting server anyway so logs are visible"
+fi
+
+# ── Seed (idempotent) ───────────────────────────────────────────────────────
+log "seeding (tsx prisma/seed.ts)"
+if ! npx --no-install tsx prisma/seed.ts; then
+  echo "[api-entrypoint] WARNING: seed failed; continuing"
+fi
+
+# ── Start server ────────────────────────────────────────────────────────────
+log "starting Nest server"
 exec node dist/main
