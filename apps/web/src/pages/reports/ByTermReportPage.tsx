@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { ChevronDown, ChevronRight, Printer, Search } from 'lucide-react';
-import { Card } from '../../components/ui/Card';
 import { Spinner } from '../../components/ui/Spinner';
 import { useAuth } from '../../contexts/AuthContext';
 import { api } from '../../lib/api';

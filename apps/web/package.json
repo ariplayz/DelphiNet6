@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@delphinet/shared-types": "*",
+    "@hookform/resolvers": "^5.2.2",
     "@tanstack/react-query": "^5.100.6",
     "@tanstack/react-query-devtools": "^5.100.6",
     "axios": "^1.15.2",
@@ -19,8 +20,10 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-grid-layout": "^2.2.3",
+    "react-hook-form": "^7.55.0",
     "react-router-dom": "^7.14.2",
-    "socket.io-client": "^4.8.3"
+    "socket.io-client": "^4.8.3",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.11",
