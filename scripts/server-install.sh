@@ -293,9 +293,52 @@ fi
 # from the .env we just generated, so no patching is needed.
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# Step 6 — Initial Docker build + up
+# Step 6 — Install systemd service (BEFORE the initial build so the auto-deploy
+# watcher exists even if the first build fails — it will pick up the next tag
+# and try again automatically).
 # ═══════════════════════════════════════════════════════════════════════════════
-header "Step 6 — Initial Docker build"
+header "Step 6 — Systemd auto-deploy service"
+
+install_systemd_service() {
+  local service_file="/etc/systemd/system/${SERVICE_NAME}.service"
+  local service_template="${INSTALL_DIR}/scripts/${SERVICE_NAME}.service"
+
+  if [[ ! -f "$service_template" ]]; then
+    error "Service template not found at $service_template — repo may be out of date."
+  fi
+
+  cp "$service_template" "$service_file"
+  sed -i \
+    -e "s|^User=.*|User=${RUN_USER}|" \
+    -e "s|^WorkingDirectory=.*|WorkingDirectory=${INSTALL_DIR}|" \
+    -e "s|^ExecStart=.*|ExecStart=/bin/bash ${INSTALL_DIR}/scripts/watch-deploy.sh|" \
+    -e "s|^Environment=\"POLL_INTERVAL=.*\"|Environment=\"POLL_INTERVAL=${POLL_INTERVAL}\"|" \
+    -e "s|^Environment=\"REPO_DIR=.*\"|Environment=\"REPO_DIR=${INSTALL_DIR}\"|" \
+    "$service_file"
+
+  # Make sure the watcher's state/log files are writable by RUN_USER.
+  install -d -o "$RUN_USER" -g "$RUN_USER" "${INSTALL_DIR}/scripts"
+  touch "${INSTALL_DIR}/scripts/deploy.log"
+  chown "$RUN_USER":"$RUN_USER" "${INSTALL_DIR}/scripts/deploy.log"
+
+  systemctl daemon-reload
+  systemctl enable "$SERVICE_NAME" --quiet
+  systemctl restart "$SERVICE_NAME"
+  sleep 2
+
+  if systemctl is-active --quiet "$SERVICE_NAME"; then
+    success "Service $SERVICE_NAME is running as user '$RUN_USER' from $INSTALL_DIR."
+  else
+    warn "Service may not have started — check: journalctl -u $SERVICE_NAME -n 50"
+  fi
+}
+
+install_systemd_service
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Step 7 — Initial Docker build + up
+# ═══════════════════════════════════════════════════════════════════════════════
+header "Step 7 — Initial Docker build"
 
 info "Building and starting containers (this may take a few minutes)..."
 cd "$INSTALL_DIR"
@@ -310,7 +353,10 @@ else
 fi
 
 start_stack() {
-  sudo -u "$RUN_USER" docker compose up -d --build
+  # Non-fatal: if the build/up fails the auto-deploy watcher (already installed
+  # in Step 6) will retry on the next tag, so we don't want a transient build
+  # error to abort the rest of the install.
+  sudo -u "$RUN_USER" docker compose up -d --build || return 1
 }
 
 probe_db_auth() {
@@ -328,79 +374,55 @@ probe_db_auth() {
   return 1
 }
 
-start_stack
+BUILD_OK=1
+if ! start_stack; then
+  BUILD_OK=0
+  warn "Initial docker build/up failed."
+  warn "The ${SERVICE_NAME} watcher is installed and will retry automatically"
+  warn "on the next git tag. To rebuild manually now:"
+  warn "    cd $INSTALL_DIR && sudo -u $RUN_USER docker compose up -d --build"
+fi
 
-info "Verifying database credentials..."
-if ! probe_db_auth; then
-  warn "DB authentication failed — Postgres volume has a stale password."
-  warn "Wiping the volume and reinitialising..."
-  sudo -u "$RUN_USER" docker compose down -v --remove-orphans 2>/dev/null || true
-  start_stack
+if [[ "$BUILD_OK" -eq 1 ]]; then
+  info "Verifying database credentials..."
   if ! probe_db_auth; then
-    warn "DB still rejecting credentials after wipe. Showing logs:"
-    sudo -u "$RUN_USER" docker compose logs --tail=40 db 2>&1 || true
+    warn "DB authentication failed — Postgres volume has a stale password."
+    warn "Wiping the volume and reinitialising..."
+    sudo -u "$RUN_USER" docker compose down -v --remove-orphans 2>/dev/null || true
+    start_stack || BUILD_OK=0
+    if [[ "$BUILD_OK" -eq 1 ]] && ! probe_db_auth; then
+      warn "DB still rejecting credentials after wipe. Showing logs:"
+      sudo -u "$RUN_USER" docker compose logs --tail=40 db 2>&1 || true
+    elif [[ "$BUILD_OK" -eq 1 ]]; then
+      success "DB credentials accepted after volume wipe."
+    fi
   else
-    success "DB credentials accepted after volume wipe."
+    success "DB credentials OK."
   fi
-else
-  success "DB credentials OK."
-fi
 
-info "Waiting for API health check (up to 2 min)..."
-API_HEALTHY=0
-for i in {1..40}; do
-  if sudo -u "$RUN_USER" docker compose exec -T api \
-       wget -qO- http://localhost:3000/api/health &>/dev/null 2>&1; then
-    API_HEALTHY=1
-    success "API is healthy."
-    break
+  info "Waiting for API health check (up to 2 min)..."
+  API_HEALTHY=0
+  for i in {1..40}; do
+    if sudo -u "$RUN_USER" docker compose exec -T api \
+         wget -qO- http://localhost:3000/api/health &>/dev/null 2>&1; then
+      API_HEALTHY=1
+      success "API is healthy."
+      break
+    fi
+    sleep 3
+  done
+
+  if [[ "$API_HEALTHY" -eq 0 ]]; then
+    warn "API health check timed out. Last 80 lines of API logs:"
+    echo "─────────────────────────────────────────────────────────────"
+    sudo -u "$RUN_USER" docker compose logs --tail=80 api 2>&1 || true
+    echo "─────────────────────────────────────────────────────────────"
+    warn "If the error mentions Postgres auth, run:"
+    warn "    FRESH_INSTALL=1 sudo bash $INSTALL_DIR/scripts/server-install.sh"
+    warn "The auto-deploy watcher will retry on the next git tag."
+  else
+    success "Stack is running on port 8090."
   fi
-  sleep 3
-done
-
-if [[ "$API_HEALTHY" -eq 0 ]]; then
-  warn "API health check timed out. Last 80 lines of API logs:"
-  echo "─────────────────────────────────────────────────────────────"
-  sudo -u "$RUN_USER" docker compose logs --tail=80 api 2>&1 || true
-  echo "─────────────────────────────────────────────────────────────"
-  warn "If the error mentions Postgres auth, run:"
-  warn "    FRESH_INSTALL=1 sudo bash $INSTALL_DIR/scripts/server-install.sh"
-  warn "Continuing with systemd setup; the watcher will redeploy on the next tag."
-fi
-
-success "Stack is running on port 8090."
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# Step 7 — Install systemd service
-# ═══════════════════════════════════════════════════════════════════════════════
-header "Step 7 — Systemd service"
-
-SERVICE_FILE="/etc/systemd/system/${SERVICE_NAME}.service"
-SERVICE_TEMPLATE="${INSTALL_DIR}/scripts/${SERVICE_NAME}.service"
-
-if [[ ! -f "$SERVICE_TEMPLATE" ]]; then
-  error "Service template not found at $SERVICE_TEMPLATE — repo may be out of date."
-fi
-
-# Copy canonical template, then patch User/paths/POLL_INTERVAL to match this install.
-cp "$SERVICE_TEMPLATE" "$SERVICE_FILE"
-sed -i \
-  -e "s|^User=.*|User=${RUN_USER}|" \
-  -e "s|^WorkingDirectory=.*|WorkingDirectory=${INSTALL_DIR}|" \
-  -e "s|^ExecStart=.*|ExecStart=/bin/bash ${INSTALL_DIR}/scripts/watch-deploy.sh|" \
-  -e "s|^Environment=\"POLL_INTERVAL=.*\"|Environment=\"POLL_INTERVAL=${POLL_INTERVAL}\"|" \
-  -e "s|^Environment=\"REPO_DIR=.*\"|Environment=\"REPO_DIR=${INSTALL_DIR}\"|" \
-  "$SERVICE_FILE"
-
-systemctl daemon-reload
-systemctl enable "$SERVICE_NAME" --quiet
-systemctl start "$SERVICE_NAME"
-sleep 2
-
-if systemctl is-active --quiet "$SERVICE_NAME"; then
-  success "Service $SERVICE_NAME is running as user '$RUN_USER' from $INSTALL_DIR."
-else
-  warn "Service may not have started — check: journalctl -u $SERVICE_NAME -n 50"
 fi
 
 # ═══════════════════════════════════════════════════════════════════════════════
