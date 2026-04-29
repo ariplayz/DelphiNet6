@@ -38,10 +38,12 @@ export function LoginPage() {
       <div className="bg-bg-surface rounded-2xl border border-border p-6 sm:p-8 shadow-2xl">
         {/* Logo */}
         <div className="flex flex-col items-center mb-8">
-          <div className="w-12 h-12 rounded-xl bg-brand flex items-center justify-center mb-3">
-            <span className="text-white font-bold text-xl">D</span>
-          </div>
-          <h1 className="text-2xl font-bold text-text-primary">DelphiNet</h1>
+          <img
+            src="/logo-text.png"
+            alt="DelphiNet"
+            className="h-20 w-auto mb-2 select-none"
+            draggable={false}
+          />
           <p className="text-sm text-text-secondary mt-1">School Portal</p>
         </div>
 

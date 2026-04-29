@@ -138,9 +138,13 @@ export function AppLayout() {
             (desktopCollapsed || true) && 'lg:justify-start justify-center px-2 lg:px-4',
           )}
         >
-          <div className="w-8 h-8 rounded-lg bg-brand flex items-center justify-center flex-shrink-0">
-            <span className="text-white font-bold text-sm">D</span>
-          </div>
+          <img
+            src="/logo.png"
+            alt=""
+            aria-hidden="true"
+            className="w-9 h-9 rounded-lg object-contain flex-shrink-0 select-none"
+            draggable={false}
+          />
           {!desktopCollapsed && (
             <span className="hidden lg:inline font-semibold text-text-primary text-sm">DelphiNet 6</span>
           )}
@@ -210,9 +214,13 @@ export function AppLayout() {
       >
         <div className="flex items-center justify-between px-4 py-4 border-b border-border">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-brand flex items-center justify-center">
-              <span className="text-white font-bold text-sm">D</span>
-            </div>
+            <img
+              src="/logo.png"
+              alt=""
+              aria-hidden="true"
+              className="w-9 h-9 rounded-lg object-contain select-none"
+              draggable={false}
+            />
             <span className="font-semibold text-text-primary text-sm">DelphiNet 6</span>
           </div>
           <button
