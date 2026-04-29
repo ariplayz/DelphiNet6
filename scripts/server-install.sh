@@ -167,9 +167,14 @@ usermod -aG docker "$RUN_USER" 2>/dev/null || true
 # ═══════════════════════════════════════════════════════════════════════════════
 header "Step 4 — Repository"
 
+REPO_PRE_EXISTED=0
 if [[ -d "$INSTALL_DIR/.git" ]]; then
+  REPO_PRE_EXISTED=1
   info "Repo already exists at $INSTALL_DIR — fetching latest..."
-  sudo -u "$RUN_USER" git -C "$INSTALL_DIR" fetch --tags --force --quiet
+  # --prune --prune-tags removes locally-cached tags that no longer exist
+  # on the remote and forces moved tags to refresh, so we never get stuck on
+  # an outdated "latest" tag from a previous install.
+  sudo -u "$RUN_USER" git -C "$INSTALL_DIR" fetch --tags --force --prune --prune-tags origin
   success "Repo updated."
 else
   info "Cloning $REPO_URL → $INSTALL_DIR ..."
@@ -178,15 +183,26 @@ else
   success "Repo cloned."
 fi
 
-# Checkout latest tag
-LATEST_TAG="$(git -C "$INSTALL_DIR" tag --sort=-version:refname | head -n1)"
+# Checkout latest tag (semver-sorted, GitHub's CDN may take a few seconds to
+# propagate so list everything we have).
+LATEST_TAG="$(git -C "$INSTALL_DIR" tag --list 'v*' --sort=-version:refname | head -n1)"
 if [[ -z "$LATEST_TAG" ]]; then
   warn "No tags found — staying on default branch (main)."
   LATEST_TAG="main"
+  sudo -u "$RUN_USER" git -C "$INSTALL_DIR" checkout main --quiet
+  sudo -u "$RUN_USER" git -C "$INSTALL_DIR" reset --hard origin/main --quiet
 else
   info "Checking out latest tag: $LATEST_TAG"
-  sudo -u "$RUN_USER" git -C "$INSTALL_DIR" checkout "$LATEST_TAG" --quiet
+  # Discard any local edits before switching (e.g. stale tsbuildinfo files)
+  sudo -u "$RUN_USER" git -C "$INSTALL_DIR" reset --hard --quiet
+  sudo -u "$RUN_USER" git -C "$INSTALL_DIR" checkout --force "$LATEST_TAG" --quiet
   success "At tag: $LATEST_TAG"
+fi
+
+# Record the previously deployed tag (if any) so Step 5 can decide whether
+# to wipe the Postgres volume due to a known-broken prior tag.
+if [[ -f "$INSTALL_DIR/scripts/.deployed-tag" ]]; then
+  cp -f "$INSTALL_DIR/scripts/.deployed-tag" "$INSTALL_DIR/scripts/.deployed-tag.previous"
 fi
 
 # Save the deployed tag so the watcher doesn't redeploy immediately
@@ -199,6 +215,40 @@ chown "$RUN_USER":"$RUN_USER" "$INSTALL_DIR/scripts/.deployed-tag"
 header "Step 5 — Environment configuration"
 
 ENV_FILE="$INSTALL_DIR/.env"
+
+# Detect a stale Postgres volume from a prior failed install. Postgres only
+# initialises POSTGRES_PASSWORD on first start, so if the volume already
+# exists with one password and we (re)generate a *new* random password in
+# .env, the API will fail to authenticate forever. We auto-recover by
+# wiping the volume in any of these situations:
+#   1. .env is missing but a Postgres volume already exists.
+#   2. The previously deployed tag was v0.1, which shipped with a hardcoded
+#      'delphinet' password that doesn't match the random one in .env.
+#   3. The caller passed FRESH_INSTALL=1.
+WIPE_DB_VOLUME=0
+PG_VOLUME_NAME="$(basename "$INSTALL_DIR")_postgres_data"
+PREV_DEPLOYED_TAG=""
+if [[ -f "$INSTALL_DIR/scripts/.deployed-tag.previous" ]]; then
+  PREV_DEPLOYED_TAG="$(cat "$INSTALL_DIR/scripts/.deployed-tag.previous" 2>/dev/null || echo "")"
+fi
+
+if [[ ! -f "$ENV_FILE" ]] && docker volume inspect "$PG_VOLUME_NAME" &>/dev/null; then
+  warn "Found Postgres volume ($PG_VOLUME_NAME) but no .env."
+  warn "The DB password we generated won't match — wiping the volume."
+  WIPE_DB_VOLUME=1
+fi
+
+if [[ "$PREV_DEPLOYED_TAG" == "v0.1" ]] && docker volume inspect "$PG_VOLUME_NAME" &>/dev/null; then
+  warn "Previous deploy was v0.1 (hardcoded DB password)."
+  warn "Wiping Postgres volume so the v0.1.1+ generated password takes effect."
+  WIPE_DB_VOLUME=1
+fi
+
+if [[ "${FRESH_INSTALL:-0}" == "1" ]]; then
+  warn "FRESH_INSTALL=1 — wiping all DelphiNet docker volumes."
+  WIPE_DB_VOLUME=1
+  rm -f "$ENV_FILE"
+fi
 
 if [[ -f "$ENV_FILE" ]]; then
   warn ".env already exists — skipping generation. Edit $ENV_FILE if needed."
@@ -249,20 +299,74 @@ header "Step 6 — Initial Docker build"
 
 info "Building and starting containers (this may take a few minutes)..."
 cd "$INSTALL_DIR"
-sudo -u "$RUN_USER" docker compose up -d --build
 
-info "Waiting for API health check..."
+# Always bring the stack down before rebuilding so we pick up new images
+# cleanly. If we detected a stale Postgres volume above, also wipe volumes.
+if [[ "$WIPE_DB_VOLUME" -eq 1 ]]; then
+  info "Tearing down stack and wiping volumes..."
+  sudo -u "$RUN_USER" docker compose down -v --remove-orphans 2>/dev/null || true
+else
+  sudo -u "$RUN_USER" docker compose down --remove-orphans 2>/dev/null || true
+fi
+
+start_stack() {
+  sudo -u "$RUN_USER" docker compose up -d --build
+}
+
+probe_db_auth() {
+  # Returns 0 if the DB accepts the credentials in .env, 1 otherwise.
+  # We give the DB up to ~30 s to start.
+  local pw
+  pw="$(grep -E '^POSTGRES_PASSWORD=' "$ENV_FILE" | cut -d= -f2-)"
+  for _ in {1..15}; do
+    if sudo -u "$RUN_USER" docker compose exec -T -e PGPASSWORD="$pw" db \
+         psql -U delphinet -d delphinet -c 'SELECT 1' &>/dev/null; then
+      return 0
+    fi
+    sleep 2
+  done
+  return 1
+}
+
+start_stack
+
+info "Verifying database credentials..."
+if ! probe_db_auth; then
+  warn "DB authentication failed — Postgres volume has a stale password."
+  warn "Wiping the volume and reinitialising..."
+  sudo -u "$RUN_USER" docker compose down -v --remove-orphans 2>/dev/null || true
+  start_stack
+  if ! probe_db_auth; then
+    warn "DB still rejecting credentials after wipe. Showing logs:"
+    sudo -u "$RUN_USER" docker compose logs --tail=40 db 2>&1 || true
+  else
+    success "DB credentials accepted after volume wipe."
+  fi
+else
+  success "DB credentials OK."
+fi
+
+info "Waiting for API health check (up to 2 min)..."
+API_HEALTHY=0
 for i in {1..40}; do
   if sudo -u "$RUN_USER" docker compose exec -T api \
        wget -qO- http://localhost:3000/api/health &>/dev/null 2>&1; then
+    API_HEALTHY=1
     success "API is healthy."
     break
   fi
-  if [[ $i -eq 40 ]]; then
-    warn "API health check timed out. Check logs: docker compose -f $INSTALL_DIR/docker-compose.yml logs api"
-  fi
   sleep 3
 done
+
+if [[ "$API_HEALTHY" -eq 0 ]]; then
+  warn "API health check timed out. Last 80 lines of API logs:"
+  echo "─────────────────────────────────────────────────────────────"
+  sudo -u "$RUN_USER" docker compose logs --tail=80 api 2>&1 || true
+  echo "─────────────────────────────────────────────────────────────"
+  warn "If the error mentions Postgres auth, run:"
+  warn "    FRESH_INSTALL=1 sudo bash $INSTALL_DIR/scripts/server-install.sh"
+  warn "Continuing with systemd setup; the watcher will redeploy on the next tag."
+fi
 
 success "Stack is running on port 8090."
 
