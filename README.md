@@ -40,23 +40,23 @@ DelphiNet6/
 
 ## Development setup
 
-**Prerequisites**: Node.js 22+, pnpm 10+, Docker
+**Prerequisites**: Node.js 22+, Bun 1.1+, Docker
 
 ```bash
 # Install dependencies
-pnpm install
+bun install
 
 # Start API in dev mode
-pnpm dev:api
+bun dev:api
 
 # Start web in dev mode
-pnpm dev:web
+bun dev:web
 
 # Type-check all packages
-pnpm typecheck
+bun run typecheck
 
 # Run all tests
-pnpm test
+bun run test
 ```
 
 ## Services (docker compose)

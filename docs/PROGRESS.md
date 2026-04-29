@@ -24,7 +24,7 @@ Legend: `[ ]` open · `[x]` done.
 - **Goals:** A `docker compose up` that boots the empty stack on
   **port 8090** with healthchecks green.
 - **Tasks:**
-  - [ ] pnpm workspace at repo root (`apps/api`, `apps/web`,
+  - [ ] bun workspace at repo root (`apps/api`, `apps/web`,
         `packages/shared-types`, `packages/eslint-config`).
   - [ ] Base `tsconfig.base.json`, ESLint, Prettier, Husky pre-commit.
   - [ ] `apps/api`: NestJS skeleton with `/api/health` returning `{ok:true}`.
@@ -53,7 +53,7 @@ Legend: `[ ]` open · `[x]` done.
         `RolePermission`, `UserRole`, `Session`, `AuditLog`, `Pageview`.
   - [ ] Stub tables for every domain phase (empty fields ok) so future
         migrations are additive.
-  - [ ] `pnpm db:migrate` and `pnpm db:seed` scripts.
+  - [ ] `bun run db:migrate` and `bun run db:seed` scripts.
   - [ ] Seed: super-admin `ari@aricummings.com` (password set during bootstrap,
         argon2-hashed), default roles (`super_admin`, `school_admin`,
         `supervisor`, `attendance_verifier`, `program_viewer`,
@@ -147,7 +147,7 @@ Legend: `[ ]` open · `[x]` done.
   - [ ] Top nav mirroring legacy: Dashboard / Home / Students & School /
         Parents / Links.
   - [ ] OpenAPI client generation script
-        (`pnpm gen:api` → `apps/web/src/shared/api/generated.ts`).
+        (`bun run gen:api` → `apps/web/src/shared/api/generated.ts`).
   - [ ] (No theme toggle in v1 — dark-only by design.)
 - **Acceptance:** Logged-in user sees the shell; unauthenticated visits
   redirect to `/login`.

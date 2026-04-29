@@ -1,14 +1,18 @@
 #!/usr/bin/env bash
 # server-install.sh — Bootstrap DelphiNet 6 on a fresh Linux server.
 #
+# Runtime stack: Docker + Docker Compose. Application code is built and run
+# inside containers using Bun (https://bun.sh) — the host machine does NOT
+# need Bun, Node, or pnpm installed.
+#
 # What this script does:
 #   1. Installs system dependencies (Docker, Git, curl)
 #   2. Clones the repo (or updates it if already present)
 #   3. Checks out the latest git tag
 #   4. Creates .env from .env.example with secure auto-generated secrets
-#   5. Runs the initial docker compose build + up
-#   6. Installs and starts the delphinet-deploy systemd service
+#   5. Installs and starts the delphinet-deploy systemd service
 #      (auto-deploys whenever a new git tag is pushed)
+#   6. Runs the initial docker compose build + up
 #
 # Supported OS: Debian 11/12, Ubuntu 20.04/22.04/24.04
 #
@@ -17,11 +21,21 @@
 #   -- or --
 #   sudo bash scripts/server-install.sh
 #
+# Flags:
+#   --purge       Remove ALL prior DelphiNet 6 state before installing fresh:
+#                 stops & removes containers, deletes docker volumes (postgres,
+#                 redis, caddy data), removes the systemd service, deletes
+#                 INSTALL_DIR, and prunes any built delphinet6-* images.
+#                 The optional 'delphinet' service user is left in place.
+#                 Equivalent env var: PURGE=1.
+#
 # Environment overrides (optional):
 #   REPO_URL      Git clone URL  (default: https://github.com/ariplayz/DelphiNet6.git)
 #   INSTALL_DIR   Where to clone (default: /opt/delphinet6)
 #   RUN_USER      OS user to own the files and run the service (default: current user or 'delphinet')
 #   POLL_INTERVAL Seconds between tag checks (default: 30)
+#   FRESH_INSTALL Wipe the Postgres volume only (does not touch INSTALL_DIR)
+#   PURGE         Same as the --purge flag
 
 set -euo pipefail
 
@@ -32,6 +46,22 @@ REPO_URL="${REPO_URL:-https://github.com/ariplayz/DelphiNet6.git}"
 INSTALL_DIR="${INSTALL_DIR:-/opt/delphinet6}"
 POLL_INTERVAL="${POLL_INTERVAL:-30}"
 SERVICE_NAME="delphinet-deploy"
+PURGE="${PURGE:-0}"
+
+# ── Argument parsing ────────────────────────────────────────────────────────
+# Note: when piped via `curl ... | bash`, $@ is empty. To purge in that mode,
+# either run `curl ... | PURGE=1 bash` OR download the script first and pass
+# --purge as an argument.
+for arg in "$@"; do
+  case "$arg" in
+    --purge) PURGE=1 ;;
+    --help|-h)
+      sed -n '2,40p' "$0"
+      exit 0
+      ;;
+    *) echo "Unknown argument: $arg" >&2; exit 2 ;;
+  esac
+done
 
 # Determine the run user
 if [[ -n "${RUN_USER:-}" ]]; then
@@ -76,7 +106,58 @@ info "Install directory : $INSTALL_DIR"
 info "Run user          : $RUN_USER"
 info "Repo              : $REPO_URL"
 info "Poll interval     : ${POLL_INTERVAL}s"
+if [[ "$PURGE" == "1" ]]; then
+  info "Mode              : ${YELLOW}PURGE${RESET} — wiping all prior state"
+fi
 echo ""
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Optional purge — wipe everything from a prior install before continuing
+# ═══════════════════════════════════════════════════════════════════════════════
+if [[ "$PURGE" == "1" ]]; then
+  header "Purge — removing all prior DelphiNet 6 state"
+
+  # 1) Stop & disable the systemd watcher (so it doesn't fight us mid-purge).
+  if systemctl list-unit-files | grep -q "^${SERVICE_NAME}.service"; then
+    info "Stopping & disabling systemd unit '${SERVICE_NAME}'..."
+    systemctl stop "$SERVICE_NAME" 2>/dev/null || true
+    systemctl disable "$SERVICE_NAME" --quiet 2>/dev/null || true
+  fi
+  if [[ -f "/etc/systemd/system/${SERVICE_NAME}.service" ]]; then
+    rm -f "/etc/systemd/system/${SERVICE_NAME}.service"
+    systemctl daemon-reload
+    success "Removed /etc/systemd/system/${SERVICE_NAME}.service"
+  fi
+
+  # 2) Bring down the docker compose stack and wipe its volumes / orphans.
+  if [[ -f "${INSTALL_DIR}/docker-compose.yml" ]] && command -v docker >/dev/null 2>&1; then
+    info "Tearing down docker compose stack + volumes..."
+    (cd "$INSTALL_DIR" && docker compose down -v --remove-orphans --rmi local 2>/dev/null) || true
+  fi
+
+  # 3) Belt-and-braces: nuke any lingering delphinet6-* containers / volumes /
+  #    images / networks even if the compose project name has drifted.
+  if command -v docker >/dev/null 2>&1; then
+    info "Removing any stray delphinet6-* docker resources..."
+    docker ps -a --filter 'name=delphinet6' --format '{{.ID}}' | xargs -r docker rm -f 2>/dev/null || true
+    docker volume ls --filter 'name=delphinet6' --format '{{.Name}}' | xargs -r docker volume rm -f 2>/dev/null || true
+    docker images --filter 'reference=delphinet6-*' --format '{{.ID}}' | xargs -r docker rmi -f 2>/dev/null || true
+    docker network ls --filter 'name=delphinet6' --format '{{.ID}}' | xargs -r docker network rm 2>/dev/null || true
+  fi
+
+  # 4) Delete the install directory itself (code + .env + scripts/.deployed-tag).
+  if [[ -d "$INSTALL_DIR" ]]; then
+    info "Deleting $INSTALL_DIR ..."
+    rm -rf "$INSTALL_DIR"
+    success "Removed $INSTALL_DIR"
+  fi
+
+  # NOTE: We deliberately leave the 'delphinet' OS user in place — removing it
+  #       is rarely what the operator wants, and the user has no secrets that
+  #       survive the data-volume wipe above.
+  success "Purge complete. Continuing with a clean install..."
+  echo ""
+fi
 
 # Detect OS
 if [[ -f /etc/os-release ]]; then

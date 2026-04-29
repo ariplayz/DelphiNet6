@@ -1,0 +1,30 @@
+# Bun configuration for DelphiNet 6.
+#
+# DelphiNet 6 uses Bun (https://bun.sh) as its package manager and TypeScript
+# runtime. Bun handles native module rebuilds automatically for any package
+# listed in package.json#trustedDependencies (see root package.json).
+
+[install]
+# Auto-install peer deps so the workspace resolves cleanly without manual
+# overrides (was: auto-install-peers=true in the legacy .npmrc).
+auto = "auto"
+peer = true
+exact = false
+
+# Use the hoisted (npm/yarn-classic style) node_modules layout instead of
+# Bun 1.3+'s default isolated linker. Prisma's generated client lives at
+# `node_modules/.prisma/client` and is discovered at runtime via Node's
+# parent-directory resolution from `node_modules/@prisma/client`. With the
+# isolated linker, `@prisma/client` is symlinked from a per-package store
+# under `node_modules/.bun/...`, where the lookup finds an empty default
+# `.prisma/client` instead of the one we generated, which makes every
+# model-specific type (e.g. `Prisma.DormUpdateInput`) disappear.
+# See: https://github.com/prisma/prisma/issues/18934
+#
+# This can be revisited once Prisma ships a Bun-isolated-linker-aware client
+# (or once Bun's isolated linker exposes generated artifacts at the location
+# Prisma's path-based lookup expects).
+linker = "hoisted"
+
+[install.scopes]
+# (no private registries today — placeholder for future Delphi-internal pkgs)

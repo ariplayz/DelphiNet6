@@ -56,8 +56,8 @@ provider in there. Current jobs:
 
 ## Testing
 
-Vitest. `pnpm --filter @delphinet/api test` from repo root, or
-`pnpm test` from `apps/api/`. Tests should mock `PrismaService` and the
+Vitest. `bun --filter @delphinet/api test` from repo root, or
+`bun run test` from `apps/api/`. Tests should mock `PrismaService` and the
 event emitter.
 
 ## Logging
