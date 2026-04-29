@@ -276,30 +276,21 @@ success "Stack is running on port 8090."
 header "Step 7 — Systemd service"
 
 SERVICE_FILE="/etc/systemd/system/${SERVICE_NAME}.service"
+SERVICE_TEMPLATE="${INSTALL_DIR}/scripts/${SERVICE_NAME}.service"
 
-cat > "$SERVICE_FILE" <<EOF
-[Unit]
-Description=DelphiNet 6 — auto-deploy on new git tags
-After=network-online.target docker.service
-Wants=network-online.target
-Requires=docker.service
+if [[ ! -f "$SERVICE_TEMPLATE" ]]; then
+  error "Service template not found at $SERVICE_TEMPLATE — repo may be out of date."
+fi
 
-[Service]
-Type=simple
-User=${RUN_USER}
-WorkingDirectory=${INSTALL_DIR}
-ExecStart=/bin/bash ${INSTALL_DIR}/scripts/watch-deploy.sh
-Restart=on-failure
-RestartSec=10
-Environment="POLL_INTERVAL=${POLL_INTERVAL}"
-Environment="REPO_DIR=${INSTALL_DIR}"
-StandardOutput=journal
-StandardError=journal
-SyslogIdentifier=${SERVICE_NAME}
-
-[Install]
-WantedBy=multi-user.target
-EOF
+# Copy canonical template, then patch User/paths/POLL_INTERVAL to match this install.
+cp "$SERVICE_TEMPLATE" "$SERVICE_FILE"
+sed -i \
+  -e "s|^User=.*|User=${RUN_USER}|" \
+  -e "s|^WorkingDirectory=.*|WorkingDirectory=${INSTALL_DIR}|" \
+  -e "s|^ExecStart=.*|ExecStart=/bin/bash ${INSTALL_DIR}/scripts/watch-deploy.sh|" \
+  -e "s|^Environment=\"POLL_INTERVAL=.*\"|Environment=\"POLL_INTERVAL=${POLL_INTERVAL}\"|" \
+  -e "s|^Environment=\"REPO_DIR=.*\"|Environment=\"REPO_DIR=${INSTALL_DIR}\"|" \
+  "$SERVICE_FILE"
 
 systemctl daemon-reload
 systemctl enable "$SERVICE_NAME" --quiet
@@ -307,7 +298,7 @@ systemctl start "$SERVICE_NAME"
 sleep 2
 
 if systemctl is-active --quiet "$SERVICE_NAME"; then
-  success "Service $SERVICE_NAME is running."
+  success "Service $SERVICE_NAME is running as user '$RUN_USER' from $INSTALL_DIR."
 else
   warn "Service may not have started — check: journalctl -u $SERVICE_NAME -n 50"
 fi

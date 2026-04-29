@@ -6,22 +6,24 @@ Requires=docker.service
 
 [Service]
 Type=simple
-# ── Change these two lines to match your server ──────────────────────────────
-User=aric
-WorkingDirectory=/home/aric/Documents/GitHub/DelphiNet6
-# ─────────────────────────────────────────────────────────────────────────────
-ExecStart=/bin/bash /home/aric/Documents/GitHub/DelphiNet6/scripts/watch-deploy.sh
+# These match the defaults produced by scripts/server-install.sh.
+# If you ran the install script with custom RUN_USER or INSTALL_DIR overrides,
+# the install script will sed-replace these lines automatically.
+User=delphinet
+WorkingDirectory=/opt/delphinet6
+ExecStart=/bin/bash /opt/delphinet6/scripts/watch-deploy.sh
+
 Restart=on-failure
 RestartSec=10
 
-# Poll every 30 seconds. Override here or in a drop-in:
+# Override poll interval here or via:
 #   sudo systemctl edit delphinet-deploy
-# and add:
 #   [Service]
 #   Environment="POLL_INTERVAL=60"
 Environment="POLL_INTERVAL=30"
+Environment="REPO_DIR=/opt/delphinet6"
 
-# Log via journald (view with: journalctl -u delphinet-deploy -f)
+# View logs with: journalctl -u delphinet-deploy -f
 StandardOutput=journal
 StandardError=journal
 SyslogIdentifier=delphinet-deploy
