@@ -28,6 +28,7 @@ import { DormRollCallListPage } from './pages/dorms/DormRollCallListPage';
 import { DormRollCallPage } from './pages/dorms/DormRollCallPage';
 import { ComingSoonPage } from './pages/ComingSoonPage';
 import { ClassSchedulesPage } from './pages/reports/ClassSchedulesPage';
+import { AttendanceReportPage } from './pages/reports/AttendanceReportPage';
 import { StudentLookupPage } from './pages/students/StudentLookupPage';
 import { ClassesOfferedPage } from './pages/rosters/ClassesOfferedPage';
 import { ChangePasswordPage } from './pages/ChangePasswordPage';
@@ -173,7 +174,7 @@ export default function App() {
         <Route path="/students/lookup" element={<StudentLookupPage />} />
         <Route path="/reports/by-term" element={<ComingSoonPage title="Report Generator (Students By Term)" />} />
         <Route path="/reports/class-schedules" element={<ClassSchedulesPage />} />
-        <Route path="/reports/attendance" element={<ComingSoonPage title="Attendance Report" />} />
+        <Route path="/reports/attendance" element={<AttendanceReportPage />} />
         <Route path="/reports/photos" element={<ComingSoonPage title="Photo Display" />} />
         <Route path="/reports/plus-minus" element={<ComingSoonPage title="+/- Days Report" />} />
         <Route path="/reports/plus-minus-5wk" element={<ComingSoonPage title="Five Week +/- Days Report" />} />
