@@ -21,8 +21,23 @@ export class AuthService {
     res: Response,
     schoolId?: string,
   ) {
+    // If no schoolId was supplied and only one school exists in the system
+    // (default single-tenant deployment for The Delphian School), use it.
+    let resolvedSchoolId = schoolId;
+    if (!resolvedSchoolId) {
+      const schools = await this.prisma.school.findMany({
+        select: { id: true },
+        take: 2,
+      });
+      if (schools.length === 1) {
+        resolvedSchoolId = schools[0].id;
+      }
+    }
+
     const user = await this.prisma.user.findFirst({
-      where: schoolId ? { email, schoolId } : { email },
+      where: resolvedSchoolId
+        ? { email, OR: [{ schoolId: resolvedSchoolId }, { isSuperAdmin: true }] }
+        : { email },
     });
 
     if (!user) throw new UnauthorizedException('Invalid credentials');
@@ -30,8 +45,10 @@ export class AuthService {
     const valid = await argon2.verify(user.passwordHash, password);
     if (!valid) throw new UnauthorizedException('Invalid credentials');
 
-    if (!schoolId && !user.isSuperAdmin) {
-      throw new BadRequestException('schoolId is required for non-super-admin users');
+    if (!resolvedSchoolId && !user.isSuperAdmin) {
+      throw new BadRequestException(
+        'Multiple schools exist; a schoolId is required to log in as a non-super-admin.',
+      );
     }
 
     const token = randomBytes(64).toString('hex');

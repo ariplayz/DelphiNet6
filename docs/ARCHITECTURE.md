@@ -162,7 +162,8 @@ tables refreshed by a cron job. Admin dashboard charts (Recharts):
 - `.env.example` is committed. Real `.env` is gitignored.
 - `@nestjs/config` with a Zod schema validates env at startup.
 - Default super-admin seeded once at first migration:
-  `ari@aricummings.com` / `adminpassword` (changeable on first login).
+  `ari@aricummings.com`. The initial password is generated during the seed
+  bootstrap and must be changed on first login.
 
 ## Testing
 

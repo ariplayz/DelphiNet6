@@ -1,9 +1,18 @@
 :8090 {
     handle /api/* {
-        reverse_proxy api:3000
+        reverse_proxy api:3000 {
+            lb_try_duration 30s
+            lb_try_interval 1s
+            transport http {
+                dial_timeout 5s
+            }
+        }
     }
     handle /ws/* {
-        reverse_proxy api:3000
+        reverse_proxy api:3000 {
+            lb_try_duration 30s
+            lb_try_interval 1s
+        }
     }
     handle /mail/* {
         reverse_proxy mail:8025

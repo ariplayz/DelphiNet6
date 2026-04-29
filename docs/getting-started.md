@@ -38,7 +38,9 @@ Wait ~30 s for the API to migrate + seed, then open:
 | <http://localhost:8090/api/health> | API liveness probe |
 | <http://localhost:8090/mail> | Mailpit dev inbox |
 
-Default super-admin: `ari@aricummings.com` / `adminpassword`.
+Default super-admin email: `ari@aricummings.com`. The password is generated
+during the seed bootstrap (see install output) and must be changed on first
+login.
 {: .warning }
 > **Change the default password immediately** in any non-dev deployment.
 

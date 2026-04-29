@@ -113,15 +113,18 @@ async function main() {
   }
   console.log('✅ Built-in roles seeded');
 
-  // ── Seed demo school ──
+  // ── Seed the default school: The Delphian School (Sheridan) ──
+  // DelphiNet 6 ships configured for The Delphian School in Sheridan, OR as
+  // the single default tenant. From the super-admin panel additional schools
+  // — including the Delphi Academies in other cities — can be added later.
   const school = await prisma.school.upsert({
-    where: { id: 'demo-school-id' },
+    where: { id: 'delphian-sheridan' },
     create: {
-      id: 'demo-school-id',
-      name: 'Delphian — Sheridan',
+      id: 'delphian-sheridan',
+      name: 'The Delphian School',
       timezone: 'America/Los_Angeles',
     },
-    update: {},
+    update: { name: 'The Delphian School' },
   });
   console.log(`✅ School: ${school.name}`);
 
@@ -165,7 +168,8 @@ async function main() {
   console.log('✅ Reference pages seeded');
 
   console.log('\n🎉 Seed complete!');
-  console.log('   Super-admin login: ari@aricummings.com / adminpassword');
+  console.log('   Super-admin email: ari@aricummings.com');
+  console.log('   (password set from initial bootstrap; change it on first login)');
 }
 
 main()

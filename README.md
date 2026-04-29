@@ -1,6 +1,12 @@
 # DelphiNet 6
 
-**Modern school portal** built with NestJS, React, and PostgreSQL.
+**Modern school portal for The Delphian School** — built with NestJS, React, and PostgreSQL.
+
+DelphiNet 6 is the next-generation rewrite of DelphiNet 5. It is built primarily
+for [The Delphian School](https://www.delphian.org/) (Sheridan, OR) and is
+designed to be multi-tenant so other schools in the Delphi network — including
+the various **Delphi Academies** in different cities across the country — can
+be added as additional tenants from the super-admin panel.
 
 ## Quickstart
 
@@ -13,7 +19,9 @@ docker compose up
 - **API Health**: http://localhost:8090/api/health
 - **Mailpit**: http://localhost:8090/mail
 
-Default credentials (Phase 2): `ari@aricummings.com` / `adminpassword`
+The initial super-admin email is `ari@aricummings.com`. The password is set
+during the bootstrap seed (see your `.env` / install output) and must be
+changed on first login.
 
 ## Repository structure
 

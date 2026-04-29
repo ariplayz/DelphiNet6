@@ -54,11 +54,13 @@ Legend: `[ ]` open · `[x]` done.
   - [ ] Stub tables for every domain phase (empty fields ok) so future
         migrations are additive.
   - [ ] `pnpm db:migrate` and `pnpm db:seed` scripts.
-  - [ ] Seed: super-admin `ari@aricummings.com` / `adminpassword`
-        (argon2-hashed), default roles (`super_admin`, `school_admin`,
+  - [ ] Seed: super-admin `ari@aricummings.com` (password set during bootstrap,
+        argon2-hashed), default roles (`super_admin`, `school_admin`,
         `supervisor`, `attendance_verifier`, `program_viewer`,
         `ethics_officer`, `routing_handler`, `parent`, `student`, `staff`),
-        full permission list, one demo school "Delphian — Sheridan".
+        full permission list, default tenant **The Delphian School**
+        (Sheridan, OR). Additional Delphi Academies in other cities can be
+        added as further tenants.
 - **Acceptance:** Fresh `compose up` runs migrations + seeds; super-admin
   exists in DB.
 - **What was done:**

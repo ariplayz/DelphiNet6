@@ -9,8 +9,6 @@ export function LoginPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [schoolId, setSchoolId] = useState('');
-  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -23,7 +21,7 @@ export function LoginPage() {
     setError('');
     setLoading(true);
     try {
-      await login(email, password, isSuperAdmin ? schoolId : undefined);
+      await login(email, password);
       navigate('/dashboard', { replace: true });
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Login failed';
@@ -40,7 +38,7 @@ export function LoginPage() {
         <div className="flex flex-col items-center mb-8">
           <img
             src="/logo-text.png"
-            alt="DelphiNet"
+            alt="The Delphian School"
             className="h-20 w-auto mb-2 select-none"
             draggable={false}
           />
@@ -53,7 +51,7 @@ export function LoginPage() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@school.edu"
+            placeholder="you@delphian.org"
             required
             autoComplete="email"
           />
@@ -66,25 +64,6 @@ export function LoginPage() {
             required
             autoComplete="current-password"
           />
-
-          {isSuperAdmin && (
-            <Input
-              label="School ID"
-              value={schoolId}
-              onChange={(e) => setSchoolId(e.target.value)}
-              placeholder="school-uuid"
-            />
-          )}
-
-          <label className="flex items-center gap-2 text-sm text-text-secondary cursor-pointer">
-            <input
-              type="checkbox"
-              checked={isSuperAdmin}
-              onChange={(e) => setIsSuperAdmin(e.target.checked)}
-              className="rounded border-border bg-bg-elevated text-brand focus:ring-brand/20"
-            />
-            Super admin login
-          </label>
 
           {error && (
             <p className="text-sm text-danger bg-danger/10 rounded-lg px-3 py-2">{error}</p>
