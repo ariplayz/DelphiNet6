@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ChevronDown, ChevronRight, BookOpen, Plus, Trash2, CheckCircle2 } from 'lucide-react';
 import { api } from '../../lib/api';
@@ -48,7 +48,7 @@ const STREAM_ORDER = ['math', 'reading', 'seminar', 'practical'];
 
 function ChecksheetCard({
   sheet,
-  programId,
+  programId: _programId,
 }: {
   sheet: Checksheet;
   programId: string;
