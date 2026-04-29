@@ -32,6 +32,13 @@ file-by-file change lists, lives in [`docs/PROGRESS.md`](https://github.com/arip
 | – | Install hardening (self-heal stale volumes, log dump) | v0.1.2 |
 | – | Prisma client regeneration fix | v0.1.3 |
 | 12 | Dorms + captains + dorm roll calls (Mark Messy +1) | v0.1.3 |
+| – | Top-bar dropdown navigation mirroring legacy DN5 menus | v0.2.3 |
+| – | Themes (built-in catalogue + custom builder) | v0.2.3 |
+| – | Student schedule (`/me/schedule`) | v0.2.3 |
+| – | Student point trend + history | v0.2.3 |
+| – | Class supervisor overview grid | v0.2.3 |
+| – | Seminars (no-points, leader-led roll calls) | v0.2.3 |
+| – | Defensive create-user (global exception filter + safe event emit) | v0.2.3 |
 
 ## Pending
 

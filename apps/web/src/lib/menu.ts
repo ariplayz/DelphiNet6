@@ -72,7 +72,7 @@ export const TOP_MENUS: TopMenu[] = [
             anyOf: ['attendance.record', 'roster.view', 'students.view_all'],
             items: [
               { kind: 'link', label: 'Academic Rosters', to: '/classes' },
-              { kind: 'link', label: 'Seminar Rosters', to: '/rosters/seminars' },
+              { kind: 'link', label: 'Seminar Rosters', to: '/seminars', anyOf: ['seminar.view'] },
               { kind: 'link', label: 'Afternoon Class Rosters', to: '/rosters/afternoon' },
               { kind: 'link', label: 'Student Service Rosters', to: '/rosters/student-service' },
               { kind: 'link', label: 'Night Class/Activity Rosters', to: '/rosters/night' },
@@ -125,6 +125,7 @@ export const TOP_MENUS: TopMenu[] = [
       { kind: 'link', label: 'Class Roll Call', to: '/roll-call', anyOf: ['attendance.record'], requiresAssignment: 'supervisedClasses' },
       { kind: 'link', label: 'Dorm Roll Call', to: '/dorm-roll-call', anyOf: ['dorm.roll_call'], requiresAssignment: 'captainDorms' },
       { kind: 'link', label: 'Verification Queue', to: '/verification', anyOf: ['attendance.verify'], requiresAssignment: 'pendingVerifications' },
+      { kind: 'link', label: 'Seminar Roll Call', to: '/seminar-roll-call', anyOf: ['seminar.lead'], requiresAssignment: 'ledSeminars' },
     ],
   },
   {

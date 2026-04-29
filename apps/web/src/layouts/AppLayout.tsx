@@ -23,6 +23,8 @@ interface AssignmentCounts {
   supervisedClasses: number;
   captainDorms: number;
   pendingVerifications: number;
+  pendingStories?: number;
+  ledSeminars: number;
 }
 
 // Bottom tabs on mobile — quick access to the four most-used screens.

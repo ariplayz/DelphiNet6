@@ -70,6 +70,10 @@ model User {
   collegeApplications CollegeApplication[]
   cramAssignments     CramAssignment[]
   preference          UserPreference?
+  ledSeminars         Seminar[]                @relation("SeminarLeader")
+  seminarEnrollments  SeminarEnrollment[]      @relation("SeminarEnrollee")
+  seminarAttendance   SeminarAttendance[]      @relation("SeminarAttendee")
+  seminarRecorded     SeminarAttendance[]      @relation("SeminarRecorder")
 
   @@unique([schoolId, email])
   @@index([schoolId])
@@ -623,4 +627,87 @@ model ReferencePage {
 
   @@unique([schoolId, slug])
   @@map("reference_pages")
+}
+
+// ─── Seminars ──────────────────────────────────────────────────────────────
+// Lightweight class-like grouping. No points, no analytics, optional
+// attendance only. Led by an assigned "seminar leader".
+
+enum SeminarAttendanceStatus {
+  PRESENT
+  ABSENT
+  EXCUSED
+}
+
+model Seminar {
+  id              String   @id @default(uuid())
+  schoolId        String   @map("school_id")
+  name            String
+  description     String?
+  daysOfWeek      Int[]    @map("days_of_week") // 0=Sun..6=Sat
+  startsAt        String   @map("starts_at")    // HH:mm in school TZ
+  durationMinutes Int      @map("duration_minutes")
+  location        String?
+  leaderUserId    String?  @map("leader_user_id")
+  isArchived      Boolean  @default(false) @map("is_archived")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  leader      User?                @relation("SeminarLeader", fields: [leaderUserId], references: [id])
+  enrollments SeminarEnrollment[]
+  sessions    SeminarSession[]
+
+  @@index([schoolId])
+  @@map("seminars")
+}
+
+model SeminarEnrollment {
+  id            String    @id @default(uuid())
+  seminarId     String    @map("seminar_id")
+  studentUserId String    @map("student_user_id")
+  addedAt       DateTime  @default(now()) @map("added_at")
+  addedBy       String?   @map("added_by")
+  removedAt     DateTime? @map("removed_at")
+
+  seminar Seminar @relation(fields: [seminarId], references: [id], onDelete: Cascade)
+  student User    @relation("SeminarEnrollee", fields: [studentUserId], references: [id], onDelete: Cascade)
+
+  @@unique([seminarId, studentUserId])
+  @@index([seminarId])
+  @@index([studentUserId])
+  @@map("seminar_enrollments")
+}
+
+model SeminarSession {
+  id          String   @id @default(uuid())
+  seminarId   String   @map("seminar_id")
+  startsAt    DateTime @map("starts_at")
+  endsAt      DateTime @map("ends_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  seminar    Seminar              @relation(fields: [seminarId], references: [id], onDelete: Cascade)
+  attendance SeminarAttendance[]
+
+  @@unique([seminarId, startsAt])
+  @@index([seminarId])
+  @@map("seminar_sessions")
+}
+
+model SeminarAttendance {
+  id            String                  @id @default(uuid())
+  sessionId     String                  @map("session_id")
+  studentUserId String                  @map("student_user_id")
+  status        SeminarAttendanceStatus
+  excuseReason  String?                 @map("excuse_reason")
+  recordedBy    String                  @map("recorded_by")
+  recordedAt    DateTime                @default(now()) @map("recorded_at")
+
+  session  SeminarSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  student  User           @relation("SeminarAttendee", fields: [studentUserId], references: [id], onDelete: Cascade)
+  recorder User           @relation("SeminarRecorder", fields: [recordedBy], references: [id])
+
+  @@unique([sessionId, studentUserId])
+  @@index([sessionId])
+  @@index([studentUserId])
+  @@map("seminar_attendance")
 }

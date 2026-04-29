@@ -23,6 +23,9 @@ const SKIP_TENANCY = new Set([
   'BookRead',
   'ParentLink',
   'UserPreference',
+  'SeminarEnrollment',
+  'SeminarSession',
+  'SeminarAttendance',
 ]);
 
 /** Models that have a schoolId column and should be auto-filtered. */
@@ -42,6 +45,7 @@ const TENANTED_MODELS = new Set([
   'RoutingForm',
   'CollegeApplication',
   'ReferencePage',
+  'Seminar',
 ]);
 
 const READ_OPERATIONS = new Set([

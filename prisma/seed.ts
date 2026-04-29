@@ -19,6 +19,7 @@ const BUILT_IN_ROLES: { name: string; permissions: string[]; description: string
       'program.edit', 'program.edit_template', 'ethics.review', 'routing.handle',
       'routing.start', 'analytics.view', 'dashboard.admin', 'reslife.manage',
       'dorm.view_all', 'dorm.roll_call',
+      'seminar.view', 'seminar.manage', 'seminar.lead',
     ],
   },
   {
@@ -63,17 +64,22 @@ const BUILT_IN_ROLES: { name: string; permissions: string[]; description: string
   {
     name: 'student',
     description: 'Standard student access',
-    permissions: ['program.view', 'class.view', 'routing.start', 'ethics.write'],
+    permissions: ['program.view', 'class.view', 'routing.start', 'ethics.write', 'seminar.view'],
   },
   {
     name: 'staff',
     description: 'General staff access',
-    permissions: ['class.view', 'program.view', 'routing.start', 'routing.handle'],
+    permissions: ['class.view', 'program.view', 'routing.start', 'routing.handle', 'seminar.view'],
+  },
+  {
+    name: 'seminar_leader',
+    description: 'Leads one or more seminars (assigned per-seminar)',
+    permissions: ['seminar.view', 'seminar.lead'],
   },
   {
     name: 'residential_life',
     description: 'Manages dorms, rooms, and dorm roll-call schedules',
-    permissions: ['reslife.manage', 'restriction.view', 'dorm.view_all'],
+    permissions: ['reslife.manage', 'restriction.view', 'dorm.view_all', 'seminar.view'],
   },
   {
     name: 'dorm_captain',

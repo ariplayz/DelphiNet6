@@ -13,6 +13,9 @@ import { AdminStatsPage } from './pages/admin/AdminStatsPage';
 import { ClassesListPage } from './pages/classes/ClassesListPage';
 import { ClassDetailPage } from './pages/classes/ClassDetailPage';
 import { ClassSupervisorOverviewPage } from './pages/classes/ClassSupervisorOverviewPage';
+import { SeminarsListPage } from './pages/seminars/SeminarsListPage';
+import { SeminarRollCallPage } from './pages/seminars/SeminarRollCallPage';
+import { MySeminarsLeadingPage } from './pages/seminars/MySeminarsLeadingPage';
 import { RollCallListPage } from './pages/rollcall/RollCallListPage';
 import { RollCallPage } from './pages/rollcall/RollCallPage';
 import { MyAttendancePage } from './pages/me/MyAttendancePage';
@@ -71,6 +74,9 @@ export default function App() {
         <Route path="/classes" element={<ClassesListPage />} />
         <Route path="/classes/:id" element={<ClassDetailPage />} />
         <Route path="/classes/:id/overview" element={<ClassSupervisorOverviewPage />} />
+        <Route path="/seminars" element={<SeminarsListPage />} />
+        <Route path="/seminar-roll-call" element={<MySeminarsLeadingPage />} />
+        <Route path="/seminar-roll-call/:id" element={<SeminarRollCallPage />} />
         <Route
           path="/roll-call"
           element={
@@ -155,7 +161,7 @@ export default function App() {
         <Route path="/reports/photos" element={<ComingSoonPage title="Photo Display" />} />
         <Route path="/reports/plus-minus" element={<ComingSoonPage title="+/- Days Report" />} />
         <Route path="/reports/plus-minus-5wk" element={<ComingSoonPage title="Five Week +/- Days Report" />} />
-        <Route path="/rosters/seminars" element={<ComingSoonPage title="Seminar Rosters" />} />
+        <Route path="/rosters/seminars" element={<SeminarsListPage />} />
         <Route path="/rosters/afternoon" element={<ComingSoonPage title="Afternoon Class Rosters" />} />
         <Route path="/rosters/student-service" element={<ComingSoonPage title="Student Service Rosters" />} />
         <Route path="/rosters/night" element={<ComingSoonPage title="Night Class / Activity Rosters" />} />

@@ -13,7 +13,7 @@ export interface MenuLeaf {
   /** Only show when the user has the `student` role. */
   studentOnly?: boolean;
   /** Only show when this assignment count is > 0. */
-  requiresAssignment?: 'supervisedClasses' | 'captainDorms' | 'pendingVerifications';
+  requiresAssignment?: 'supervisedClasses' | 'captainDorms' | 'pendingVerifications' | 'ledSeminars';
 }
 
 export interface MenuGroup {
@@ -33,7 +33,7 @@ export interface TopMenu {
 interface Ctx {
   hasPermission: (p: string) => boolean;
   isStudent: boolean;
-  assignments?: { supervisedClasses: number; captainDorms: number; pendingVerifications: number };
+  assignments?: { supervisedClasses: number; captainDorms: number; pendingVerifications: number; ledSeminars: number };
 }
 
 function nodeVisible(n: MenuNode, ctx: Ctx): boolean {

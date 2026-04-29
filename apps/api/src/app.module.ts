@@ -26,6 +26,7 @@ import { AttendanceModule } from './modules/attendance/attendance.module';
 import { DormsModule } from './modules/dorms/dorms.module';
 import { PreferencesModule } from './modules/preferences/preferences.module';
 import { MeModule } from './modules/me/me.module';
+import { SeminarsModule } from './modules/seminars/seminars.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { MeModule } from './modules/me/me.module';
     DormsModule,
     PreferencesModule,
     MeModule,
+    SeminarsModule,
   ],
   controllers: [AppController],
   providers: [

@@ -40,10 +40,51 @@ export class MeController {
     const to = toStr ? new Date(toStr) : defaultTo;
 
     const classes = await this.classes.getScheduleForUser(schoolId, u.id, from, to);
+
+    // Seminars (no points, no rollcall here — just calendar entries).
+    const seminarRows = await this.prisma.seminar.findMany({
+      where: {
+        schoolId,
+        isArchived: false,
+        OR: [
+          { leaderUserId: u.id },
+          { enrollments: { some: { studentUserId: u.id, removedAt: null } } },
+        ],
+      },
+      select: {
+        id: true, name: true, location: true,
+        daysOfWeek: true, startsAt: true, durationMinutes: true,
+        leaderUserId: true,
+      },
+    });
+    const seminarSessions: any[] = [];
+    for (const s of seminarRows) {
+      for (let d = new Date(from); d < to; d = new Date(d.getTime() + 24 * 60 * 60 * 1000)) {
+        if (!s.daysOfWeek.includes(d.getUTCDay())) continue;
+        const [hh, mm] = s.startsAt.split(':').map((x) => parseInt(x, 10) || 0);
+        const startsAt = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), hh, mm));
+        if (startsAt < from || startsAt >= to) continue;
+        const endsAt = new Date(startsAt.getTime() + s.durationMinutes * 60 * 1000);
+        seminarSessions.push({
+          kind: 'seminar',
+          seminarId: s.id,
+          name: s.name,
+          location: s.location,
+          isLeader: s.leaderUserId === u.id,
+          startsAt: startsAt.toISOString(),
+          endsAt: endsAt.toISOString(),
+        });
+      }
+    }
+
+    const all = [...classes, ...seminarSessions].sort((a, b) =>
+      String(a.startsAt).localeCompare(String(b.startsAt)),
+    );
+
     return {
       from: from.toISOString(),
       to: to.toISOString(),
-      sessions: classes.sort((a, b) => a.startsAt.localeCompare(b.startsAt)),
+      sessions: all,
     };
   }
 
@@ -78,6 +119,12 @@ export class MeController {
         ? this.prisma.successStory.count({ where: { schoolId, verifiedAt: null } })
         : Promise.resolve(0),
     ]);
-    return { supervisedClasses, captainDorms, pendingVerifications, pendingStories };
+    return {
+      supervisedClasses,
+      captainDorms,
+      pendingVerifications,
+      pendingStories,
+      ledSeminars: await this.prisma.seminar.count({ where: { schoolId, leaderUserId: u.id, isArchived: false } }),
+    };
   }
 }
