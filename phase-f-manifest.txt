@@ -1,0 +1,20 @@
+=== app.module.ts imports to add ===
+import { RoutingModule } from './modules/routing/routing.module';
+
+=== app.module.ts imports array entry ===
+RoutingModule,
+
+=== App.tsx imports to add ===
+import { RoutingInboxPage } from './pages/routing/RoutingInboxPage';
+import { StartRoutePage } from './pages/routing/StartRoutePage';
+import { RoutingLookupPage } from './pages/routing/RoutingLookupPage';
+
+=== App.tsx routes to replace ===
+REPLACE: <Route path="/routing/inbox" element={<ComingSoonPage title="My Routes To Handle" />} />
+WITH:    <Route path="/routing/inbox" element={<RoutingInboxPage />} />
+
+REPLACE: <Route path="/routing/start" element={<ComingSoonPage title="Start Route" />} />
+WITH:    <Route path="/routing/start" element={<StartRoutePage />} />
+
+REPLACE: <Route path="/routing/lookup" element={<ComingSoonPage title="Route Lookup By Student" />} />
+WITH:    <Route path="/routing/lookup" element={<RoutingLookupPage />} />

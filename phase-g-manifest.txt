@@ -1,0 +1,12 @@
+=== app.module.ts imports to add ===
+import { CollegeAppsModule } from './modules/college-apps/college-apps.module';
+
+=== app.module.ts imports array entry ===
+CollegeAppsModule,
+
+=== App.tsx imports to add ===
+import { CollegeApplicationsPage } from './pages/college/CollegeApplicationsPage';
+
+=== App.tsx routes to replace ===
+REPLACE: <Route path="/college-applications" element={<ComingSoonPage title="College Applications" />} />
+WITH:    <Route path="/college-applications" element={<CollegeApplicationsPage />} />

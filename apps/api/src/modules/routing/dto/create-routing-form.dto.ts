@@ -3,7 +3,7 @@ import { IsString, IsNotEmpty, IsOptional, IsUUID } from 'class-validator';
 export class CreateRoutingFormDto {
   @IsString()
   @IsNotEmpty()
-  subject: string;
+  subject!: string;
 
   @IsString()
   @IsOptional()
