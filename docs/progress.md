@@ -22,7 +22,7 @@ file-by-file change lists, lives in [`docs/PROGRESS.md`](https://github.com/arip
 | 5 | Multi-tenancy middleware | v0.1 |
 | 6 | React frontend shell + design system | v0.1 |
 | 6b | Mobile-first responsive pass | v0.1 |
-| – | Deploy scripts (server-install, watch-deploy) | v0.1 |
+| – | Deploy scripts (server-install, watch-deploy) | v0.1 (removed in v0.2.1 — Compose-only now) |
 | – | Install fix #1 (random DB password from .env) | v0.1.1 |
 | 7 | Dashboard widgets (react-grid-layout) | v0.1.2 |
 | 8 | Classes / sessions / rosters | v0.1.2 |

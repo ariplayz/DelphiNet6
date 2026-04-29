@@ -114,7 +114,7 @@ audit module subscribes to `**.audited`.
   `/api/*` to the api container, `/ws/*` to the same, everything else
   to web.
 - **Postgres** and **Redis** persist to named Docker volumes.
-- **systemd** runs `watch-deploy.sh` to auto-deploy new git tags.
+- **Updates** are operator-driven: `git pull && docker compose up -d --build`.
 
 For HA / multi-node, the natural next step is to externalise Postgres
 (managed RDS / Cloud SQL) and Redis (managed) and run multiple API

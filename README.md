@@ -20,7 +20,7 @@ docker compose up
 - **Mailpit**: http://localhost:8090/mail
 
 The initial super-admin email is `ari@aricummings.com`. The password is set
-during the bootstrap seed (see your `.env` / install output) and must be
+during the bootstrap seed (see your `.env` / first-run logs) and must be
 changed on first login.
 
 ## Repository structure

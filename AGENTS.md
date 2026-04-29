@@ -73,11 +73,6 @@ docker/
   api-entrypoint.sh      `prisma db push` → seed → `node dist/main`
   Caddyfile              Routes :8090
   nginx.conf             SPA fallback + /api proxy
-scripts/
-  server-install.sh      One-command bootstrap (idempotent, self-healing)
-  watch-deploy.sh        Polls for new git tags
-  deploy.sh              Down → checkout tag → up --build → health check
-  delphinet-deploy.service  systemd unit for watch-deploy.sh
 docs/                    GitHub Pages site (Jekyll, just-the-docs theme)
 ```
 
@@ -212,25 +207,29 @@ Audit log is just an `@OnEvent('**.audited')` listener — emit
 
 ## 9. Deployment
 
-1. Tag a release (`git tag vX.Y.Z && git push --tags`).
-2. The server's `delphinet-deploy.service` polls every 30 s, sees the new
-   tag, and runs `deploy.sh`: `compose down` → `git checkout tag` →
-   `compose up -d --build` → health check.
-3. If the API health check fails, the watcher rolls back to the previous
-   tag (see `deploy.sh`).
-
-**Bootstrapping a fresh server:**
+DelphiNet 6 ships as a single Docker Compose stack. There is no install
+script and no host-side service — operators run the stack themselves:
 
 ```bash
-sudo bash -c 'curl -fsSL https://raw.githubusercontent.com/ariplayz/DelphiNet6/main/scripts/server-install.sh | bash'
+git clone https://github.com/ariplayz/DelphiNet6.git
+cd DelphiNet6
+cp .env.example .env   # edit and set strong secrets
+docker compose up -d --build
 ```
 
-The install script is **self-healing**:
-- `--prune-tags` keeps tag refs consistent with origin.
-- Auto-wipes the Postgres volume if it detects a credential mismatch (e.g.
-  upgrading from the broken v0.1).
-- `FRESH_INSTALL=1` forces a clean reinstall.
-- Dumps API logs and prints recovery hints on failure.
+To update:
+
+```bash
+git pull && docker compose up -d --build
+```
+
+To wipe state (drops the Postgres + Redis volumes):
+
+```bash
+docker compose down -v && docker compose up -d --build
+```
+
+See `docs/deployment.md` for TLS, backups, and troubleshooting.
 
 ---
 

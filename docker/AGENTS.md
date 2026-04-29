@@ -53,9 +53,10 @@ Lives at repo root. Services:
 | `mail` | axllent/mailpit | Dev SMTP catch-all on `:8025`. |
 
 DB credentials come from `.env` via `${POSTGRES_PASSWORD}` etc. — **don't
-hardcode**. The `server-install.sh` script generates a random password on
-first run; if you change it later you must `docker compose down -v` to wipe
-the volume so Postgres re-initialises with the new password.
+hardcode**. Generate a strong password yourself (`openssl rand -hex 32`) and
+put it in `.env` before the first `docker compose up`. If you change it
+later you must `docker compose down -v` to wipe the volume so Postgres
+re-initialises with the new password.
 
 ## Common changes
 

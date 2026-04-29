@@ -15,90 +15,50 @@ nav_order: 4
 
 ---
 
-## One-command server install
+## Quick start
 
-On a fresh Debian / Ubuntu host:
+DelphiNet 6 ships as a single Docker Compose stack. There is no install
+script, no system service, and no host-side runtime — everything runs in
+containers and the host only needs Docker + the Compose v2 plugin.
 
 ```bash
-sudo bash -c 'curl -fsSL https://raw.githubusercontent.com/ariplayz/DelphiNet6/main/scripts/server-install.sh | bash'
+git clone https://github.com/ariplayz/DelphiNet6.git
+cd DelphiNet6
+cp .env.example .env        # then edit .env and set strong secrets
+docker compose up -d --build
 ```
 
-This will:
+The app is then live at `http://<host>:8090`.
 
-1. Create the `delphinet` system user.
-2. Install Docker + the Compose v2 plugin.
-3. Clone the repo to `/opt/delphinet6`.
-4. Check out the latest `v*` git tag.
-5. Generate a `.env` with random secrets.
-6. Build + start the stack on port **8090**.
-7. Install and enable `delphinet-deploy.service` (systemd unit) so the
-   stack auto-updates on every new tag.
+## Environment
 
-After it finishes the app is live at `http://<host>:8090`.
+Required variables in `.env` (see `.env.example` for the full list):
 
-### Optional flags
-
-| Flag | Effect |
+| Variable | Purpose |
 |---|---|
-| `FRESH_INSTALL=1` | Wipes all volumes + `.env` and reinstalls clean. |
-| `INSTALL_DIR=/some/path` | Override `/opt/delphinet6`. |
-| `RUN_USER=foo` | Override the `delphinet` system user. |
-| `POLL_INTERVAL=60s` | Override the deploy watcher poll interval. |
+| `POSTGRES_PASSWORD` | DB password — Postgres only honours this on first volume init. |
+| `SESSION_SECRET` | Signs session cookies. Use 32+ random bytes. |
+| `DATABASE_URL` | Must match the Postgres user / password / host / db. |
 
-Example clean reinstall:
-
-```bash
-FRESH_INSTALL=1 sudo bash -c 'curl -fsSL https://raw.githubusercontent.com/ariplayz/DelphiNet6/main/scripts/server-install.sh | bash'
-```
-
-## What the install script protects against
-
-The script is **idempotent and self-healing**. Re-running is always safe.
-It auto-recovers from:
-
-- Stale Postgres volume from a prior tag (e.g. upgrading from v0.1) — auto
-  wipes and reinitialises.
-- Tag refs stuck on an old version — uses `--prune-tags`.
-- Half-applied installs — `git reset --hard` before checkout.
-- Auth failures after start — actively probes Postgres with the `.env`
-  password and wipes the volume on failure.
-
-If the API fails to start, the script dumps the last 80 lines of API logs
-and prints a recovery hint.
-
-## Auto-deploy on git tags
-
-The `delphinet-deploy.service` systemd unit runs `scripts/watch-deploy.sh`,
-which polls every `POLL_INTERVAL` for new tags. When it sees one:
-
-1. `docker compose down --remove-orphans`
-2. `git fetch --tags --force --prune --prune-tags`
-3. `git checkout <new_tag>`
-4. `docker compose up -d --build`
-5. Health-check `/api/health` for up to 2 min.
-6. **On failure**: roll back to the previously-deployed tag.
-7. Persist the deployed tag to `scripts/.deployed-tag`.
+Generate strong secrets:
 
 ```bash
-# Live tail of the deployer
-sudo journalctl -fu delphinet-deploy.service
-
-# Manually trigger a deploy without waiting for the poll
-sudo systemctl restart delphinet-deploy.service
+openssl rand -hex 32
 ```
 
-## Cutting a release
+## Updating
 
 ```bash
-# from your dev machine
-git tag v0.2.0
-git push origin v0.2.0
+git pull
+docker compose up -d --build
 ```
 
-Within `POLL_INTERVAL` seconds, the server will pull and deploy.
+## Resetting state
 
-{: .warning }
-> **Tag only known-good commits.** The watcher will deploy any `v*` tag.
+```bash
+docker compose down -v        # ALSO deletes the postgres + redis volumes
+docker compose up -d --build
+```
 
 ## TLS in production
 
@@ -135,7 +95,6 @@ gunzip -c backup.sql.gz | docker compose exec -T db psql -U delphinet delphinet
 
 | Symptom | Likely cause | Fix |
 |---|---|---|
-| `dependency failed to start: api unhealthy` | Postgres password mismatch from prior install | `FRESH_INSTALL=1` reinstall. |
-| `Namespace ... has no exported member 'XxxWhereInput'` during build | Prisma client wasn't regenerated for a new model | Already fixed in v0.1.3+; rerun install to pull the fix. |
-| Watcher never deploys a new tag | `.deployed-tag` is already set to that tag | `rm scripts/.deployed-tag && systemctl restart delphinet-deploy.service`. |
-| `sudo: unable to resolve host …` warning spam | Host has no `/etc/hosts` self-entry | Append `127.0.1.1 <hostname>` to `/etc/hosts`. Cosmetic. |
+| `dependency failed to start: api unhealthy` | Postgres password mismatch from a prior volume init | `docker compose down -v` then bring the stack back up. |
+| 502 from Caddy on first request | API still booting (cold-start migrations + seed) | Wait ~30s; Caddy retries automatically. |
+| Web loads but `/api/*` returns 404 | API container crashed | `docker compose logs api`. |
