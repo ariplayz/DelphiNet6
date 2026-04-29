@@ -4,6 +4,7 @@ import { ChevronDown, ChevronRight } from 'lucide-react';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { Spinner } from '../../components/ui/Spinner';
+import { api } from '../../lib/api';
 import {
   AttendanceStatus,
   HistoryEntry,
@@ -12,6 +13,15 @@ import {
   WeeklySnapshot,
   attendanceApi,
 } from '../../lib/api/attendance';
+
+interface PointSummary {
+  weekStart: string;
+  resetsAt: string;
+  restrictionThreshold: number;
+  currentWeekPoints: number;
+  restricted: boolean;
+  history: { weekStart: string; total: number; entries: number }[];
+}
 
 function statusBadgeVariant(status: AttendanceStatus) {
   switch (status) {
@@ -57,6 +67,11 @@ export function MyAttendancePage() {
     enabled: snapshotsOpen,
   });
 
+  const { data: summary } = useQuery<PointSummary>({
+    queryKey: ['me', 'points'],
+    queryFn: async () => (await api.get<PointSummary>('/me/points', { params: { weeks: 12 } })).data,
+  });
+
   return (
     <div className="p-4 sm:p-6 max-w-3xl mx-auto">
       <h1 className="text-xl sm:text-2xl font-semibold text-text-primary mb-4">
@@ -96,6 +111,18 @@ export function MyAttendancePage() {
           </div>
         )}
       </Card>
+
+      {summary && summary.history.length > 0 && (
+        <Card className="p-5 sm:p-6 mb-5">
+          <div className="flex items-baseline justify-between mb-3">
+            <h2 className="text-base sm:text-lg font-semibold text-text-primary">
+              Point trend
+            </h2>
+            <span className="text-xs text-text-secondary">Last {summary.history.length} weeks</span>
+          </div>
+          <PointTrendChart history={summary.history} threshold={summary.restrictionThreshold} />
+        </Card>
+      )}
 
       <h2 className="text-base sm:text-lg font-semibold text-text-primary mb-3">
         Recent (last 30 days)
@@ -263,6 +290,42 @@ export function MyAttendancePage() {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function PointTrendChart({
+  history,
+  threshold,
+}: {
+  history: { weekStart: string; total: number; entries: number }[];
+  threshold: number;
+}) {
+  // Display oldest -> newest left-to-right for a reading-order trend.
+  const ordered = [...history].reverse();
+  const max = Math.max(threshold, ...ordered.map((b) => b.total), 1);
+
+  return (
+    <div className="flex items-end gap-1 sm:gap-2 h-32">
+      {ordered.map((b) => {
+        const pct = Math.min(100, (b.total / max) * 100);
+        const over = b.total >= threshold;
+        const date = new Date(b.weekStart);
+        const label = `${date.getUTCMonth() + 1}/${date.getUTCDate()}`;
+        return (
+          <div key={b.weekStart} className="flex-1 flex flex-col items-center gap-1 min-w-0">
+            <div className="text-[10px] text-text-secondary">{b.total || ''}</div>
+            <div
+              className={`w-full rounded-t transition-all ${
+                over ? 'bg-danger' : 'bg-brand'
+              }`}
+              style={{ height: `${pct}%`, minHeight: b.total ? 4 : 0 }}
+              title={`Week of ${date.toLocaleDateString()}: ${b.total} pts (${b.entries} entries)`}
+            />
+            <div className="text-[10px] text-text-disabled truncate w-full text-center">{label}</div>
+          </div>
+        );
+      })}
     </div>
   );
 }
