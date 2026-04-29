@@ -1,4 +1,5 @@
 import {
+  Logger,
   BadRequestException,
   Injectable,
   NotFoundException,
@@ -11,10 +12,24 @@ import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
+  private readonly logger = new Logger(UsersService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly events: TypedEventEmitter,
   ) {}
+
+  /** Emit an event without ever propagating listener exceptions back into the caller. */
+  private safeEmit<T extends Parameters<TypedEventEmitter['emit']>[0]>(
+    name: T,
+    payload: Parameters<TypedEventEmitter['emit']>[1],
+  ) {
+    try {
+      this.safeEmit(name as never, payload as never);
+    } catch (err) {
+      this.logger.warn(`Event emit '${String(name)}' failed: ${err instanceof Error ? err.message : err}`);
+    }
+  }
 
   findAll(schoolId: string, search?: string, form?: number) {
     return this.prisma.user.findMany({
@@ -55,12 +70,12 @@ export class UsersService {
       data: { ...rest, passwordHash, schoolId },
     });
 
-    this.events.emit('user.created', {
+    this.safeEmit('user.created', {
       userId: user.id,
       schoolId,
       createdBy: actorId,
     });
-    this.events.emit('audit.log', {
+    this.safeEmit('audit.log', {
       userId: actorId,
       schoolId,
       action: 'user.created',
@@ -83,8 +98,8 @@ export class UsersService {
 
     const user = await this.prisma.user.update({ where: { id }, data });
 
-    this.events.emit('user.updated', { userId: id, schoolId, updatedBy: actorId });
-    this.events.emit('audit.log', {
+    this.safeEmit('user.updated', { userId: id, schoolId, updatedBy: actorId });
+    this.safeEmit('audit.log', {
       userId: actorId,
       schoolId,
       action: 'user.updated',
@@ -100,7 +115,7 @@ export class UsersService {
     await this.findOne(id);
     await this.prisma.user.delete({ where: { id } });
 
-    this.events.emit('audit.log', {
+    this.safeEmit('audit.log', {
       userId: actorId,
       schoolId,
       action: 'user.deleted',
@@ -121,8 +136,8 @@ export class UsersService {
       data: { userId, roleId, grantedBy: actorId },
     });
 
-    this.events.emit('user.role_assigned', { userId, roleId, assignedBy: actorId });
-    this.events.emit('audit.log', {
+    this.safeEmit('user.role_assigned', { userId, roleId, assignedBy: actorId });
+    this.safeEmit('audit.log', {
       userId: actorId,
       schoolId,
       action: 'user.role_assigned',
@@ -138,8 +153,8 @@ export class UsersService {
 
     await this.prisma.userRole.delete({ where: { userId_roleId: { userId, roleId } } });
 
-    this.events.emit('user.role_removed', { userId, roleId, removedBy: actorId });
-    this.events.emit('audit.log', {
+    this.safeEmit('user.role_removed', { userId, roleId, removedBy: actorId });
+    this.safeEmit('audit.log', {
       userId: actorId,
       schoolId,
       action: 'user.role_removed',

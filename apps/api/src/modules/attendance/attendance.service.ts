@@ -637,4 +637,97 @@ export class AttendanceService {
       ),
     );
   }
+
+  /**
+   * Class-supervisor overview: student roster + per-student point totals
+   * (today, this week, last 30 days), plus latest entry status. Powers the
+   * supervisor grid view on /classes/:id.
+   */
+  async getClassSupervisorOverview(classId: string) {
+    const cls = await this.prisma.class.findUnique({
+      where: { id: classId },
+      select: { id: true, schoolId: true, name: true, supervisorUserId: true },
+    });
+    if (!cls) throw new NotFoundException(`Class ${classId} not found`);
+
+    const enrollments = await this.prisma.classEnrollment.findMany({
+      where: { classId, removedAt: null },
+      include: { student: { select: studentSelect } },
+      orderBy: [{ student: { lastName: 'asc' } }, { student: { firstName: 'asc' } }],
+    });
+
+    const studentIds = enrollments.map((e) => e.studentUserId);
+    const weekStart = getCurrentWeekStart();
+    const dayStart = new Date(); dayStart.setUTCHours(0, 0, 0, 0);
+    const monthStart = new Date(); monthStart.setUTCDate(monthStart.getUTCDate() - 30);
+
+    const [todayAgg, weekAgg, monthAgg, lastByStudent] = await Promise.all([
+      this.prisma.attendanceEntry.groupBy({
+        by: ['studentUserId'],
+        _sum: { pointsAwarded: true },
+        where: { studentUserId: { in: studentIds }, createdAt: { gte: dayStart } },
+      }),
+      this.prisma.attendanceEntry.groupBy({
+        by: ['studentUserId'],
+        _sum: { pointsAwarded: true },
+        _count: { _all: true },
+        where: { studentUserId: { in: studentIds }, createdAt: { gte: weekStart } },
+      }),
+      this.prisma.attendanceEntry.groupBy({
+        by: ['studentUserId'],
+        _sum: { pointsAwarded: true },
+        where: { studentUserId: { in: studentIds }, createdAt: { gte: monthStart } },
+      }),
+      this.prisma.attendanceEntry.findMany({
+        where: { studentUserId: { in: studentIds } },
+        orderBy: { createdAt: 'desc' },
+        distinct: ['studentUserId'],
+        select: { studentUserId: true, status: true, pointsAwarded: true, verificationStatus: true, createdAt: true },
+      }),
+    ]);
+
+    const map = (arr: { studentUserId: string; _sum: { pointsAwarded: number | null }; _count?: { _all: number } }[]) =>
+      new Map(arr.map((g) => [g.studentUserId, { sum: g._sum.pointsAwarded ?? 0, count: g._count?._all ?? 0 }]));
+    const today = map(todayAgg);
+    const week = map(weekAgg);
+    const month = map(monthAgg);
+    const last = new Map(lastByStudent.map((e) => [e.studentUserId, e]));
+
+    const students = enrollments.map((e) => {
+      const wk = week.get(e.studentUserId) ?? { sum: 0, count: 0 };
+      const td = today.get(e.studentUserId) ?? { sum: 0, count: 0 };
+      const mo = month.get(e.studentUserId) ?? { sum: 0, count: 0 };
+      const lst = last.get(e.studentUserId) ?? null;
+      return {
+        student: e.student,
+        pointsToday: td.sum,
+        pointsThisWeek: wk.sum,
+        pointsLast30Days: mo.sum,
+        weekEntries: wk.count,
+        restricted: wk.sum >= RESTRICTION_THRESHOLD,
+        lastEntry: lst
+          ? {
+              status: lst.status,
+              points: lst.pointsAwarded,
+              verified: lst.verificationStatus !== 'unverified',
+              at: lst.createdAt.toISOString(),
+            }
+          : null,
+      };
+    });
+
+    return {
+      classId: cls.id,
+      className: cls.name,
+      weekStart: weekStart.toISOString(),
+      restrictionThreshold: RESTRICTION_THRESHOLD,
+      totals: {
+        todayPoints: students.reduce((a, s) => a + s.pointsToday, 0),
+        weekPoints: students.reduce((a, s) => a + s.pointsThisWeek, 0),
+        restrictedCount: students.filter((s) => s.restricted).length,
+        studentCount: students.length,
+      },
+      students,
+    };
+  }
 }

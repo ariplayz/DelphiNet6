@@ -28,7 +28,7 @@ import { SessionFormModal } from '../../components/classes/SessionFormModal';
 
 export function ClassDetailPage() {
   const { id = '' } = useParams<{ id: string }>();
-  const { can } = useAuth();
+  const { can, user } = useAuth();
   const qc = useQueryClient();
   const navigate = useNavigate();
   const canManage = can('class.manage');
@@ -97,16 +97,23 @@ export function ClassDetailPage() {
             </p>
           )}
         </div>
-        {canManage && (
+        {(canManage || cls.supervisorUserId === user?.id) && (
           <div className="flex gap-2">
-            <Button variant="secondary" onClick={() => setEditOpen(true)}>
-              <Edit size={14} />
-              Edit
+            <Button variant="secondary" onClick={() => navigate(`/classes/${id}/overview`)}>
+              Overview
             </Button>
-            <Button variant="danger" onClick={() => setConfirmDelete(true)}>
-              <Trash2 size={14} />
-              Delete
-            </Button>
+            {canManage && (
+              <>
+                <Button variant="secondary" onClick={() => setEditOpen(true)}>
+                  <Edit size={14} />
+                  Edit
+                </Button>
+                <Button variant="danger" onClick={() => setConfirmDelete(true)}>
+                  <Trash2 size={14} />
+                  Delete
+                </Button>
+              </>
+            )}
           </div>
         )}
       </div>

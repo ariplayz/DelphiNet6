@@ -12,6 +12,7 @@ import { AdminRolesPage } from './pages/admin/AdminRolesPage';
 import { AdminStatsPage } from './pages/admin/AdminStatsPage';
 import { ClassesListPage } from './pages/classes/ClassesListPage';
 import { ClassDetailPage } from './pages/classes/ClassDetailPage';
+import { ClassSupervisorOverviewPage } from './pages/classes/ClassSupervisorOverviewPage';
 import { RollCallListPage } from './pages/rollcall/RollCallListPage';
 import { RollCallPage } from './pages/rollcall/RollCallPage';
 import { MyAttendancePage } from './pages/me/MyAttendancePage';
@@ -69,6 +70,7 @@ export default function App() {
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/classes" element={<ClassesListPage />} />
         <Route path="/classes/:id" element={<ClassDetailPage />} />
+        <Route path="/classes/:id/overview" element={<ClassSupervisorOverviewPage />} />
         <Route
           path="/roll-call"
           element={

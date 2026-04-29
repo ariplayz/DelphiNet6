@@ -13,6 +13,8 @@ import {
 import { Request } from 'express';
 import { RequirePermission } from '../auth/require-permission.decorator';
 import { ClassesService } from './classes.service';
+import { AttendanceService } from '../attendance/attendance.service';
+import { ForbiddenException } from '@nestjs/common';
 import { CreateClassDto } from './dto/create-class.dto';
 import { UpdateClassDto } from './dto/update-class.dto';
 import { SetRosterDto } from './dto/set-roster.dto';
@@ -21,7 +23,10 @@ import { UpdateSessionDto } from './dto/update-session.dto';
 
 @Controller('classes')
 export class ClassesController {
-  constructor(private readonly service: ClassesService) {}
+  constructor(
+    private readonly service: ClassesService,
+    private readonly attendance: AttendanceService,
+  ) {}
 
   @Get()
   @RequirePermission('class.view')
@@ -73,6 +78,19 @@ export class ClassesController {
   get(@Req() req: Request, @Param('id') id: string) {
     const schoolId = (req as any).schoolId as string;
     return this.service.get(schoolId, id);
+  }
+
+  @Get(':id/overview')
+  @RequirePermission('class.view')
+  async overview(@Req() req: Request, @Param('id') id: string) {
+    const schoolId = (req as any).schoolId as string;
+    const userId = req.user!.id;
+    const cls = await this.service.get(schoolId, id);
+    const perms: string[] = (req.user as any)?.permissions ?? [];
+    if (cls.supervisorUserId !== userId && !perms.includes('class.manage')) {
+      throw new ForbiddenException('Only the class supervisor or an admin can view this overview');
+    }
+    return this.attendance.getClassSupervisorOverview(id);
   }
 
   @Post()
