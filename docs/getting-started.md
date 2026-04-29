@@ -18,7 +18,7 @@ nav_order: 2
 ## Prerequisites
 
 - **Docker** 24+ with the Compose v2 plugin
-- **Node 22+** and **Bun 1.1+** (only if you plan to run the API or web outside containers)
+- **Node.js 20+** and **npm 10+** (only if you plan to run the API or web outside containers)
 - ~2 GB free RAM and ~3 GB disk for the full stack
 
 ## 60-second local run
@@ -53,20 +53,19 @@ If you want HMR + faster iteration:
 docker compose up -d db cache mail
 
 # Terminal 2 — install once
-export PATH="$HOME/.bun/bin:$PATH"
-bun install
+npm install
 DATABASE_URL="postgresql://delphinet:delphinet@localhost:5432/delphinet" \
-  bunx prisma generate --schema prisma/schema.prisma
+  npx prisma generate --schema prisma/schema.prisma
 
 # Terminal 3 — API with watch
 cd apps/api
 DATABASE_URL="postgresql://delphinet:delphinet@localhost:5432/delphinet" \
 SESSION_SECRET="dev" REDIS_URL="redis://localhost:6379" \
-bun dev
+npm run dev
 
 # Terminal 4 — web with HMR
 cd apps/web
-bun dev    # http://localhost:5173 — proxies /api → :3000
+npm run dev    # http://localhost:5173 — proxies /api → :3000
 ```
 
 ## Environment variables
@@ -112,5 +111,5 @@ The seed runs on every API container start (idempotent), but you can force
 it manually:
 
 ```bash
-docker compose exec api npx bun run prisma/seed.ts
+docker compose exec api npx tsx prisma/seed.ts
 ```

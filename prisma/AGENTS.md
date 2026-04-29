@@ -40,7 +40,7 @@ leave a comment in the schema explaining why.
 
 ## Seed
 
-`bun run prisma/seed.ts` (also runs automatically in the api entrypoint).
+`npx tsx prisma/seed.ts` (also runs automatically in the api entrypoint).
 
 - Idempotent — uses `upsert` by stable keys.
 - Creates built-in roles, default super-admin
@@ -50,7 +50,7 @@ leave a comment in the schema explaining why.
 ## After changing the schema
 
 ```bash
-DATABASE_URL="postgresql://x:x@x/x" bunx prisma generate --schema prisma/schema.prisma
+DATABASE_URL="postgresql://x:x@x/x" npx prisma generate --schema prisma/schema.prisma
 cd apps/api && npx tsc --noEmit       # confirm Prisma types updated
 ```
 

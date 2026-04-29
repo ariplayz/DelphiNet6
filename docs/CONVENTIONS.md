@@ -49,7 +49,7 @@ modules/<domain>/
 
 - Every new entity that belongs to a school **must** include
   `schoolId String` and an index. Run the tenancy lint check
-  (`bun run lint:tenancy`) — it scans `schema.prisma` for tenant-scoped models
+  (`npm run lint:tenancy`) — it scans `schema.prisma` for tenant-scoped models
   missing `schoolId`.
 - Super-admin operations must be wrapped in `withSuperAdminContext(...)` to
   bypass the interceptor explicitly.
@@ -68,7 +68,7 @@ modules/<domain>/
 
 ## Style
 
-- Prettier (default) + ESLint. Run `bun run lint && bun run typecheck` before
+- Prettier (default) + ESLint. Run `npm run lint && npm run typecheck` before
   every commit.
 - No comments unless the code genuinely needs clarification.
 - Naming: `kebab-case` for files, `PascalCase` for components & classes,

@@ -92,7 +92,7 @@ success.
 ## Building / running
 
 ```bash
-bun dev        # vite dev server with HMR proxy to /api
-bun run build      # production bundle into dist/
-bun run typecheck  # tsc --noEmit
+npm run dev        # vite dev server with HMR proxy to /api
+npm run build      # production bundle into dist/
+npm run typecheck  # tsc --noEmit
 ```
