@@ -22,6 +22,7 @@ import { DormsListPage } from './pages/dorms/DormsListPage';
 import { DormDetailPage } from './pages/dorms/DormDetailPage';
 import { DormRollCallListPage } from './pages/dorms/DormRollCallListPage';
 import { DormRollCallPage } from './pages/dorms/DormRollCallPage';
+import { ComingSoonPage } from './pages/ComingSoonPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
@@ -137,6 +138,33 @@ export default function App() {
             </PermissionRoute>
           }
         />
+
+        {/* Legacy DN5 menu placeholders — full pages land in later releases */}
+        <Route path="/programs" element={<ComingSoonPage title="My Program" />} />
+        <Route path="/ethics" element={<ComingSoonPage title="Write/Review Ethics Reports" />} />
+        <Route path="/ethics/history" element={<ComingSoonPage title="My Ethics Report History" />} />
+        <Route path="/ethics/campus" element={<ComingSoonPage title="Campus Ethics Reports" />} />
+        <Route path="/tools/math-facts" element={<ComingSoonPage title="Math Facts" />} />
+        <Route path="/tools/htfw" element={<ComingSoonPage title="Hard to Find Words" />} />
+        <Route path="/students/lookup" element={<ComingSoonPage title="Student Lookup" />} />
+        <Route path="/reports/by-term" element={<ComingSoonPage title="Report Generator (Students By Term)" />} />
+        <Route path="/reports/class-schedules" element={<ComingSoonPage title="All Student Class Schedules" />} />
+        <Route path="/reports/attendance" element={<ComingSoonPage title="Attendance Report" />} />
+        <Route path="/reports/photos" element={<ComingSoonPage title="Photo Display" />} />
+        <Route path="/reports/plus-minus" element={<ComingSoonPage title="+/- Days Report" />} />
+        <Route path="/reports/plus-minus-5wk" element={<ComingSoonPage title="Five Week +/- Days Report" />} />
+        <Route path="/rosters/seminars" element={<ComingSoonPage title="Seminar Rosters" />} />
+        <Route path="/rosters/afternoon" element={<ComingSoonPage title="Afternoon Class Rosters" />} />
+        <Route path="/rosters/student-service" element={<ComingSoonPage title="Student Service Rosters" />} />
+        <Route path="/rosters/night" element={<ComingSoonPage title="Night Class / Activity Rosters" />} />
+        <Route path="/rosters/offered" element={<ComingSoonPage title="List of Classes Offered" />} />
+        <Route path="/college-applications" element={<ComingSoonPage title="College Applications" />} />
+        <Route path="/standards/cram" element={<ComingSoonPage title="Off Course Correction Assignments" />} />
+        <Route path="/standards/success-stories" element={<ComingSoonPage title="My Success Story Entry" />} />
+        <Route path="/routing/inbox" element={<ComingSoonPage title="My Routes To Handle" />} />
+        <Route path="/routing/start" element={<ComingSoonPage title="Start Route" />} />
+        <Route path="/routing/lookup" element={<ComingSoonPage title="Route Lookup By Student" />} />
+        <Route path="/parents/student-info" element={<ComingSoonPage title="Student Info (Parent View)" />} />
       </Route>
 
       <Route path="*" element={<NotFoundPage />} />
