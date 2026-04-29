@@ -239,12 +239,8 @@ EOF
   info "  Session secret: ${SESSION_SECRET:0:8}... (auto-generated)"
 fi
 
-# Patch docker-compose.yml to use POSTGRES_PASSWORD env var if needed
-# (The compose file uses a hardcoded 'delphinet' password by default — override via env)
-if grep -q "POSTGRES_PASSWORD: delphinet" "$INSTALL_DIR/docker-compose.yml"; then
-  warn "docker-compose.yml has hardcoded DB password."
-  warn "Edit $INSTALL_DIR/docker-compose.yml to use \${POSTGRES_PASSWORD} if you want the generated password."
-fi
+# docker-compose.yml reads POSTGRES_PASSWORD / POSTGRES_USER / POSTGRES_DB
+# from the .env we just generated, so no patching is needed.
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # Step 6 — Initial Docker build + up
