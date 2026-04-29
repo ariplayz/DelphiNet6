@@ -10,6 +10,12 @@ import { SessionGuard } from './modules/auth/session.guard';
 import { PermissionGuard } from './modules/auth/permission.guard';
 import { TenancyInterceptor } from './modules/tenancy/tenancy.interceptor';
 import { PrismaService } from './modules/database/prisma.service';
+import { EventBusModule } from './modules/event-bus/event-bus.module';
+import { AuditModule } from './modules/audit/audit.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
+import { GatewayModule } from './modules/gateway/gateway.module';
+import { PageviewInterceptor } from './modules/analytics/pageview.interceptor';
+import { TypedEventEmitter } from './modules/event-bus/typed-event-emitter.service';
 
 @Module({
   imports: [
@@ -17,6 +23,10 @@ import { PrismaService } from './modules/database/prisma.service';
     DatabaseModule,
     AuthModule,
     TenancyModule,
+    EventBusModule,
+    AuditModule,
+    AnalyticsModule,
+    GatewayModule,
   ],
   controllers: [AppController],
   providers: [
@@ -41,6 +51,12 @@ import { PrismaService } from './modules/database/prisma.service';
       provide: APP_INTERCEPTOR,
       useFactory: (reflector: Reflector) => new TenancyInterceptor(reflector),
       inject: [Reflector],
+    },
+    // Pageview tracking — runs after tenancy sets req.schoolId
+    {
+      provide: APP_INTERCEPTOR,
+      useFactory: (events: TypedEventEmitter) => new PageviewInterceptor(events),
+      inject: [TypedEventEmitter],
     },
   ],
 })

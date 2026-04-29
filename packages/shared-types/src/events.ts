@@ -1,26 +1,40 @@
 export interface EventRegistry {
-  'auth.login': { userId: string; schoolId: string };
-  'auth.login_failed': { email: string };
-  'auth.logout': { userId: string };
-  'pageview.recorded': { userId: string; schoolId: string; path: string; referrer?: string };
-  'role.granted': { actorId: string; targetUserId: string; roleId: string };
-  'role.revoked': { actorId: string; targetUserId: string; roleId: string };
-  'school.created': { schoolId: string; name: string };
-  'user.created': { userId: string; schoolId: string };
-  'class.created': { classId: string; schoolId: string };
-  'class.supervisor_changed': { classId: string; supervisorUserId: string };
-  'attendance.recorded': { rollCallId: string; studentUserId: string; status: string; points: number };
-  'rollcall.completed': { rollCallId: string; classId?: string; dormId?: string };
-  'attendance.verified': { entryId: string; verifiedBy: string };
-  'attendance.council_excused': { entryId: string; reason: string; excusedBy: string };
-  'student.restricted': { studentUserId: string; schoolId: string; weekStart: string };
-  'student.unrestricted': { studentUserId: string; schoolId: string };
-  'points.week_reset': { schoolId: string; weekStart: string };
-  'program.checksheet_completed': { studentUserId: string; checksheetId: string };
-  'routing.assigned': { rfId: string; assignedTo: string };
-  'ethics.report_filed': { reportId: string; schoolId: string };
-  'success_story.verified': { storyId: string; verifiedBy: string };
-  'dorm.created': { dormId: string; schoolId: string };
-  'dorm.captain_changed': { dormId: string; captainUserId: string };
-  'attendance.messy_room_assessed': { dormId: string; studentUserId: string; points: number };
+  // Auth
+  'auth.login': { userId: string; schoolId: string; ip: string };
+  'auth.logout': { userId: string; sessionId: string };
+
+  // Users
+  'user.created': { userId: string; schoolId: string; createdBy: string };
+  'user.updated': { userId: string; schoolId: string; updatedBy: string };
+  'user.role_assigned': { userId: string; roleId: string; assignedBy: string };
+  'user.role_removed': { userId: string; roleId: string; removedBy: string };
+
+  // Classes
+  'class.created': { classId: string; schoolId: string; createdBy: string };
+  'class.updated': { classId: string; schoolId: string; updatedBy: string };
+  'class.deleted': { classId: string; schoolId: string; deletedBy: string };
+
+  // Attendance
+  'attendance.roll_call_opened': { rollCallId: string; classId: string; schoolId: string };
+  'attendance.roll_call_closed': { rollCallId: string; classId: string; schoolId: string };
+  'attendance.entry_recorded': { entryId: string; studentId: string; status: string; points: number; schoolId: string };
+  'attendance.entry_excused': { entryId: string; verifiedBy: string; reason: string };
+  'attendance.weekly_reset': { schoolId: string; week: string; restrictedCount: number };
+
+  // Dorms
+  'dorm.created': { dormId: string; schoolId: string; createdBy: string };
+  'dorm.roll_call_opened': { rollCallId: string; dormId: string; schoolId: string };
+  'dorm.roll_call_closed': { rollCallId: string; dormId: string; schoolId: string };
+  'dorm.room_check': { dormId: string; studentId: string; messy: boolean; points: number; schoolId: string };
+
+  // Programs
+  'program.started': { programId: string; studentId: string; schoolId: string };
+  'program.completed': { programId: string; studentId: string; schoolId: string };
+  'program.step_completed': { programId: string; stepId: string; studentId: string };
+
+  // Analytics
+  'pageview.recorded': { userId: string; schoolId: string; from: string; to: string; ts: number };
+
+  // System
+  'audit.log': { userId: string; schoolId: string; action: string; entity: string; entityId: string; meta?: Record<string, unknown> };
 }

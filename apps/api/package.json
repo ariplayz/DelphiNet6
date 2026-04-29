@@ -10,11 +10,15 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@delphinet/shared-types": "workspace:*",
     "@nestjs/common": "^10.4.1",
     "@nestjs/config": "^4.0.4",
     "@nestjs/core": "^10.4.1",
+    "@nestjs/event-emitter": "^3.1.0",
     "@nestjs/platform-express": "^10.4.1",
+    "@nestjs/platform-socket.io": "^10.4.22",
     "@nestjs/throttler": "^6.5.0",
+    "@nestjs/websockets": "^10.4.22",
     "@prisma/client": "^5.22.0",
     "argon2": "^0.44.0",
     "class-transformer": "^0.5.1",
@@ -22,6 +26,7 @@
     "cookie-parser": "^1.4.7",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
+    "socket.io": "^4.8.3",
     "zod": "^4.3.6"
   },
   "devDependencies": {
