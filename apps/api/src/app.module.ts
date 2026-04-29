@@ -19,6 +19,7 @@ import { TypedEventEmitter } from './modules/event-bus/typed-event-emitter.servi
 import { SchoolsModule } from './modules/schools/schools.module';
 import { UsersModule } from './modules/users/users.module';
 import { RolesModule } from './modules/roles/roles.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { RolesModule } from './modules/roles/roles.module';
     SchoolsModule,
     UsersModule,
     RolesModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [

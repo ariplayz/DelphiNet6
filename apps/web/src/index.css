@@ -18,3 +18,19 @@
   .pt-safe { padding-top: env(safe-area-inset-top); }
   .h-safe-screen { height: 100dvh; }
 }
+
+/* React Grid Layout overrides for dark theme */
+.react-grid-item.react-grid-placeholder {
+  background: #016745 !important;
+  opacity: 0.2 !important;
+  border-radius: 0.75rem;
+}
+.react-grid-item > .react-resizable-handle {
+  background-image: none !important;
+}
+.react-grid-item > .react-resizable-handle::after {
+  border-right: 2px solid #8FAF87 !important;
+  border-bottom: 2px solid #8FAF87 !important;
+  width: 8px !important;
+  height: 8px !important;
+}
