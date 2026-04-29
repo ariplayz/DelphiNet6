@@ -54,8 +54,42 @@ export interface EventRegistry {
 
   // Dorms
   'dorm.created': { dormId: string; schoolId: string; createdBy: string };
+  'dorm.updated': { dormId: string; schoolId: string; updatedBy: string };
+  'dorm.deleted': { dormId: string; schoolId: string; deletedBy: string };
+  'dorm.captain.assigned': { dormId: string; captainUserId: string | null; assignedBy: string };
+  'dorm.room.created': { roomId: string; dormId: string; schoolId: string; createdBy: string };
+  'dorm.room.updated': { roomId: string; dormId: string; schoolId: string; updatedBy: string };
+  'dorm.room.deleted': { roomId: string; dormId: string; schoolId: string; deletedBy: string };
+  'dorm.assignment.changed': {
+    roomId: string;
+    dormId: string;
+    schoolId: string;
+    addedUserIds: string[];
+    removedUserIds: string[];
+    changedBy: string;
+  };
+  'dorm.schedule.changed': { dormId: string; schoolId: string; changedBy: string };
   'dorm.roll_call_opened': { rollCallId: string; dormId: string; schoolId: string };
   'dorm.roll_call_closed': { rollCallId: string; dormId: string; schoolId: string };
+  'dorm.rollcall.entry.changed': {
+    entryId: string;
+    rollCallId: string;
+    dormId: string;
+    studentUserId: string;
+    oldStatus: string;
+    newStatus: string;
+    oldPoints: number;
+    newPoints: number;
+    changedBy: string;
+  };
+  'dorm.room.marked_messy': {
+    roomId: string;
+    dormId: string;
+    dormRollCallId: string;
+    schoolId: string;
+    byUserId: string;
+    residentUserIds: string[];
+  };
   'dorm.room_check': { dormId: string; studentId: string; messy: boolean; points: number; schoolId: string };
 
   // Programs

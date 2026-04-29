@@ -23,6 +23,7 @@ import { RolesModule } from './modules/roles/roles.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { ClassesModule } from './modules/classes/classes.module';
 import { AttendanceModule } from './modules/attendance/attendance.module';
+import { DormsModule } from './modules/dorms/dorms.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { AttendanceModule } from './modules/attendance/attendance.module';
     DashboardModule,
     ClassesModule,
     AttendanceModule,
+    DormsModule,
   ],
   controllers: [AppController],
   providers: [

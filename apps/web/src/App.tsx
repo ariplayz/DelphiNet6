@@ -16,6 +16,10 @@ import { RollCallListPage } from './pages/rollcall/RollCallListPage';
 import { RollCallPage } from './pages/rollcall/RollCallPage';
 import { MyAttendancePage } from './pages/me/MyAttendancePage';
 import { VerificationQueuePage } from './pages/verification/VerificationQueuePage';
+import { DormsListPage } from './pages/dorms/DormsListPage';
+import { DormDetailPage } from './pages/dorms/DormDetailPage';
+import { DormRollCallListPage } from './pages/dorms/DormRollCallListPage';
+import { DormRollCallPage } from './pages/dorms/DormRollCallPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
@@ -79,6 +83,24 @@ export default function App() {
           }
         />
         <Route path="/me/attendance" element={<MyAttendancePage />} />
+        <Route path="/dorms" element={<DormsListPage />} />
+        <Route path="/dorms/:id" element={<DormDetailPage />} />
+        <Route
+          path="/dorm-roll-call"
+          element={
+            <PermissionRoute permission="dorm.roll_call">
+              <DormRollCallListPage />
+            </PermissionRoute>
+          }
+        />
+        <Route
+          path="/dorm-roll-call/:slotId"
+          element={
+            <PermissionRoute permission="dorm.roll_call">
+              <DormRollCallPage />
+            </PermissionRoute>
+          }
+        />
         <Route
           path="/verification"
           element={

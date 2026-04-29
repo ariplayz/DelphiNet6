@@ -434,7 +434,7 @@ export class AttendanceService {
   }) {
     const weekStart = opts.weekStart ?? getCurrentWeekStart();
     const weekEnd = opts.weekEnd ?? getNextWeekStart(weekStart);
-    const where: Prisma.AttendanceEntryWhereInput = {
+    const where: Record<string, unknown> = {
       createdAt: { gte: weekStart, lt: weekEnd },
       student: { schoolId: opts.schoolId },
     };
@@ -443,7 +443,8 @@ export class AttendanceService {
     }
 
     const entries = await this.prisma.attendanceEntry.findMany({
-      where,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      where: where as any,
       include: {
         student: { select: studentSelect },
         verifier: { select: studentSelect },

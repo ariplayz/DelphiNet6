@@ -34,7 +34,8 @@ const mainNav: NavItem[] = [
   { to: '/roll-call', icon: <ClipboardCheck size={18} />, label: 'Roll Call', permission: 'attendance.record' },
   { to: '/verification', icon: <CheckCircle2 size={18} />, label: 'Verification', permission: 'attendance.verify' },
   { to: '/me/attendance', icon: <ClipboardList size={18} />, label: 'My Attendance' },
-  { to: '/dorms', icon: <Home size={18} />, label: 'Dorms', permission: 'dorm.captain' },
+  { to: '/dorms', icon: <Home size={18} />, label: 'Dorms' },
+  { to: '/dorm-roll-call', icon: <ClipboardCheck size={18} />, label: 'Dorm Roll Call', permission: 'dorm.roll_call' },
   { to: '/student-council', icon: <Shield size={18} />, label: 'Student Council', permission: 'success_story.verify' },
 ];
 

@@ -23,6 +23,9 @@ export const PERMISSIONS = [
   'dashboard.admin',
   'reslife.manage',
   'dorm.captain',
+  'dorm.roll_call',
+  'dorm.view_all',
+  'dorm.view_own',
   'success_story.verify',
 ] as const;
 

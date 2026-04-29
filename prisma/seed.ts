@@ -18,6 +18,7 @@ const BUILT_IN_ROLES: { name: string; permissions: string[]; description: string
       'attendance.amend', 'restriction.view', 'program.view', 'program.view_others',
       'program.edit', 'program.edit_template', 'ethics.review', 'routing.handle',
       'routing.start', 'analytics.view', 'dashboard.admin', 'reslife.manage',
+      'dorm.view_all', 'dorm.roll_call',
     ],
   },
   {
@@ -72,12 +73,12 @@ const BUILT_IN_ROLES: { name: string; permissions: string[]; description: string
   {
     name: 'residential_life',
     description: 'Manages dorms, rooms, and dorm roll-call schedules',
-    permissions: ['reslife.manage', 'restriction.view'],
+    permissions: ['reslife.manage', 'restriction.view', 'dorm.view_all'],
   },
   {
     name: 'dorm_captain',
     description: 'Takes dorm roll calls (morning and evening)',
-    permissions: ['attendance.record', 'dorm.captain'],
+    permissions: ['dorm.roll_call', 'dorm.view_own'],
   },
 ];
 
