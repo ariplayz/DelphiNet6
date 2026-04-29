@@ -89,11 +89,22 @@ function MenuList({ items, ctx, depth = 0 }: { items: MenuNode[]; ctx: Ctx; dept
 
 function Submenu({ group, ctx, depth }: { group: MenuGroup; ctx: Ctx; depth: number }) {
   const [open, setOpen] = useState(false);
+  const closeTimer = useRef<ReturnType<typeof setTimeout>>();
+
+  const handleMouseEnter = () => {
+    clearTimeout(closeTimer.current);
+    setOpen(true);
+  };
+
+  const handleMouseLeave = () => {
+    closeTimer.current = setTimeout(() => setOpen(false), 100);
+  };
+
   return (
     <div
       className="relative"
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <button
         type="button"
@@ -110,6 +121,8 @@ function Submenu({ group, ctx, depth }: { group: MenuGroup; ctx: Ctx; depth: num
             // flip to the left when nested deep to avoid going off-screen
             depth >= 2 ? 'right-full mr-1' : 'left-full ml-1',
           )}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
         >
           <MenuList items={group.items} ctx={ctx} depth={depth} />
         </div>
@@ -125,6 +138,7 @@ function Submenu({ group, ctx, depth }: { group: MenuGroup; ctx: Ctx; depth: num
 export function TopDropdown({ menu, ctx }: { menu: TopMenu; ctx: Ctx }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const closeTimer = useRef<ReturnType<typeof setTimeout>>();
   const loc = useLocation();
 
   useEffect(() => setOpen(false), [loc.pathname]);
@@ -138,6 +152,14 @@ export function TopDropdown({ menu, ctx }: { menu: TopMenu; ctx: Ctx }) {
     return () => window.removeEventListener('mousedown', handler);
   }, [open]);
 
+  const handleMouseLeave = () => {
+    closeTimer.current = setTimeout(() => setOpen(false), 100);
+  };
+
+  const handleMouseEnterPanel = () => {
+    clearTimeout(closeTimer.current);
+  };
+
   if (!menu.items.some((i) => nodeVisible(i, ctx))) return null;
 
   return (
@@ -145,6 +167,7 @@ export function TopDropdown({ menu, ctx }: { menu: TopMenu; ctx: Ctx }) {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
+        onMouseLeave={handleMouseLeave}
         className={clsx(
           'flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-md transition-colors',
           open
@@ -156,7 +179,11 @@ export function TopDropdown({ menu, ctx }: { menu: TopMenu; ctx: Ctx }) {
         <ChevronDown size={14} className={clsx('transition-transform', open && 'rotate-180')} />
       </button>
       {open && (
-        <div className="absolute left-0 top-full mt-1 z-50 bg-bg-surface border border-border rounded-md shadow-lg">
+        <div
+          className="absolute left-0 top-full mt-1 z-50 bg-bg-surface border border-border rounded-md shadow-lg"
+          onMouseEnter={handleMouseEnterPanel}
+          onMouseLeave={handleMouseLeave}
+        >
           <MenuList items={menu.items} ctx={ctx} />
         </div>
       )}
