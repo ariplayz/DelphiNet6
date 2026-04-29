@@ -54,10 +54,6 @@ ENV NODE_ENV=production
 COPY --from=builder /workspace/apps/api/dist ./dist
 COPY --from=builder /workspace/apps/api/package.json ./package.json
 COPY --from=builder /workspace/node_modules ./node_modules
-COPY --from=builder /workspace/apps/api/node_modules ./node_modules_api_local
-# Merge any api-local node_modules entries (workspace symlinks etc.) into the
-# hoisted tree without overwriting hoisted packages.
-RUN [ -d ./node_modules_api_local ] && cp -rn ./node_modules_api_local/. ./node_modules/ ; rm -rf ./node_modules_api_local || true
 
 # Prisma schema + seed live next to the bundle so the entrypoint can run them.
 COPY --from=builder /workspace/prisma ./prisma
