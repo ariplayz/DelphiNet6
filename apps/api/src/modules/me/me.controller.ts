@@ -2,6 +2,7 @@ import { Controller, Get, Query, Req } from '@nestjs/common';
 import { Request } from 'express';
 import { ClassesService } from '../classes/classes.service';
 import { AttendanceService } from '../attendance/attendance.service';
+import { PrismaService } from '../database/prisma.service';
 
 /**
  * "Me" endpoints — read-only views scoped to the calling user. Cross-cutting
@@ -14,6 +15,7 @@ export class MeController {
   constructor(
     private readonly classes: ClassesService,
     private readonly attendance: AttendanceService,
+    private readonly prisma: PrismaService,
   ) {}
 
   /**
@@ -51,5 +53,31 @@ export class MeController {
     const u = req.user as any;
     const weeks = weeksStr ? Math.max(1, Math.min(52, parseInt(weeksStr, 10) || 12)) : 12;
     return this.attendance.getStudentPointSummary(u.id, weeks);
+  }
+
+  /**
+   * Lightweight counts of the things the user is actually responsible for.
+   * Used by the nav so that "Roll Call" / "Dorm Roll Call" only show up
+   * when the user supervises at least one class / is captain of at least
+   * one dorm.
+   */
+  @Get('assignments')
+  async assignments(@Req() req: Request) {
+    const u = req.user as any;
+    const schoolId = (req as any).schoolId as string;
+    const perms: string[] = u.permissions ?? [];
+    const canVerify = perms.includes('attendance.verify');
+    const canVerifyStories = perms.includes('success_story.verify');
+    const [supervisedClasses, captainDorms, pendingVerifications, pendingStories] = await Promise.all([
+      this.prisma.class.count({ where: { schoolId, supervisorUserId: u.id } }),
+      this.prisma.dorm.count({ where: { schoolId, captainUserId: u.id } }),
+      canVerify
+        ? this.prisma.attendanceEntry.count({ where: { verificationStatus: 'unverified', pointsAwarded: { gt: 0 } } })
+        : Promise.resolve(0),
+      canVerifyStories
+        ? this.prisma.successStory.count({ where: { schoolId, verifiedAt: null } })
+        : Promise.resolve(0),
+    ]);
+    return { supervisedClasses, captainDorms, pendingVerifications, pendingStories };
   }
 }

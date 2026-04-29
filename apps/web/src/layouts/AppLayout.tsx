@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import {
   LayoutDashboard,
@@ -20,6 +21,13 @@ import {
   MoreHorizontal,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { api } from '../lib/api';
+
+interface AssignmentCounts {
+  supervisedClasses: number;
+  captainDorms: number;
+  pendingVerifications: number;
+}
 
 interface NavItem {
   to: string;
@@ -31,19 +39,24 @@ interface NavItem {
   // (their attendance, their classes, their program). Staff/admins
   // who happen to also be students will still see these.
   studentOnly?: boolean;
+  /**
+   * If set, this nav item is only shown when the user has at least one
+   * matching assignment. Permission alone is not enough — they must
+   * actually be assigned (e.g. supervise a class, captain a dorm).
+   */
+  requiresAssignment?: 'supervisedClasses' | 'captainDorms' | 'pendingVerifications';
 }
 
 const mainNav: NavItem[] = [
   { to: '/dashboard', icon: <LayoutDashboard size={18} />, label: 'Dashboard' },
   { to: '/programs', icon: <BookOpen size={18} />, label: 'Programs', studentOnly: true },
   { to: '/classes', icon: <GraduationCap size={18} />, label: 'Classes', studentOnly: true },
-  { to: '/roll-call', icon: <ClipboardCheck size={18} />, label: 'Roll Call', permission: 'attendance.record' },
-  { to: '/verification', icon: <CheckCircle2 size={18} />, label: 'Verification', permission: 'attendance.verify' },
+  { to: '/roll-call', icon: <ClipboardCheck size={18} />, label: 'Roll Call', permission: 'attendance.record', requiresAssignment: 'supervisedClasses' },
+  { to: '/verification', icon: <CheckCircle2 size={18} />, label: 'Verification', permission: 'attendance.verify', requiresAssignment: 'pendingVerifications' },
   { to: '/me/attendance', icon: <ClipboardList size={18} />, label: 'My Attendance', studentOnly: true },
   { to: '/me/schedule', icon: <CalendarDays size={18} />, label: 'Schedule', studentOnly: true },
   { to: '/dorms', icon: <Home size={18} />, label: 'Dorms', studentOnly: true },
-  { to: '/dorm-roll-call', icon: <ClipboardCheck size={18} />, label: 'Dorm Roll Call', permission: 'dorm.roll_call' },
-  { to: '/student-council', icon: <Shield size={18} />, label: 'Student Council', permission: 'success_story.verify' },
+  { to: '/dorm-roll-call', icon: <ClipboardCheck size={18} />, label: 'Dorm Roll Call', permission: 'dorm.roll_call', requiresAssignment: 'captainDorms' },
   { to: '/me/settings', icon: <Settings size={18} />, label: 'Settings' },
 ];
 
@@ -56,12 +69,26 @@ const adminNav: NavItem[] = [
 // Bottom tabs on mobile — first 4 main nav items + a More button that opens the drawer
 const bottomTabs = mainNav.slice(0, 4);
 
-function SidebarLink({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
+function SidebarLink({
+  item,
+  collapsed,
+  assignments,
+}: {
+  item: NavItem;
+  collapsed: boolean;
+  assignments?: AssignmentCounts;
+}) {
   const { hasPermission, user } = useAuth();
   if (item.permission && !hasPermission(item.permission)) return null;
   if (item.studentOnly) {
     const isStudent = user?.roles?.some((r) => r.name === 'student');
     if (!isStudent) return null;
+  }
+  if (item.requiresAssignment) {
+    // Hide until we know — avoid flashing the link in for users who don't
+    // actually have an assignment.
+    if (!assignments) return null;
+    if ((assignments[item.requiresAssignment] ?? 0) <= 0) return null;
   }
   return (
     <NavLink
@@ -107,6 +134,15 @@ export function AppLayout() {
 
   const hasAnyAdminPerm = adminNav.some((item) => item.permission && hasPermission(item.permission));
 
+  // Pull lightweight assignment counts so we can hide nav items the user has
+  // permission for but no actual assignments on (e.g. a former supervisor).
+  const { data: assignments } = useQuery<AssignmentCounts>({
+    queryKey: ['me', 'assignments'],
+    queryFn: async () => (await api.get<AssignmentCounts>('/me/assignments')).data,
+    staleTime: 60_000,
+    enabled: !!user,
+  });
+
   const handleLogout = async () => {
     await logout();
     navigate('/login');
@@ -118,7 +154,7 @@ export function AppLayout() {
   const renderNav = (collapsed: boolean) => (
     <>
       {mainNav.map((item) => (
-        <SidebarLink key={item.to} item={item} collapsed={collapsed} />
+        <SidebarLink key={item.to} item={item} collapsed={collapsed} assignments={assignments} />
       ))}
       {hasAnyAdminPerm && (
         <>
@@ -127,7 +163,7 @@ export function AppLayout() {
             <p className="text-xs text-text-disabled uppercase font-semibold px-3 py-1">Admin</p>
           )}
           {adminNav.map((item) => (
-            <SidebarLink key={item.to} item={item} collapsed={collapsed} />
+            <SidebarLink key={item.to} item={item} collapsed={collapsed} assignments={assignments} />
           ))}
         </>
       )}
@@ -315,6 +351,10 @@ export function AppLayout() {
         {bottomTabs.map((tab) => {
           if (tab.permission && !hasPermission(tab.permission)) return null;
           if (tab.studentOnly && !user?.roles?.some((r) => r.name === 'student')) return null;
+          if (tab.requiresAssignment) {
+            if (!assignments) return null;
+            if ((assignments[tab.requiresAssignment] ?? 0) <= 0) return null;
+          }
           return (
             <NavLink
               key={tab.to}
