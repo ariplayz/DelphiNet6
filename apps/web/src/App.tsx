@@ -27,6 +27,7 @@ import { DormDetailPage } from './pages/dorms/DormDetailPage';
 import { DormRollCallListPage } from './pages/dorms/DormRollCallListPage';
 import { DormRollCallPage } from './pages/dorms/DormRollCallPage';
 import { ComingSoonPage } from './pages/ComingSoonPage';
+import { ChangePasswordPage } from './pages/ChangePasswordPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
@@ -38,6 +39,9 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
     );
   }
   if (!user) return <Navigate to="/login" replace />;
+  if (user.mustChangePassword && window.location.pathname !== '/change-password') {
+    return <Navigate to="/change-password" replace />;
+  }
   return <>{children}</>;
 }
 
@@ -61,6 +65,15 @@ export default function App() {
       <Route element={<AuthLayout />}>
         <Route path="/login" element={<LoginPage />} />
       </Route>
+
+      <Route
+        path="/change-password"
+        element={
+          <ProtectedRoute>
+            <ChangePasswordPage />
+          </ProtectedRoute>
+        }
+      />
 
       <Route
         element={

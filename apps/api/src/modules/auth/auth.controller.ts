@@ -25,6 +25,16 @@ class LoginDto {
   schoolId?: string;
 }
 
+class ChangePasswordDto {
+  @IsString()
+  @MinLength(1)
+  currentPassword!: string;
+
+  @IsString()
+  @MinLength(8)
+  newPassword!: string;
+}
+
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -59,5 +69,22 @@ export class AuthController {
       return { message: 'No session' };
     }
     return this.authService.renew(token, res);
+  }
+
+  @Post('change-password')
+  @HttpCode(200)
+  async changePassword(@Req() req: Request, @Body() dto: ChangePasswordDto) {
+    const user = req.user as { id: string } | undefined;
+    if (!user) {
+      // SessionGuard normally rejects this earlier; defensive guard for safety.
+      return { ok: false };
+    }
+    const token: string | undefined = req.cookies?.['sesh'];
+    return this.authService.changePassword(
+      user.id,
+      dto.currentPassword,
+      dto.newPassword,
+      token,
+    );
   }
 }

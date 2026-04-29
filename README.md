@@ -17,11 +17,12 @@ docker compose up
 
 - **App**: http://localhost:8090
 - **API Health**: http://localhost:8090/api/health
-- **Mailpit**: http://localhost:8090/mail
 
-The initial super-admin email is `ari@aricummings.com`. The password is set
-during the bootstrap seed (see your `.env` / first-run logs) and must be
-changed on first login.
+The initial super-admin email is `ari@aricummings.com`. The default password
+is `adminpassword` — change it by setting `SUPER_ADMIN_PASSWORD` in your
+`.env` and re-running `docker compose up -d --build` (the seed will rotate
+the password to whatever you set). The seed prints the resolved credentials
+in the api logs on every run; check them with `docker compose logs api`.
 
 ## Repository structure
 
@@ -68,7 +69,6 @@ bun run test
 | web | local build | React SPA via nginx :80 |
 | db | postgres:16-alpine | PostgreSQL database |
 | cache | redis:7-alpine | Redis cache |
-| mail | axllent/mailpit | SMTP dev server |
 
 ## Docs
 

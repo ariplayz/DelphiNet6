@@ -23,8 +23,7 @@ services:
       - JWT_SECRET=${JWT_SECRET:-change-me-in-development}
       - JWT_EXPIRES_IN=${JWT_EXPIRES_IN:-7d}
       - REDIS_URL=${REDIS_URL:-redis://cache:6379}
-      - SMTP_HOST=${SMTP_HOST:-mail}
-      - SMTP_PORT=${SMTP_PORT:-1025}
+      - SUPER_ADMIN_PASSWORD=${SUPER_ADMIN_PASSWORD:-}
       - PORT=3000
       - NODE_ENV=${NODE_ENV:-development}
     depends_on:
@@ -70,10 +69,6 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
-    restart: unless-stopped
-
-  mail:
-    image: axllent/mailpit:latest
     restart: unless-stopped
 
 volumes:

@@ -9,6 +9,7 @@ interface AuthUser {
   lastName: string;
   schoolId: string;
   isSuperAdmin: boolean;
+  mustChangePassword: boolean;
   permissions: string[];
   roles: { id: string; name: string }[];
 }
@@ -18,6 +19,7 @@ interface AuthContextValue {
   isLoading: boolean;
   login: (email: string, password: string, schoolId?: string) => Promise<void>;
   logout: () => Promise<void>;
+  changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
   hasPermission: (perm: string) => boolean;
   can: (perm: string) => boolean;
 }
@@ -52,13 +54,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     window.location.href = '/login';
   };
 
+  const changePassword = async (currentPassword: string, newPassword: string) => {
+    await api.post('/auth/change-password', { currentPassword, newPassword });
+    // Refetch /auth/me so mustChangePassword flips to false in context.
+    await queryClient.invalidateQueries({ queryKey: ['auth', 'me'] });
+  };
+
   const hasPermission = (perm: string): boolean => {
     if (!user) return false;
     return user.isSuperAdmin || user.permissions.includes(perm);
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, logout, hasPermission, can: hasPermission }}>
+    <AuthContext.Provider value={{ user, isLoading, login, logout, changePassword, hasPermission, can: hasPermission }}>
       {children}
     </AuthContext.Provider>
   );

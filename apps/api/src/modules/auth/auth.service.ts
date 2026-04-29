@@ -10,6 +10,7 @@ import { PrismaService } from '../database/prisma.service';
 
 const SESSION_DURATION_MS = 8 * 60 * 60 * 1000; // 8 hours
 const COOKIE_NAME = 'sesh';
+const MIN_PASSWORD_LENGTH = 8;
 
 @Injectable()
 export class AuthService {
@@ -96,5 +97,55 @@ export class AuthService {
       expires: expiresAt,
       path: '/',
     });
+  }
+
+  /**
+   * Change the password of the currently-authenticated user.
+   *
+   * - Requires the current password to be correct (defends against
+   *   leaked-session privilege escalation).
+   * - Enforces a minimum length on the new password.
+   * - Rejects no-op changes (new == current).
+   * - Clears `mustChangePassword`.
+   * - Invalidates all *other* sessions for the user; the current session
+   *   stays valid so the caller doesn't get logged out mid-flow.
+   */
+  async changePassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string,
+    currentToken: string | undefined,
+  ) {
+    if (typeof newPassword !== 'string' || newPassword.length < MIN_PASSWORD_LENGTH) {
+      throw new BadRequestException(
+        `New password must be at least ${MIN_PASSWORD_LENGTH} characters long`,
+      );
+    }
+    if (newPassword === currentPassword) {
+      throw new BadRequestException('New password must be different from the current password');
+    }
+
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new UnauthorizedException('User not found');
+
+    const valid = await argon2.verify(user.passwordHash, currentPassword);
+    if (!valid) throw new UnauthorizedException('Current password is incorrect');
+
+    const newHash = await argon2.hash(newPassword);
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { passwordHash: newHash, mustChangePassword: false },
+    });
+
+    // Revoke every other session for this user — they may have been
+    // hijacked. Keep the current one alive so the response can complete.
+    await this.prisma.session.deleteMany({
+      where: {
+        userId,
+        ...(currentToken ? { NOT: { token: currentToken } } : {}),
+      },
+    });
+
+    return { ok: true };
   }
 }

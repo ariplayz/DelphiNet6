@@ -135,18 +135,44 @@ async function main() {
   console.log(`✅ School: ${school.name}`);
 
   // ── Seed super-admin user ──
-  const passwordHash = await argon2.hash('adminpassword');
+  // Password resolution:
+  //   1. If SUPER_ADMIN_PASSWORD is set, use it AND rotate the existing
+  //      user's hash (so re-seeding propagates a new password).
+  //   2. Otherwise fall back to the well-known default 'adminpassword' for
+  //      dev convenience, but only set it on user creation — existing users
+  //      keep whatever password they already have. We log a warning so
+  //      operators know they're running with the default credential.
+  const SUPER_ADMIN_EMAIL = 'ari@aricummings.com';
+  const envPassword = process.env.SUPER_ADMIN_PASSWORD;
+  const effectivePassword = envPassword && envPassword.length > 0 ? envPassword : 'adminpassword';
+  const usingDefaultPassword = !envPassword || envPassword.length === 0;
+  if (usingDefaultPassword) {
+    console.warn(
+      "⚠️  SUPER_ADMIN_PASSWORD not set — using default password 'adminpassword' for new super-admin. " +
+        'Set SUPER_ADMIN_PASSWORD in your .env to override (re-seeding rotates the password when set).',
+    );
+  }
+  const passwordHash = await argon2.hash(effectivePassword);
   const superAdmin = await prisma.user.upsert({
-    where: { schoolId_email: { schoolId: school.id, email: 'ari@aricummings.com' } },
+    where: { schoolId_email: { schoolId: school.id, email: SUPER_ADMIN_EMAIL } },
     create: {
       schoolId: school.id,
-      email: 'ari@aricummings.com',
+      email: SUPER_ADMIN_EMAIL,
       passwordHash,
       firstName: 'Ari',
       lastName: 'Cummings',
       isSuperAdmin: true,
+      // Force a password change on first login when we provisioned with the
+      // well-known default. If the operator supplied SUPER_ADMIN_PASSWORD we
+      // assume they chose it intentionally and don't force a change.
+      mustChangePassword: usingDefaultPassword,
     },
-    update: {},
+    // Only rotate the password when the operator explicitly supplied one
+    // via the env. Leaving update={} when on the default avoids clobbering
+    // a password that an operator may have already changed via the API.
+    // When rotating, also clear mustChangePassword — the operator just
+    // explicitly chose this password.
+    update: envPassword ? { passwordHash, mustChangePassword: false } : {},
   });
 
   // Grant super_admin role
@@ -157,6 +183,12 @@ async function main() {
   });
 
   console.log(`✅ Super-admin: ${superAdmin.email}`);
+  if (envPassword) {
+    console.log('   Password: (set from SUPER_ADMIN_PASSWORD env var)');
+    console.log('   Existing password hash was rotated to match the env var.');
+  } else {
+    console.log("   Password: 'adminpassword' (default — change via SUPER_ADMIN_PASSWORD env var)");
+  }
 
   // ── Seed reference pages ──
   const pages = [
@@ -174,8 +206,13 @@ async function main() {
   console.log('✅ Reference pages seeded');
 
   console.log('\n🎉 Seed complete!');
-  console.log('   Super-admin email: ari@aricummings.com');
-  console.log('   (password set from initial bootstrap; change it on first login)');
+  console.log(`   Super-admin email: ${SUPER_ADMIN_EMAIL}`);
+  if (envPassword) {
+    console.log('   Super-admin password: (from SUPER_ADMIN_PASSWORD env var)');
+  } else {
+    console.log("   Super-admin password: 'adminpassword' (default)");
+    console.log('   Override by setting SUPER_ADMIN_PASSWORD in your .env and re-running the stack.');
+  }
 }
 
 main()
