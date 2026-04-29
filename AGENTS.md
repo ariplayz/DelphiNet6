@@ -84,27 +84,24 @@ those too** before working in that area.
 ## 3. Build / run / test commands
 
 ```bash
-# bun binary lives here on dev workstations:
-export PATH="$HOME/.bun/bin:$PATH"
-
 # Install deps
-bun install
+npm install
 
 # Generate Prisma client (after schema changes)
-DATABASE_URL="postgresql://x:x@x/x" bunx prisma generate --schema prisma/schema.prisma
+DATABASE_URL="postgresql://x:x@x/x" npx prisma generate --schema prisma/schema.prisma
 
 # API typecheck (the canonical sanity check before committing)
 cd apps/api && npx tsc --noEmit
 
 # Web typecheck + bundle
-cd apps/web && npx tsc --noEmit && bun run build
+cd apps/web && npx tsc --noEmit && npm run build
 
 # Full local stack
 docker compose up -d --build
 docker compose logs -f api
 
 # Seed (runs automatically inside the api container; manually:)
-DATABASE_URL="postgresql://delphinet:delphinet@localhost:5432/delphinet" bun run prisma/seed.ts
+DATABASE_URL="postgresql://delphinet:delphinet@localhost:5432/delphinet" npx tsx prisma/seed.ts
 ```
 
 > ⚠️ **Always run the API typecheck before committing.** Nest's runtime
@@ -236,18 +233,19 @@ See `docs/deployment.md` for TLS, backups, and troubleshooting.
 ## 10. Common gotchas (learned the hard way)
 
 1. **Prisma client missing types after schema changes**: regenerate with
-   `bunx prisma generate --schema prisma/schema.prisma`. In Docker, the
-   `api.Dockerfile` regenerates twice (deps + builder stages) with `rm -rf`
-   first, so this should "just work" — but if you add a new model and the
-   build fails complaining about a missing `XxxWhereInput`, that's the cause.
+   `npx prisma generate --schema prisma/schema.prisma`. In Docker, the
+   `api.Dockerfile` regenerates twice (deps + builder stages) so this should
+   "just work" — but if you add a new model and the build fails complaining
+   about a missing `XxxWhereInput`, that's the cause.
 2. **react-grid-layout v2** exports `WidthProvider` / `Responsive` from the
    `react-grid-layout/legacy` subpath, not the root.
 3. **AttendanceEntry / RollCall are NOT auto-tenanted** — they inherit via
    parent. Don't add `schoolId` to them.
 4. **WidgetLayout has composite unique `(userId, breakpoint)`**, not
    `(userId, schoolId)`.
-5. **`bun --filter delphinet6`** is required in the api Dockerfile to pull
-   in the root devDeps (prisma CLI + tsx) needed by the entrypoint.
+5. **The api Dockerfile copies the root `node_modules` into the runner image.**
+   npm hoists every workspace dep into the root `node_modules`, so the API's
+   runtime resolution just works as long as we ship that directory.
 6. **Postgres only honours `POSTGRES_PASSWORD` on first init.** If you regen
    `.env` on an existing volume, you'll get auth-failed loops. The install
    script auto-wipes in this case; manually use `docker compose down -v`.

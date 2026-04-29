@@ -60,7 +60,7 @@ DelphiNet6/
 │   └── web.Dockerfile
 ├── docker-compose.yml       # publishes :8090 only
 ├── docs/                    # this folder — the living plan
-├── package.json             # bun workspaces
+├── package.json             # npm workspaces
 └── README.md
 ```
 

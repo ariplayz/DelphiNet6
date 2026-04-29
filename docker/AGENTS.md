@@ -8,22 +8,22 @@ All container build assets. Read root `AGENTS.md` first.
 |---|---|
 | `api.Dockerfile` | Multi-stage build for the NestJS API. Bundles Prisma schema + entrypoint. |
 | `web.Dockerfile` | Multi-stage build for the Vite SPA, served by nginx. |
-| `api-entrypoint.sh` | Runs `prisma db push` → `bun run prisma/seed.ts` → `node dist/main`. |
+| `api-entrypoint.sh` | Runs `prisma db push` → `tsx prisma/seed.ts` → `node dist/main`. |
 | `Caddyfile` | Caddy reverse proxy. Routes `/api/*` and `/ws/*` to api, everything else to web. |
 | `nginx.conf` | nginx config inside the web container. SPA fallback + `/api` proxy for local dev. |
 
 ## api.Dockerfile — important details
 
-- **deps stage** copies `package.json` + `bunfig.toml` + the
-  `prisma/` directory **before** `bun install`, so `@prisma/client`'s
+- **deps stage** copies `package.json` + `package-lock.json*` + the
+  `prisma/` directory **before** `npm install`, so `@prisma/client`'s
   postinstall sees the schema.
-- **deps + builder stages** both run `bunx prisma generate
-  --schema prisma/schema.prisma` after `rm -rf` of any prior client output.
-  This is necessary because bun's hoisted `.prisma/client` location isn't
-  always overwritten cleanly when the schema changes.
-- Filter `bun install --filter @delphinet/api... --filter delphinet6` —
-  the `delphinet6` filter pulls in the **root devDeps** (Prisma CLI + tsx)
-  required by the entrypoint at runtime.
+- **deps + builder stages** both run `npx prisma generate
+  --schema prisma/schema.prisma`. The builder regenerates against the
+  freshly-copied source so a schema change always produces a fresh client.
+- The root `node_modules/` is hoisted by npm workspaces, so the runner image
+  copies the root `node_modules` (containing `@prisma/client`, the Nest
+  runtime, the `prisma` CLI, and `tsx` for the entrypoint) alongside the
+  built api package.
 - `apk add --no-cache openssl` in both `base` and `runner` stages — Prisma
   needs it to detect the platform binary.
 - The runner copies `prisma/` so `db push` and seed can run at startup.
@@ -32,7 +32,7 @@ All container build assets. Read root `AGENTS.md` first.
 
 ```sh
 prisma db push --skip-generate --accept-data-loss   # idempotent schema sync
-npx --no-install bun run prisma/seed.ts || true         # seed (non-fatal)
+npx tsx prisma/seed.ts || true                      # seed (non-fatal)
 exec node dist/main                                 # start API
 ```
 

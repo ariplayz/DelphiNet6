@@ -10,7 +10,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@delphinet/shared-types": "workspace:*",
+    "@delphinet/shared-types": "*",
     "@tanstack/react-query": "^5.100.6",
     "@tanstack/react-query-devtools": "^5.100.6",
     "axios": "^1.15.2",

@@ -22,8 +22,8 @@ working-style document.
 
    ```bash
    cd apps/api && npx tsc --noEmit
-   cd apps/web && npx tsc --noEmit && bun run build
-   bun --filter '*' test
+   cd apps/web && npx tsc --noEmit && npm run build
+   npm test --workspaces --if-present
    ```
 
 6. Commit with a clear `<type>(<scope>): <subject>` message
@@ -88,7 +88,7 @@ Gate it via `<RoleRoute permissions={[...]}>` if it's not public.
 ## Pull request checklist
 
 - [ ] `tsc --noEmit` passes in `apps/api/` and `apps/web/`
-- [ ] Vite production build succeeds (`bun --filter @delphinet/web build`)
+- [ ] Vite production build succeeds (`npm run build --workspace @delphinet/web`)
 - [ ] Mobile look-and-feel checked at iPhone 14 viewport
 - [ ] New routes are role-gated
 - [ ] New permission strings are documented in `roles-and-permissions.md`

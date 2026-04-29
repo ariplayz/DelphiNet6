@@ -2,43 +2,38 @@
   "name": "delphinet6",
   "private": true,
   "version": "0.0.1",
-  "packageManager": "bun@1.1.38",
+  "engines": {
+    "node": ">=20"
+  },
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
   "scripts": {
-    "dev:api": "bun --filter @delphinet/api dev",
-    "dev:web": "bun --filter @delphinet/web dev",
-    "build:api": "bun --filter @delphinet/api build",
-    "build:web": "bun --filter @delphinet/web build",
-    "lint": "bun --filter '*' lint",
-    "typecheck": "bun --filter '*' typecheck",
-    "test": "bun --filter '*' test",
-    "db:generate": "bunx prisma generate --schema prisma/schema.prisma",
-    "db:migrate": "bunx prisma migrate dev --schema prisma/schema.prisma",
-    "db:push": "bunx prisma db push --schema prisma/schema.prisma",
-    "db:seed": "bun run prisma/seed.ts",
-    "db:studio": "bunx prisma studio --schema prisma/schema.prisma"
+    "dev:api": "npm run dev --workspace @delphinet/api",
+    "dev:web": "npm run dev --workspace @delphinet/web",
+    "build:api": "npm run build --workspace @delphinet/api",
+    "build:web": "npm run build --workspace @delphinet/web",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm test --workspaces --if-present",
+    "db:generate": "npx prisma generate --schema prisma/schema.prisma",
+    "db:migrate": "npx prisma migrate dev --schema prisma/schema.prisma",
+    "db:push": "npx prisma db push --schema prisma/schema.prisma",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:studio": "npx prisma studio --schema prisma/schema.prisma"
   },
   "devDependencies": {
+    "@types/node": "^22.5.0",
     "prettier": "^3.3.3",
     "prisma": "^5.22.0",
-    "typescript": "^5.5.4",
-    "@types/bun": "^1.1.13"
+    "tsx": "^4.19.2",
+    "typescript": "^5.5.4"
   },
   "prisma": {
     "schema": "prisma/schema.prisma",
-    "seed": "bun run prisma/seed.ts"
+    "seed": "tsx prisma/seed.ts"
   },
-  "trustedDependencies": [
-    "@nestjs/core",
-    "@prisma/client",
-    "@prisma/engines",
-    "argon2",
-    "esbuild",
-    "prisma"
-  ],
   "dependencies": {
     "@prisma/client": "^5.22.0"
   }
