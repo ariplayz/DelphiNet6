@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { DashboardService } from './dashboard.service';
+import { ClassesService } from '../classes/classes.service';
 import { SaveLayoutDto } from './dto/save-layout.dto';
 import {
   CreateQuickLinkDto,
@@ -19,7 +20,10 @@ import {
 
 @Controller('dashboard')
 export class DashboardController {
-  constructor(private readonly service: DashboardService) {}
+  constructor(
+    private readonly service: DashboardService,
+    private readonly classes: ClassesService,
+  ) {}
 
   @Get('layout')
   getLayout(@Req() req: Request) {
@@ -62,7 +66,9 @@ export class DashboardController {
   }
 
   @Get('today-classes')
-  async getTodayClasses() {
-    return { classes: [], note: 'Class endpoints coming in Phase 9' };
+  async getTodayClasses(@Req() req: Request) {
+    const schoolId = (req as any).schoolId as string;
+    const classes = await this.classes.getTodayClassesForUser(schoolId, req.user!.id);
+    return { classes };
   }
 }

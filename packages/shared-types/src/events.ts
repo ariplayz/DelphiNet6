@@ -13,6 +13,11 @@ export interface EventRegistry {
   'class.created': { classId: string; schoolId: string; createdBy: string };
   'class.updated': { classId: string; schoolId: string; updatedBy: string };
   'class.deleted': { classId: string; schoolId: string; deletedBy: string };
+  'class.enrollment.added': { classId: string; studentUserId: string; schoolId: string; addedBy: string };
+  'class.enrollment.removed': { classId: string; studentUserId: string; schoolId: string; removedBy: string };
+  'class.session.created': { sessionId: string; classId: string; schoolId: string; createdBy: string };
+  'class.session.updated': { sessionId: string; classId: string; schoolId: string; updatedBy: string };
+  'class.session.deleted': { sessionId: string; classId: string; schoolId: string; deletedBy: string };
 
   // Attendance
   'attendance.roll_call_opened': { rollCallId: string; classId: string; schoolId: string };

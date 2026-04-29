@@ -20,6 +20,7 @@ import { SchoolsModule } from './modules/schools/schools.module';
 import { UsersModule } from './modules/users/users.module';
 import { RolesModule } from './modules/roles/roles.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { ClassesModule } from './modules/classes/classes.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     UsersModule,
     RolesModule,
     DashboardModule,
+    ClassesModule,
   ],
   controllers: [AppController],
   providers: [

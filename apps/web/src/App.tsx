@@ -10,6 +10,8 @@ import { NotFoundPage } from './pages/NotFoundPage';
 import { AdminUsersPage } from './pages/admin/AdminUsersPage';
 import { AdminRolesPage } from './pages/admin/AdminRolesPage';
 import { AdminStatsPage } from './pages/admin/AdminStatsPage';
+import { ClassesListPage } from './pages/classes/ClassesListPage';
+import { ClassDetailPage } from './pages/classes/ClassDetailPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
@@ -54,6 +56,8 @@ export default function App() {
       >
         <Route index element={<Navigate to="/dashboard" replace />} />
         <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/classes" element={<ClassesListPage />} />
+        <Route path="/classes/:id" element={<ClassDetailPage />} />
         <Route
           path="/admin/users"
           element={
