@@ -23,6 +23,16 @@ export interface EventRegistry {
   'attendance.roll_call_opened': { rollCallId: string; classId: string; schoolId: string };
   'attendance.roll_call_closed': { rollCallId: string; classId: string; schoolId: string };
   'attendance.entry_recorded': { entryId: string; studentId: string; status: string; points: number; schoolId: string };
+  'attendance.entry.changed': {
+    entryId: string;
+    rollCallId: string;
+    studentUserId: string;
+    oldStatus: string;
+    newStatus: string;
+    oldPoints: number;
+    newPoints: number;
+    changedBy: string;
+  };
   'attendance.entry_excused': { entryId: string; verifiedBy: string; reason: string };
   'attendance.weekly_reset': { schoolId: string; week: string; restrictedCount: number };
 

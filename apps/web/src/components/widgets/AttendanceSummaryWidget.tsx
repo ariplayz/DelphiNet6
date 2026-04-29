@@ -2,27 +2,16 @@ import { useQuery } from '@tanstack/react-query';
 import { WidgetWrapper } from './WidgetWrapper';
 import { Spinner } from '../ui/Spinner';
 import { Badge } from '../ui/Badge';
-import { api } from '../../lib/api';
-
-interface Summary {
-  todayClassesCount: number;
-  weeklyPoints: number;
-  restrictionThreshold: number;
-  restricted: boolean;
-  pendingRoutingForms: number;
-  unreadNotifications: number;
-  weekStart: string;
-  nextReset: string;
-}
+import { attendanceApi, WeekStatus } from '../../lib/api/attendance';
 
 interface Props {
   editMode?: boolean;
 }
 
 export function AttendanceSummaryWidget({ editMode }: Props) {
-  const { data, isLoading } = useQuery<Summary>({
-    queryKey: ['dashboard', 'summary'],
-    queryFn: async () => (await api.get<Summary>('/dashboard/summary')).data,
+  const { data, isLoading } = useQuery<WeekStatus>({
+    queryKey: ['attendance', 'me', 'week'],
+    queryFn: () => attendanceApi.myWeek(),
   });
 
   return (
@@ -35,7 +24,7 @@ export function AttendanceSummaryWidget({ editMode }: Props) {
         <div className="flex flex-col justify-center h-full">
           <div className="flex items-baseline gap-2">
             <span className="text-4xl font-bold text-text-primary">
-              {data.weeklyPoints}
+              {data.points}
             </span>
             <span className="text-text-secondary text-sm">
               / {data.restrictionThreshold} pts this week
@@ -50,7 +39,7 @@ export function AttendanceSummaryWidget({ editMode }: Props) {
           </div>
           <p className="text-xs text-text-secondary mt-3">
             Resets{' '}
-            {new Date(data.nextReset).toLocaleDateString(undefined, {
+            {new Date(data.resetsAt).toLocaleDateString(undefined, {
               weekday: 'long',
               month: 'short',
               day: 'numeric',

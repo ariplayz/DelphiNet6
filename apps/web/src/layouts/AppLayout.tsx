@@ -6,6 +6,7 @@ import {
   BookOpen,
   GraduationCap,
   ClipboardList,
+  ClipboardCheck,
   Home,
   Shield,
   Settings,
@@ -29,7 +30,8 @@ const mainNav: NavItem[] = [
   { to: '/dashboard', icon: <LayoutDashboard size={18} />, label: 'Dashboard' },
   { to: '/programs', icon: <BookOpen size={18} />, label: 'Programs' },
   { to: '/classes', icon: <GraduationCap size={18} />, label: 'Classes' },
-  { to: '/attendance', icon: <ClipboardList size={18} />, label: 'Attendance' },
+  { to: '/roll-call', icon: <ClipboardCheck size={18} />, label: 'Roll Call', permission: 'attendance.record' },
+  { to: '/me/attendance', icon: <ClipboardList size={18} />, label: 'My Attendance' },
   { to: '/dorms', icon: <Home size={18} />, label: 'Dorms', permission: 'dorm.captain' },
   { to: '/student-council', icon: <Shield size={18} />, label: 'Student Council', permission: 'success_story.verify' },
 ];

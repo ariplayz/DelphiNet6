@@ -12,6 +12,9 @@ import { AdminRolesPage } from './pages/admin/AdminRolesPage';
 import { AdminStatsPage } from './pages/admin/AdminStatsPage';
 import { ClassesListPage } from './pages/classes/ClassesListPage';
 import { ClassDetailPage } from './pages/classes/ClassDetailPage';
+import { RollCallListPage } from './pages/rollcall/RollCallListPage';
+import { RollCallPage } from './pages/rollcall/RollCallPage';
+import { MyAttendancePage } from './pages/me/MyAttendancePage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
@@ -58,6 +61,23 @@ export default function App() {
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/classes" element={<ClassesListPage />} />
         <Route path="/classes/:id" element={<ClassDetailPage />} />
+        <Route
+          path="/roll-call"
+          element={
+            <PermissionRoute permission="attendance.record">
+              <RollCallListPage />
+            </PermissionRoute>
+          }
+        />
+        <Route
+          path="/roll-call/:sessionId"
+          element={
+            <PermissionRoute permission="attendance.record">
+              <RollCallPage />
+            </PermissionRoute>
+          }
+        />
+        <Route path="/me/attendance" element={<MyAttendancePage />} />
         <Route
           path="/admin/users"
           element={
