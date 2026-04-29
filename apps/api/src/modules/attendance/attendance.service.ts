@@ -286,6 +286,75 @@ export class AttendanceService {
     return agg._sum.pointsAwarded ?? 0;
   }
 
+  /**
+   * Per-week point history for the given student plus current-week breakdown.
+   * Used by the My Attendance page to show recent weeks at a glance.
+   */
+  async getStudentPointSummary(userId: string, weeks = 12) {
+    const currentStart = getCurrentWeekStart();
+    const earliest = new Date(currentStart);
+    earliest.setUTCDate(earliest.getUTCDate() - 7 * (weeks - 1));
+
+    const entries = await this.prisma.attendanceEntry.findMany({
+      where: { studentUserId: userId, createdAt: { gte: earliest } },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        rollCall: {
+          select: {
+            kind: true,
+            classSession: {
+              select: { class: { select: { id: true, name: true } } },
+            },
+          },
+        },
+      },
+    });
+
+    // Bucket by week (Tuesday-anchored).
+    const buckets = new Map<string, { weekStart: string; total: number; entries: number }>();
+    for (let i = 0; i < weeks; i++) {
+      const ws = new Date(currentStart);
+      ws.setUTCDate(ws.getUTCDate() - 7 * i);
+      buckets.set(ws.toISOString(), { weekStart: ws.toISOString(), total: 0, entries: 0 });
+    }
+    for (const e of entries) {
+      const ws = getCurrentWeekStart(e.createdAt);
+      const key = ws.toISOString();
+      const b = buckets.get(key);
+      if (b) {
+        b.total += e.pointsAwarded;
+        b.entries += 1;
+      }
+    }
+
+    const history = Array.from(buckets.values()).sort((a, b) =>
+      a.weekStart < b.weekStart ? 1 : -1,
+    );
+
+    const currentWeek = history[0]?.total ?? 0;
+    const recentEntries = entries.slice(0, 25).map((e) => ({
+      id: e.id,
+      status: e.status,
+      points: e.pointsAwarded,
+      reason: e.excuseReason ?? e.councilExcuseReason ?? null,
+      verified: e.verificationStatus !== 'unverified',
+      createdAt: e.createdAt.toISOString(),
+      kind: e.rollCall.kind,
+      className: e.rollCall.classSession?.class?.name ?? null,
+      classId: e.rollCall.classSession?.class?.id ?? null,
+    }));
+
+    return {
+      weekStart: currentStart.toISOString(),
+      resetsAt: getNextWeekStart().toISOString(),
+      restrictionThreshold: RESTRICTION_THRESHOLD,
+      currentWeekPoints: currentWeek,
+      restricted: currentWeek >= RESTRICTION_THRESHOLD,
+      history,
+      recentEntries,
+    };
+  }
+
   async getStudentRestrictionStatus(userId: string) {
     const weekStart = getCurrentWeekStart();
     const resetsAt = getNextWeekStart();
