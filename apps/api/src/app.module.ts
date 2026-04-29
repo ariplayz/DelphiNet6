@@ -24,6 +24,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { ClassesModule } from './modules/classes/classes.module';
 import { AttendanceModule } from './modules/attendance/attendance.module';
 import { DormsModule } from './modules/dorms/dorms.module';
+import { PreferencesModule } from './modules/preferences/preferences.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { DormsModule } from './modules/dorms/dorms.module';
     ClassesModule,
     AttendanceModule,
     DormsModule,
+    PreferencesModule,
   ],
   controllers: [AppController],
   providers: [

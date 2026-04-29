@@ -29,7 +29,7 @@ interface CreateUserDto {
   password: string;
   firstName: string;
   lastName: string;
-  form?: string;
+  form?: number;
 }
 
 type UserRow = Record<string, unknown> & { id: string; email: string; firstName: string; lastName: string; form: string; roles: Role[] };
@@ -55,10 +55,54 @@ export function AdminUsersPage() {
     enabled: !!selectedUser,
   });
 
+  const [createError, setCreateError] = useState<string | null>(null);
+  const [formInput, setFormInput] = useState<{
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    form: string;
+  }>({ email: '', password: '', firstName: '', lastName: '', form: '' });
+
   const createUser = useMutation({
     mutationFn: (dto: CreateUserDto) => api.post('/users', dto),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin', 'users'] }); setCreateOpen(false); },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin', 'users'] });
+      setCreateOpen(false);
+      setCreateError(null);
+      setFormInput({ email: '', password: '', firstName: '', lastName: '', form: '' });
+    },
+    onError: (err: any) => {
+      const msg = err?.response?.data?.message;
+      setCreateError(Array.isArray(msg) ? msg.join('; ') : (msg ?? err?.message ?? 'Create failed'));
+    },
   });
+
+  const submitCreate = () => {
+    setCreateError(null);
+    const trimmedForm = formInput.form.trim();
+    let parsedForm: number | undefined;
+    if (trimmedForm !== '') {
+      const n = Number(trimmedForm);
+      if (!Number.isInteger(n) || n < 1 || n > 8) {
+        setCreateError('Form must be an integer between 1 and 8 (or leave blank).');
+        return;
+      }
+      parsedForm = n;
+    }
+    if (formInput.password.length < 8) {
+      setCreateError('Password must be at least 8 characters.');
+      return;
+    }
+    const dto: CreateUserDto = {
+      email: formInput.email.trim(),
+      password: formInput.password,
+      firstName: formInput.firstName.trim(),
+      lastName: formInput.lastName.trim(),
+      ...(parsedForm !== undefined ? { form: parsedForm } : {}),
+    };
+    createUser.mutate(dto);
+  };
 
   const assignRole = useMutation({
     mutationFn: (roleId: string) => api.post(`/users/${selectedUser!.id}/roles`, { roleId }),
@@ -69,8 +113,6 @@ export function AdminUsersPage() {
     mutationFn: (roleId: string) => api.delete(`/users/${selectedUser!.id}/roles/${roleId}`),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['admin', 'users', selectedUser?.id, 'roles'] }),
   });
-
-  const [form, setForm] = useState<CreateUserDto>({ email: '', password: '', firstName: '', lastName: '', form: '' });
 
   const columns: { key: string; header: string; render?: (value: UserRow) => React.ReactNode }[] = [
     { key: 'name', header: 'Name', render: (u) => `${String(u.firstName)} ${String(u.lastName)}` },
@@ -141,14 +183,14 @@ export function AdminUsersPage() {
 
       <Modal
         open={createOpen}
-        onClose={() => setCreateOpen(false)}
+        onClose={() => { setCreateOpen(false); setCreateError(null); }}
         title="New User"
         footer={
           <div className="flex justify-end gap-2">
-            <Button variant="secondary" onClick={() => setCreateOpen(false)}>Cancel</Button>
+            <Button variant="secondary" onClick={() => { setCreateOpen(false); setCreateError(null); }}>Cancel</Button>
             <Button
               loading={createUser.isPending}
-              onClick={() => createUser.mutate(form)}
+              onClick={submitCreate}
             >
               Create
             </Button>
@@ -156,11 +198,24 @@ export function AdminUsersPage() {
         }
       >
         <div className="flex flex-col gap-4">
-          <Input label="First Name" value={form.firstName} onChange={(e) => setForm({ ...form, firstName: e.target.value })} />
-          <Input label="Last Name" value={form.lastName} onChange={(e) => setForm({ ...form, lastName: e.target.value })} />
-          <Input label="Email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
-          <Input label="Password" type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
-          <Input label="Form (optional)" value={form.form ?? ''} onChange={(e) => setForm({ ...form, form: e.target.value })} />
+          {createError && (
+            <div className="rounded-lg bg-red-500/10 border border-red-500/30 px-3 py-2 text-sm text-red-400">
+              {createError}
+            </div>
+          )}
+          <Input label="First Name" value={formInput.firstName} onChange={(e) => setFormInput({ ...formInput, firstName: e.target.value })} />
+          <Input label="Last Name" value={formInput.lastName} onChange={(e) => setFormInput({ ...formInput, lastName: e.target.value })} />
+          <Input label="Email" type="email" value={formInput.email} onChange={(e) => setFormInput({ ...formInput, email: e.target.value })} />
+          <Input label="Password" type="password" value={formInput.password} onChange={(e) => setFormInput({ ...formInput, password: e.target.value })} />
+          <Input
+            label="Form (optional, 1–8)"
+            type="number"
+            inputMode="numeric"
+            min={1}
+            max={8}
+            value={formInput.form}
+            onChange={(e) => setFormInput({ ...formInput, form: e.target.value })}
+          />
         </div>
       </Modal>
     </div>

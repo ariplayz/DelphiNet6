@@ -25,18 +25,24 @@ interface NavItem {
   icon: React.ReactNode;
   label: string;
   permission?: string;
+  // When true, only shown to users that hold the `student` role.
+  // Used for nav items that represent the user's *own* student data
+  // (their attendance, their classes, their program). Staff/admins
+  // who happen to also be students will still see these.
+  studentOnly?: boolean;
 }
 
 const mainNav: NavItem[] = [
   { to: '/dashboard', icon: <LayoutDashboard size={18} />, label: 'Dashboard' },
-  { to: '/programs', icon: <BookOpen size={18} />, label: 'Programs' },
-  { to: '/classes', icon: <GraduationCap size={18} />, label: 'Classes' },
+  { to: '/programs', icon: <BookOpen size={18} />, label: 'Programs', studentOnly: true },
+  { to: '/classes', icon: <GraduationCap size={18} />, label: 'Classes', studentOnly: true },
   { to: '/roll-call', icon: <ClipboardCheck size={18} />, label: 'Roll Call', permission: 'attendance.record' },
   { to: '/verification', icon: <CheckCircle2 size={18} />, label: 'Verification', permission: 'attendance.verify' },
-  { to: '/me/attendance', icon: <ClipboardList size={18} />, label: 'My Attendance' },
-  { to: '/dorms', icon: <Home size={18} />, label: 'Dorms' },
+  { to: '/me/attendance', icon: <ClipboardList size={18} />, label: 'My Attendance', studentOnly: true },
+  { to: '/dorms', icon: <Home size={18} />, label: 'Dorms', studentOnly: true },
   { to: '/dorm-roll-call', icon: <ClipboardCheck size={18} />, label: 'Dorm Roll Call', permission: 'dorm.roll_call' },
   { to: '/student-council', icon: <Shield size={18} />, label: 'Student Council', permission: 'success_story.verify' },
+  { to: '/me/settings', icon: <Settings size={18} />, label: 'Settings' },
 ];
 
 const adminNav: NavItem[] = [
@@ -49,8 +55,12 @@ const adminNav: NavItem[] = [
 const bottomTabs = mainNav.slice(0, 4);
 
 function SidebarLink({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
-  const { hasPermission } = useAuth();
+  const { hasPermission, user } = useAuth();
   if (item.permission && !hasPermission(item.permission)) return null;
+  if (item.studentOnly) {
+    const isStudent = user?.roles?.some((r) => r.name === 'student');
+    if (!isStudent) return null;
+  }
   return (
     <NavLink
       to={item.to}
@@ -274,14 +284,8 @@ export function AppLayout() {
           {/* Mobile title (centered-ish) */}
           <span className="md:hidden font-semibold text-text-primary text-sm flex-1">DelphiNet</span>
 
-          {/* Desktop school name */}
-          <div className="hidden md:flex flex-1 items-center">
-            {user?.schoolId && (
-              <span className="text-sm text-text-secondary">
-                School: <span className="text-text-primary font-medium">{user.schoolId}</span>
-              </span>
-            )}
-          </div>
+          {/* Desktop spacer */}
+          <div className="hidden md:flex flex-1 items-center" />
 
           {/* Mobile user avatar (right) */}
           {user && (
@@ -308,6 +312,7 @@ export function AppLayout() {
       >
         {bottomTabs.map((tab) => {
           if (tab.permission && !hasPermission(tab.permission)) return null;
+          if (tab.studentOnly && !user?.roles?.some((r) => r.name === 'student')) return null;
           return (
             <NavLink
               key={tab.to}

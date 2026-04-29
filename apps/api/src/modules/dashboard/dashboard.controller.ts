@@ -27,7 +27,9 @@ export class DashboardController {
 
   @Get('layout')
   getLayout(@Req() req: Request) {
-    return this.service.getLayout(req.user!.id);
+    const u = req.user as any;
+    const isStudent = !!u?.userRoles?.some((ur: any) => ur.role?.name === 'student');
+    return this.service.getLayout(u.id, isStudent);
   }
 
   @Put('layout')

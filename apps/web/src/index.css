@@ -3,6 +3,182 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Theme tokens ─────────────────────────────────────────────────────────
+   Defaults below match the legacy DelphiNet "delphinet" theme (dark green).
+   Themes are switched by setting `data-theme="…"` on the <html> element, or
+   for custom themes the ThemeContext writes individual CSS variables inline.
+   The catalogue lives in src/lib/themes.ts. */
+:root,
+:root[data-theme='delphinet'] {
+  --color-bg-base: #0B0F0D;
+  --color-bg-surface: #111713;
+  --color-bg-elevated: #1A2119;
+  --color-bg-hover: #1F2A1E;
+  --color-border: #2A3828;
+  --color-brand: #016745;
+  --color-brand-hover: #017d53;
+  --color-brand-muted: #013d28;
+  --color-text-primary: #E8F5E0;
+  --color-text-secondary: #8FAF87;
+  --color-text-disabled: #4A6548;
+  --color-danger: #e53e3e;
+  --color-warning: #d97706;
+  --color-success: #16a34a;
+}
+
+:root[data-theme='midnight'] {
+  --color-bg-base: #0a0e1a;
+  --color-bg-surface: #111629;
+  --color-bg-elevated: #1a2138;
+  --color-bg-hover: #232c4a;
+  --color-border: #2c3553;
+  --color-brand: #6366f1;
+  --color-brand-hover: #818cf8;
+  --color-brand-muted: #312e81;
+  --color-text-primary: #e0e7ff;
+  --color-text-secondary: #a5b4fc;
+  --color-text-disabled: #4f5b8a;
+  --color-danger: #f87171;
+  --color-warning: #fbbf24;
+  --color-success: #34d399;
+}
+
+:root[data-theme='dracula'] {
+  --color-bg-base: #282a36;
+  --color-bg-surface: #21222c;
+  --color-bg-elevated: #343746;
+  --color-bg-hover: #44475a;
+  --color-border: #44475a;
+  --color-brand: #bd93f9;
+  --color-brand-hover: #d0aaff;
+  --color-brand-muted: #6272a4;
+  --color-text-primary: #f8f8f2;
+  --color-text-secondary: #bd93f9;
+  --color-text-disabled: #6272a4;
+  --color-danger: #ff5555;
+  --color-warning: #ffb86c;
+  --color-success: #50fa7b;
+}
+
+:root[data-theme='nord'] {
+  --color-bg-base: #2e3440;
+  --color-bg-surface: #3b4252;
+  --color-bg-elevated: #434c5e;
+  --color-bg-hover: #4c566a;
+  --color-border: #4c566a;
+  --color-brand: #88c0d0;
+  --color-brand-hover: #8fbcbb;
+  --color-brand-muted: #5e81ac;
+  --color-text-primary: #eceff4;
+  --color-text-secondary: #d8dee9;
+  --color-text-disabled: #6f7888;
+  --color-danger: #bf616a;
+  --color-warning: #ebcb8b;
+  --color-success: #a3be8c;
+}
+
+:root[data-theme='monokai'] {
+  --color-bg-base: #272822;
+  --color-bg-surface: #1e1f1c;
+  --color-bg-elevated: #34352f;
+  --color-bg-hover: #3e3d32;
+  --color-border: #49483e;
+  --color-brand: #a6e22e;
+  --color-brand-hover: #b9f339;
+  --color-brand-muted: #5a7016;
+  --color-text-primary: #f8f8f2;
+  --color-text-secondary: #75715e;
+  --color-text-disabled: #555349;
+  --color-danger: #f92672;
+  --color-warning: #fd971f;
+  --color-success: #a6e22e;
+}
+
+:root[data-theme='solarized-dark'] {
+  --color-bg-base: #002b36;
+  --color-bg-surface: #073642;
+  --color-bg-elevated: #0a4754;
+  --color-bg-hover: #105563;
+  --color-border: #586e75;
+  --color-brand: #b58900;
+  --color-brand-hover: #d4a217;
+  --color-brand-muted: #735700;
+  --color-text-primary: #fdf6e3;
+  --color-text-secondary: #93a1a1;
+  --color-text-disabled: #586e75;
+  --color-danger: #dc322f;
+  --color-warning: #cb4b16;
+  --color-success: #859900;
+}
+
+:root[data-theme='solarized-light'] {
+  --color-bg-base: #fdf6e3;
+  --color-bg-surface: #eee8d5;
+  --color-bg-elevated: #e7e1cc;
+  --color-bg-hover: #d6cfb8;
+  --color-border: #93a1a1;
+  --color-brand: #b58900;
+  --color-brand-hover: #cb9b00;
+  --color-brand-muted: #d8c779;
+  --color-text-primary: #002b36;
+  --color-text-secondary: #586e75;
+  --color-text-disabled: #93a1a1;
+  --color-danger: #dc322f;
+  --color-warning: #cb4b16;
+  --color-success: #859900;
+}
+
+:root[data-theme='light'] {
+  --color-bg-base: #f8fafc;
+  --color-bg-surface: #ffffff;
+  --color-bg-elevated: #f1f5f9;
+  --color-bg-hover: #e2e8f0;
+  --color-border: #cbd5e1;
+  --color-brand: #016745;
+  --color-brand-hover: #015c3e;
+  --color-brand-muted: #cce5db;
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-disabled: #94a3b8;
+  --color-danger: #dc2626;
+  --color-warning: #d97706;
+  --color-success: #16a34a;
+}
+
+:root[data-theme='synthwave'] {
+  --color-bg-base: #1a103c;
+  --color-bg-surface: #261552;
+  --color-bg-elevated: #311b66;
+  --color-bg-hover: #3d2480;
+  --color-border: #5b3196;
+  --color-brand: #ff71ce;
+  --color-brand-hover: #ff8edb;
+  --color-brand-muted: #7d2c63;
+  --color-text-primary: #f8f8ff;
+  --color-text-secondary: #b39bff;
+  --color-text-disabled: #6a589e;
+  --color-danger: #ff3864;
+  --color-warning: #fbbf24;
+  --color-success: #00f5d4;
+}
+
+:root[data-theme='gruvbox'] {
+  --color-bg-base: #282828;
+  --color-bg-surface: #3c3836;
+  --color-bg-elevated: #504945;
+  --color-bg-hover: #665c54;
+  --color-border: #504945;
+  --color-brand: #b8bb26;
+  --color-brand-hover: #d6d83b;
+  --color-brand-muted: #79740e;
+  --color-text-primary: #ebdbb2;
+  --color-text-secondary: #d5c4a1;
+  --color-text-disabled: #928374;
+  --color-danger: #fb4934;
+  --color-warning: #fabd2f;
+  --color-success: #b8bb26;
+}
+
 @layer base {
   html { -webkit-text-size-adjust: 100%; }
   body { @apply bg-bg-base text-text-primary font-sans antialiased; -webkit-tap-highlight-color: transparent; }
@@ -19,9 +195,9 @@
   .h-safe-screen { height: 100dvh; }
 }
 
-/* React Grid Layout overrides for dark theme */
+/* React Grid Layout overrides — use theme tokens */
 .react-grid-item.react-grid-placeholder {
-  background: #016745 !important;
+  background: var(--color-brand) !important;
   opacity: 0.2 !important;
   border-radius: 0.75rem;
 }
@@ -29,8 +205,8 @@
   background-image: none !important;
 }
 .react-grid-item > .react-resizable-handle::after {
-  border-right: 2px solid #8FAF87 !important;
-  border-bottom: 2px solid #8FAF87 !important;
+  border-right: 2px solid var(--color-text-secondary) !important;
+  border-bottom: 2px solid var(--color-text-secondary) !important;
   width: 8px !important;
   height: 8px !important;
 }

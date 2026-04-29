@@ -69,10 +69,23 @@ model User {
   quickLinks          QuickLink[]
   collegeApplications CollegeApplication[]
   cramAssignments     CramAssignment[]
+  preference          UserPreference?
 
   @@unique([schoolId, email])
   @@index([schoolId])
   @@map("users")
+}
+
+// User-level UI preferences (theme, etc). Not tenanted — owned 1:1 by user.
+model UserPreference {
+  userId        String   @id @map("user_id")
+  themeKey      String   @default("delphinet") @map("theme_key")
+  customThemes  Json     @default("[]") @map("custom_themes")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_preferences")
 }
 
 // ─── RBAC ───────────────────────────────────────────────────────────────────

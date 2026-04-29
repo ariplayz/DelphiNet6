@@ -15,6 +15,7 @@ import { ClassDetailPage } from './pages/classes/ClassDetailPage';
 import { RollCallListPage } from './pages/rollcall/RollCallListPage';
 import { RollCallPage } from './pages/rollcall/RollCallPage';
 import { MyAttendancePage } from './pages/me/MyAttendancePage';
+import { SettingsPage } from './pages/SettingsPage';
 import { VerificationQueuePage } from './pages/verification/VerificationQueuePage';
 import { DormsListPage } from './pages/dorms/DormsListPage';
 import { DormDetailPage } from './pages/dorms/DormDetailPage';
@@ -83,6 +84,7 @@ export default function App() {
           }
         />
         <Route path="/me/attendance" element={<MyAttendancePage />} />
+        <Route path="/me/settings" element={<SettingsPage />} />
         <Route path="/dorms" element={<DormsListPage />} />
         <Route path="/dorms/:id" element={<DormDetailPage />} />
         <Route

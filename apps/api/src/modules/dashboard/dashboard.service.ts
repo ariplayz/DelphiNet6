@@ -10,11 +10,18 @@ import {
   UpdateQuickLinkDto,
 } from './dto/quick-link.dto';
 
-const DEFAULT_LAYOUT: WidgetDto[] = [
+const DEFAULT_LAYOUT_STUDENT: WidgetDto[] = [
   { id: 'welcome', type: 'welcome', x: 0, y: 0, w: 12, h: 2 },
   { id: 'summary', type: 'attendance-summary', x: 0, y: 2, w: 6, h: 3 },
   { id: 'quicklinks', type: 'quick-links', x: 6, y: 2, w: 6, h: 3 },
   { id: 'todayclasses', type: 'today-classes', x: 0, y: 5, w: 12, h: 4 },
+];
+
+// Staff/admins don't have personal attendance, classes, or programs to look at,
+// so their default dashboard is just a greeting + their own quick-links.
+const DEFAULT_LAYOUT_STAFF: WidgetDto[] = [
+  { id: 'welcome', type: 'welcome', x: 0, y: 0, w: 12, h: 2 },
+  { id: 'quicklinks', type: 'quick-links', x: 0, y: 2, w: 12, h: 4 },
 ];
 
 const RESTRICTION_THRESHOLD = 4;
@@ -23,14 +30,15 @@ const RESTRICTION_THRESHOLD = 4;
 export class DashboardService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getLayout(userId: string): Promise<{ widgets: WidgetDto[] }> {
+  async getLayout(userId: string, isStudent: boolean): Promise<{ widgets: WidgetDto[] }> {
+    const fallback = isStudent ? DEFAULT_LAYOUT_STUDENT : DEFAULT_LAYOUT_STAFF;
     const row = await this.prisma.widgetLayout.findUnique({
       where: { userId_breakpoint: { userId, breakpoint: 'lg' } },
     });
-    if (!row) return { widgets: DEFAULT_LAYOUT };
+    if (!row) return { widgets: fallback };
     const widgets = Array.isArray(row.layout)
       ? (row.layout as unknown as WidgetDto[])
-      : DEFAULT_LAYOUT;
+      : fallback;
     return { widgets };
   }
 

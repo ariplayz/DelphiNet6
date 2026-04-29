@@ -22,6 +22,7 @@ const SKIP_TENANCY = new Set([
   'Checksheet',
   'BookRead',
   'ParentLink',
+  'UserPreference',
 ]);
 
 /** Models that have a schoolId column and should be auto-filtered. */
