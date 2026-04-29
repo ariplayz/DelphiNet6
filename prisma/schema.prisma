@@ -1,0 +1,613 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Tenancy ────────────────────────────────────────────────────────────────
+
+model School {
+  id        String   @id @default(uuid())
+  name      String
+  timezone  String   @default("America/Los_Angeles")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  users              User[]
+  roles              Role[]
+  classes            Class[]
+  dorms              Dorm[]
+  pageviews          Pageview[]
+  auditLogs          AuditLog[]
+  weeklySnapshots    WeeklyPointSnapshot[]
+  dormRollCallSlots  DormRollCallSlot[]
+
+  @@map("schools")
+}
+
+// ─── Users ──────────────────────────────────────────────────────────────────
+
+model User {
+  id           String    @id @default(uuid())
+  schoolId     String    @map("school_id")
+  email        String
+  passwordHash String    @map("password_hash")
+  firstName    String    @map("first_name")
+  lastName     String    @map("last_name")
+  form         Int?      // 1–8 (school form / grade equivalent)
+  photoUrl     String?   @map("photo_url")
+  isSuperAdmin Boolean   @default(false) @map("is_super_admin")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  school              School               @relation(fields: [schoolId], references: [id])
+  userRoles           UserRole[]
+  sessions            Session[]
+  supervisedClasses   Class[]              @relation("ClassSupervisor")
+  enrollments         ClassEnrollment[]
+  captainedDorms      Dorm[]               @relation("DormCaptain")
+  dormAssignments     DormAssignment[]
+  rollCallsTaken      RollCall[]
+  attendanceEntries   AttendanceEntry[]
+  verifiedEntries     AttendanceEntry[]    @relation("EntryVerifier")
+  weeklySnapshots     WeeklyPointSnapshot[]
+  parentLinks         ParentLink[]         @relation("ParentUser")
+  childLinks          ParentLink[]         @relation("ChildUser")
+  programs            Program[]
+  successStories      SuccessStory[]
+  ethicsReports       EthicsReport[]       @relation("EthicsReportSubject")
+  ethicsReportsWritten EthicsReport[]      @relation("EthicsReportWriter")
+  routingForms        RoutingForm[]        @relation("RFAssignee")
+  routingFormsStarted RoutingForm[]        @relation("RFStarter")
+  pageviews           Pageview[]
+  auditLogs           AuditLog[]
+  widgetLayouts       WidgetLayout[]
+  quickLinks          QuickLink[]
+  collegeApplications CollegeApplication[]
+  cramAssignments     CramAssignment[]
+
+  @@unique([schoolId, email])
+  @@index([schoolId])
+  @@map("users")
+}
+
+// ─── RBAC ───────────────────────────────────────────────────────────────────
+
+model Role {
+  id          String   @id @default(uuid())
+  schoolId    String?  @map("school_id") // null = built-in global role
+  name        String
+  description String?
+  isBuiltIn   Boolean  @default(false) @map("is_built_in")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  school          School?          @relation(fields: [schoolId], references: [id])
+  rolePermissions RolePermission[]
+  userRoles       UserRole[]
+
+  @@unique([schoolId, name])
+  @@map("roles")
+}
+
+model RolePermission {
+  roleId     String @map("role_id")
+  permission String // Permission constant from shared-types
+
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permission])
+  @@map("role_permissions")
+}
+
+model UserRole {
+  userId    String   @map("user_id")
+  roleId    String   @map("role_id")
+  grantedBy String?  @map("granted_by")
+  grantedAt DateTime @default(now()) @map("granted_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+  @@map("user_roles")
+}
+
+// ─── Sessions ────────────────────────────────────────────────────────────────
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+// ─── Audit Log ───────────────────────────────────────────────────────────────
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  schoolId  String?  @map("school_id")
+  userId    String?  @map("user_id")
+  event     String
+  payload   Json     @default("{}")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  school School? @relation(fields: [schoolId], references: [id])
+  user   User?   @relation(fields: [userId], references: [id])
+
+  @@index([schoolId, createdAt])
+  @@index([userId, createdAt])
+  @@map("audit_logs")
+}
+
+// ─── Analytics ───────────────────────────────────────────────────────────────
+
+model Pageview {
+  id        String   @id @default(uuid())
+  schoolId  String   @map("school_id")
+  userId    String   @map("user_id")
+  path      String
+  referrer  String?
+  ts        DateTime @default(now())
+
+  school School @relation(fields: [schoolId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@index([schoolId, ts])
+  @@index([userId, ts])
+  @@map("pageviews")
+}
+
+// ─── Dashboard ───────────────────────────────────────────────────────────────
+
+model WidgetLayout {
+  id         String @id @default(uuid())
+  userId     String @map("user_id")
+  breakpoint String @default("lg") // lg, md, sm
+  layout     Json   // react-grid-layout layout array
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, breakpoint])
+  @@map("widget_layouts")
+}
+
+model QuickLink {
+  id       String @id @default(uuid())
+  userId   String @map("user_id")
+  label    String
+  url      String
+  position Int    @default(0)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("quick_links")
+}
+
+// ─── Classes ─────────────────────────────────────────────────────────────────
+
+enum ClassKind {
+  ACADEMIC
+  AFTERNOON
+  NIGHT
+  SEMINAR
+  STUDENT_SERVICE
+  CLUB
+  AFTER_CLASS
+}
+
+model Class {
+  id               String    @id @default(uuid())
+  schoolId         String    @map("school_id")
+  name             String
+  kind             ClassKind
+  supervisorUserId String?   @map("supervisor_user_id")
+  location         String?
+  notes            String?
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  school       School            @relation(fields: [schoolId], references: [id])
+  supervisor   User?             @relation("ClassSupervisor", fields: [supervisorUserId], references: [id])
+  sessions     ClassSession[]
+  enrollments  ClassEnrollment[]
+  rollCalls    RollCall[]
+
+  @@index([schoolId])
+  @@map("classes")
+}
+
+model ClassSession {
+  id             String   @id @default(uuid())
+  classId        String   @map("class_id")
+  startsAt       DateTime @map("starts_at")
+  endsAt         DateTime @map("ends_at")
+  recurrenceRule String?  @map("recurrence_rule") // RRULE string, null = one-off
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  class     Class      @relation(fields: [classId], references: [id], onDelete: Cascade)
+  rollCalls RollCall[]
+
+  @@index([classId])
+  @@map("class_sessions")
+}
+
+model ClassEnrollment {
+  id            String    @id @default(uuid())
+  classId       String    @map("class_id")
+  studentUserId String    @map("student_user_id")
+  addedAt       DateTime  @default(now()) @map("added_at")
+  addedBy       String?   @map("added_by")
+  removedAt     DateTime? @map("removed_at")
+
+  class   Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+  student User  @relation(fields: [studentUserId], references: [id], onDelete: Cascade)
+
+  @@unique([classId, studentUserId])
+  @@index([classId])
+  @@index([studentUserId])
+  @@map("class_enrollments")
+}
+
+// ─── Attendance ───────────────────────────────────────────────────────────────
+
+enum RollCallKind {
+  CLASS
+  DORM_EVENING
+  DORM_MORNING
+}
+
+enum AttendanceStatus {
+  HERE
+  LATE
+  ABSENT
+  EXCUSED
+}
+
+model RollCall {
+  id             String       @id @default(uuid())
+  kind           RollCallKind
+  classSessionId String?      @map("class_session_id")
+  dormSlotId     String?      @map("dorm_slot_id")
+  takenBy        String       @map("taken_by")
+  takenAt        DateTime     @default(now()) @map("taken_at")
+  locked         Boolean      @default(false)
+
+  classSession ClassSession?       @relation(fields: [classSessionId], references: [id])
+  dormSlot     DormRollCallSlot?   @relation(fields: [dormSlotId], references: [id])
+  takenByUser  User                @relation(fields: [takenBy], references: [id])
+  entries      AttendanceEntry[]
+
+  // For class-kind roll calls, we keep a denormalized classId for easier queries
+  classId      String?             @map("class_id")
+  class        Class?              @relation(fields: [classId], references: [id])
+
+  @@index([classSessionId])
+  @@index([dormSlotId])
+  @@map("roll_calls")
+}
+
+model AttendanceEntry {
+  id                  String           @id @default(uuid())
+  rollCallId          String           @map("roll_call_id")
+  studentUserId       String           @map("student_user_id")
+  status              AttendanceStatus
+  excuseReason        String?          @map("excuse_reason")
+  pointsAwarded       Int              @default(0) @map("points_awarded")
+  kind                String           @default("attendance") // 'attendance' | 'messy_room'
+  verificationStatus  String           @default("unverified") @map("verification_status") // 'unverified' | 'verified' | 'excused_by_council'
+  verifiedBy          String?          @map("verified_by")
+  verifiedAt          DateTime?        @map("verified_at")
+  councilExcuseReason String?          @map("council_excuse_reason")
+  createdAt           DateTime         @default(now()) @map("created_at")
+  updatedAt           DateTime         @updatedAt @map("updated_at")
+
+  rollCall  RollCall @relation(fields: [rollCallId], references: [id], onDelete: Cascade)
+  student   User     @relation(fields: [studentUserId], references: [id])
+  verifier  User?    @relation("EntryVerifier", fields: [verifiedBy], references: [id])
+
+  @@index([rollCallId])
+  @@index([studentUserId])
+  @@map("attendance_entries")
+}
+
+model WeeklyPointSnapshot {
+  id            String    @id @default(uuid())
+  schoolId      String    @map("school_id")
+  studentUserId String    @map("student_user_id")
+  weekStart     DateTime  @map("week_start") // Tuesday 00:00 in school TZ
+  points        Int
+  restricted    Boolean   @default(false)
+  finalizedAt   DateTime? @map("finalized_at")
+
+  school  School @relation(fields: [schoolId], references: [id])
+  student User   @relation(fields: [studentUserId], references: [id])
+
+  @@unique([schoolId, studentUserId, weekStart])
+  @@index([schoolId, weekStart])
+  @@map("weekly_point_snapshots")
+}
+
+// ─── Dorms ────────────────────────────────────────────────────────────────────
+
+model Dorm {
+  id            String   @id @default(uuid())
+  schoolId      String   @map("school_id")
+  name          String
+  captainUserId String?  @map("captain_user_id")
+  notes         String?
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  school    School               @relation(fields: [schoolId], references: [id])
+  captain   User?                @relation("DormCaptain", fields: [captainUserId], references: [id])
+  rooms     DormRoom[]
+  schedules DormRollCallSchedule[]
+
+  @@index([schoolId])
+  @@map("dorms")
+}
+
+model DormRoom {
+  id       String @id @default(uuid())
+  dormId   String @map("dorm_id")
+  name     String
+  capacity Int    @default(1)
+
+  dorm        Dorm             @relation(fields: [dormId], references: [id], onDelete: Cascade)
+  assignments DormAssignment[]
+
+  @@index([dormId])
+  @@map("dorm_rooms")
+}
+
+model DormAssignment {
+  id            String    @id @default(uuid())
+  dormRoomId    String    @map("dorm_room_id")
+  studentUserId String    @map("student_user_id")
+  since         DateTime  @default(now())
+  until         DateTime?
+
+  dormRoom DormRoom @relation(fields: [dormRoomId], references: [id], onDelete: Cascade)
+  student  User     @relation(fields: [studentUserId], references: [id])
+
+  @@index([dormRoomId])
+  @@index([studentUserId])
+  @@map("dorm_assignments")
+}
+
+model DormRollCallSchedule {
+  id                    String  @id @default(uuid())
+  dormId                String  @map("dorm_id")
+  slot                  String  // 'morning' | 'evening'
+  timeOfDay             String  @map("time_of_day") // HH:MM
+  daysOfWeek            Int[]   @map("days_of_week") // 0=Sun … 6=Sat
+  allowsMessyRoomPoints Boolean @default(false) @map("allows_messy_room_points")
+
+  dorm  Dorm              @relation(fields: [dormId], references: [id], onDelete: Cascade)
+  slots DormRollCallSlot[]
+
+  @@index([dormId])
+  @@map("dorm_roll_call_schedules")
+}
+
+model DormRollCallSlot {
+  id         String   @id @default(uuid())
+  scheduleId String   @map("schedule_id")
+  schoolId   String   @map("school_id")
+  occursOn   DateTime @map("occurs_on")
+
+  schedule  DormRollCallSchedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  school    School               @relation(fields: [schoolId], references: [id])
+  rollCalls RollCall[]
+
+  @@unique([scheduleId, occursOn])
+  @@index([schoolId, occursOn])
+  @@map("dorm_roll_call_slots")
+}
+
+// ─── Programs ─────────────────────────────────────────────────────────────────
+
+model ProgramTemplate {
+  id          String   @id @default(uuid())
+  schoolId    String   @map("school_id")
+  form        Int      // 1–8
+  stream      String   // 'math' | 'reading' | 'seminar' | 'practical'
+  name        String
+  description String?
+  items       Json     @default("[]") // ChecksheetTemplateItem[]
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([schoolId, form, stream])
+  @@map("program_templates")
+}
+
+model Program {
+  id            String   @id @default(uuid())
+  schoolId      String   @map("school_id")
+  studentUserId String   @map("student_user_id")
+  form          Int
+  notes         String?
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  student     User         @relation(fields: [studentUserId], references: [id])
+  checksheets Checksheet[]
+  booksRead   BookRead[]
+
+  @@unique([schoolId, studentUserId])
+  @@index([schoolId])
+  @@map("programs")
+}
+
+model Checksheet {
+  id          String    @id @default(uuid())
+  programId   String    @map("program_id")
+  stream      String    // 'math' | 'reading' | 'seminar' | 'practical'
+  name        String
+  items       Json      @default("[]") // ChecksheetItem[]
+  completedAt DateTime? @map("completed_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  program Program @relation(fields: [programId], references: [id], onDelete: Cascade)
+
+  @@index([programId])
+  @@map("checksheets")
+}
+
+model BookRead {
+  id          String    @id @default(uuid())
+  programId   String    @map("program_id")
+  title       String
+  author      String?
+  completedAt DateTime? @map("completed_at")
+  notes       String?
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  program Program @relation(fields: [programId], references: [id], onDelete: Cascade)
+
+  @@index([programId])
+  @@map("books_read")
+}
+
+// ─── Success Stories ─────────────────────────────────────────────────────────
+
+model SuccessStory {
+  id            String    @id @default(uuid())
+  schoolId      String    @map("school_id")
+  studentUserId String    @map("student_user_id")
+  title         String
+  body          String
+  verifiedBy    String?   @map("verified_by")
+  verifiedAt    DateTime? @map("verified_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  student User @relation(fields: [studentUserId], references: [id])
+
+  @@index([schoolId])
+  @@index([studentUserId])
+  @@map("success_stories")
+}
+
+// ─── Cramming (Off-course corrections) ───────────────────────────────────────
+
+model CramAssignment {
+  id            String    @id @default(uuid())
+  schoolId      String    @map("school_id")
+  studentUserId String    @map("student_user_id")
+  assignedBy    String    @map("assigned_by")
+  subject       String
+  description   String?
+  dueAt         DateTime? @map("due_at")
+  completedAt   DateTime? @map("completed_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  student User @relation(fields: [studentUserId], references: [id])
+
+  @@index([schoolId, studentUserId])
+  @@map("cram_assignments")
+}
+
+// ─── Ethics Reports ───────────────────────────────────────────────────────────
+
+model EthicsReport {
+  id          String    @id @default(uuid())
+  schoolId    String    @map("school_id")
+  writerId    String    @map("writer_id")
+  subjectId   String    @map("subject_id")
+  body        String
+  status      String    @default("pending") // 'pending' | 'reviewed' | 'resolved'
+  reviewedBy  String?   @map("reviewed_by")
+  reviewedAt  DateTime? @map("reviewed_at")
+  reviewNotes String?   @map("review_notes")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  writer  User @relation("EthicsReportWriter", fields: [writerId], references: [id])
+  subject User @relation("EthicsReportSubject", fields: [subjectId], references: [id])
+
+  @@index([schoolId, createdAt])
+  @@index([subjectId])
+  @@map("ethics_reports")
+}
+
+// ─── Routing Forms ────────────────────────────────────────────────────────────
+
+model RoutingForm {
+  id          String    @id @default(uuid())
+  schoolId    String    @map("school_id")
+  startedBy   String    @map("started_by")
+  assignedTo  String?   @map("assigned_to")
+  subject     String
+  description String?
+  status      String    @default("open") // 'open' | 'in_progress' | 'completed'
+  completedAt DateTime? @map("completed_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  starter  User  @relation("RFStarter", fields: [startedBy], references: [id])
+  assignee User? @relation("RFAssignee", fields: [assignedTo], references: [id])
+
+  @@index([schoolId, status])
+  @@index([assignedTo])
+  @@map("routing_forms")
+}
+
+// ─── College Applications ─────────────────────────────────────────────────────
+
+model CollegeApplication {
+  id            String    @id @default(uuid())
+  schoolId      String    @map("school_id")
+  studentUserId String    @map("student_user_id")
+  collegeName   String    @map("college_name")
+  status        String    @default("researching") // 'researching' | 'applied' | 'accepted' | 'rejected' | 'enrolled'
+  deadline      DateTime?
+  notes         String?
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  student User @relation(fields: [studentUserId], references: [id])
+
+  @@index([schoolId, studentUserId])
+  @@map("college_applications")
+}
+
+// ─── Parent Links ─────────────────────────────────────────────────────────────
+
+model ParentLink {
+  id        String   @id @default(uuid())
+  parentId  String   @map("parent_id")
+  childId   String   @map("child_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  parent User @relation("ParentUser", fields: [parentId], references: [id])
+  child  User @relation("ChildUser", fields: [childId], references: [id])
+
+  @@unique([parentId, childId])
+  @@map("parent_links")
+}
+
+// ─── Reference Content ────────────────────────────────────────────────────────
+
+model ReferencePage {
+  id        String   @id @default(uuid())
+  schoolId  String?  @map("school_id") // null = global
+  slug      String
+  title     String
+  body      String   @default("")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  updatedBy String?  @map("updated_by")
+
+  @@unique([schoolId, slug])
+  @@map("reference_pages")
+}

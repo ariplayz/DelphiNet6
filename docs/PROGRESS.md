@@ -19,7 +19,7 @@ Legend: `[ ]` open · `[x]` done.
 
 ## Phase 1 — Scaffold
 
-- **Status:** TODO
+- **Status:** DONE
 - **Depends on:** —
 - **Goals:** A `docker compose up` that boots the empty stack on
   **port 8090** with healthchecks green.
