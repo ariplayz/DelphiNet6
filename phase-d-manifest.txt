@@ -1,0 +1,12 @@
+=== app.module.ts imports to add ===
+import { ProgramsModule } from './modules/programs/programs.module';
+
+=== app.module.ts imports array entry ===
+ProgramsModule,
+
+=== App.tsx imports to add ===
+import { MyProgramPage } from './pages/programs/MyProgramPage';
+
+=== App.tsx routes to replace ===
+REPLACE: <Route path="/programs" element={<ComingSoonPage title="My Program" />} />
+WITH:    <Route path="/programs" element={<MyProgramPage />} />

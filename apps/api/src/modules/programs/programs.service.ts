@@ -37,13 +37,13 @@ export class ProgramsService {
     });
     if (!sheet) throw new NotFoundException(`Checksheet ${checksheetId} not found`);
 
-    const items = (sheet.items as ChecksheetItem[]).map((item) =>
+    const items = (sheet.items as unknown as ChecksheetItem[]).map((item) =>
       item.id === itemId ? { ...item, completed } : item,
     );
 
     return this.prisma.checksheet.update({
       where: { id: checksheetId },
-      data: { items },
+      data: { items: items as unknown as object[] },
     });
   }
 
@@ -53,7 +53,7 @@ export class ProgramsService {
     });
     if (!sheet) throw new NotFoundException(`Checksheet ${checksheetId} not found`);
 
-    const items = sheet.items as ChecksheetItem[];
+    const items = sheet.items as unknown as ChecksheetItem[];
     const allDone = items.length > 0 && items.every((i) => i.completed);
 
     return this.prisma.checksheet.update({
