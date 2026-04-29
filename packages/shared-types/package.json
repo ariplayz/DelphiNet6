@@ -1,0 +1,12 @@
+{
+  "name": "@delphinet/shared-types",
+  "version": "0.0.1",
+  "main": "src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "echo ok"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4"
+  }
+}
