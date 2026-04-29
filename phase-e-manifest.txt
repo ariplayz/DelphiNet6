@@ -1,0 +1,16 @@
+=== app.module.ts imports to add ===
+import { StandardsModule } from './modules/standards/standards.module';
+
+=== app.module.ts imports array entry ===
+StandardsModule,
+
+=== App.tsx imports to add ===
+import { CramPage } from './pages/standards/CramPage';
+import { SuccessStoriesPage } from './pages/standards/SuccessStoriesPage';
+
+=== App.tsx routes to replace ===
+REPLACE: <Route path="/standards/cram" element={<ComingSoonPage title="Off Course Correction Assignments" />} />
+WITH:    <Route path="/standards/cram" element={<CramPage />} />
+
+REPLACE: <Route path="/standards/success-stories" element={<ComingSoonPage title="My Success Story Entry" />} />
+WITH:    <Route path="/standards/success-stories" element={<SuccessStoriesPage />} />
