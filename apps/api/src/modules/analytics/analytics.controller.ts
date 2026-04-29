@@ -36,4 +36,35 @@ export class AnalyticsController {
 
     return Object.values(grouped).sort((a, b) => b.count - a.count);
   }
+
+  @Get('stats')
+  @RequirePermission('analytics.view')
+  async getStats(@Req() req: Request) {
+    const schoolId = (req as any).schoolId as string;
+
+    const since = new Date();
+    since.setDate(since.getDate() - 7);
+
+    const [totalUsers, totalRoles, totalClasses, pageviewRows] = await Promise.all([
+      this.prisma.user.count({ where: { schoolId } }),
+      this.prisma.role.count({ where: { OR: [{ schoolId }, { schoolId: null }] } }),
+      this.prisma.class.count({ where: { schoolId } }),
+      this.prisma.pageview.findMany({
+        where: { schoolId, ts: { gte: since } },
+        select: { path: true },
+      }),
+    ]);
+
+    const pathCounts: Record<string, number> = {};
+    for (const row of pageviewRows) {
+      pathCounts[row.path] = (pathCounts[row.path] ?? 0) + 1;
+    }
+
+    const topPages = Object.entries(pathCounts)
+      .map(([path, count]) => ({ path, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
+
+    return { totalUsers, totalRoles, totalClasses, topPages };
+  }
 }

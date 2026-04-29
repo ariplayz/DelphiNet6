@@ -16,6 +16,9 @@ import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { GatewayModule } from './modules/gateway/gateway.module';
 import { PageviewInterceptor } from './modules/analytics/pageview.interceptor';
 import { TypedEventEmitter } from './modules/event-bus/typed-event-emitter.service';
+import { SchoolsModule } from './modules/schools/schools.module';
+import { UsersModule } from './modules/users/users.module';
+import { RolesModule } from './modules/roles/roles.module';
 
 @Module({
   imports: [
@@ -27,6 +30,9 @@ import { TypedEventEmitter } from './modules/event-bus/typed-event-emitter.servi
     AuditModule,
     AnalyticsModule,
     GatewayModule,
+    SchoolsModule,
+    UsersModule,
+    RolesModule,
   ],
   controllers: [AppController],
   providers: [
