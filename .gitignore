@@ -36,3 +36,6 @@ Thumbs.db
 # Deployment state (server-local, not committed)
 scripts/.deployed-tag
 scripts/deploy.log
+
+# TypeScript build artifacts
+*.tsbuildinfo

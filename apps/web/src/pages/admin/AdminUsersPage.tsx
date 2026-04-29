@@ -88,8 +88,8 @@ export function AdminUsersPage() {
   ];
 
   return (
-    <div className="p-6 flex gap-6">
-      <div className="flex-1">
+    <div className="p-4 sm:p-6 flex flex-col lg:flex-row gap-4 sm:gap-6">
+      <div className="flex-1 min-w-0">
         <Card
           title="Users"
           action={<Button size="sm" onClick={() => setCreateOpen(true)}>New User</Button>}
@@ -109,7 +109,7 @@ export function AdminUsersPage() {
       </div>
 
       {selectedUser && (
-        <div className="w-80 bg-bg-surface border border-border rounded-xl p-5 flex flex-col gap-4 flex-shrink-0">
+        <div className="w-full lg:w-80 bg-bg-surface border border-border rounded-xl p-5 flex flex-col gap-4 flex-shrink-0">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold text-text-primary">{selectedUser.firstName} {selectedUser.lastName}</h3>
             <button onClick={() => setSelectedUser(null)} className="text-text-secondary hover:text-text-primary">

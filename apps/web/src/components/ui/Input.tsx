@@ -19,7 +19,7 @@ export function Input({ label, error, className, id, ...props }: InputProps) {
         id={inputId}
         {...props}
         className={clsx(
-          'w-full rounded-lg px-3 py-2 text-sm',
+          'w-full rounded-lg px-3 py-2 text-base sm:text-sm min-h-[44px]',
           'bg-bg-elevated border border-border text-text-primary',
           'placeholder:text-text-disabled',
           'focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20',

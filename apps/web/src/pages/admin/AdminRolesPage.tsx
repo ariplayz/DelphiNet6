@@ -81,8 +81,8 @@ export function AdminRolesPage() {
   ];
 
   return (
-    <div className="p-6 flex gap-6">
-      <div className="flex-1">
+    <div className="p-4 sm:p-6 flex flex-col lg:flex-row gap-4 sm:gap-6">
+      <div className="flex-1 min-w-0">
         <Card
           title="Roles"
           action={<Button size="sm" onClick={() => setCreateOpen(true)}>New Role</Button>}
@@ -102,7 +102,7 @@ export function AdminRolesPage() {
       </div>
 
       {selectedRole && (
-        <div className="w-80 bg-bg-surface border border-border rounded-xl p-5 flex flex-col gap-4 flex-shrink-0 overflow-y-auto max-h-[calc(100vh-8rem)]">
+        <div className="w-full lg:w-80 bg-bg-surface border border-border rounded-xl p-5 flex flex-col gap-4 flex-shrink-0 lg:overflow-y-auto lg:max-h-[calc(100vh-8rem)]">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold text-text-primary">{selectedRole.name}</h3>
             <button onClick={() => setSelectedRole(null)} className="text-text-secondary hover:text-text-primary">

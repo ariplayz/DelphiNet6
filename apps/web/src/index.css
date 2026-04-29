@@ -4,11 +4,17 @@
 @tailwind utilities;
 
 @layer base {
-  html { @apply dark; }
-  body { @apply bg-bg-base text-text-primary font-sans antialiased; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { @apply bg-bg-base text-text-primary font-sans antialiased; -webkit-tap-highlight-color: transparent; }
   * { @apply border-border; }
   ::-webkit-scrollbar { @apply w-1.5; }
   ::-webkit-scrollbar-track { @apply bg-bg-base; }
   ::-webkit-scrollbar-thumb { @apply bg-brand-muted rounded-full; }
   ::-webkit-scrollbar-thumb:hover { @apply bg-brand; }
+}
+
+@layer utilities {
+  .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+  .pt-safe { padding-top: env(safe-area-inset-top); }
+  .h-safe-screen { height: 100dvh; }
 }

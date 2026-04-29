@@ -34,8 +34,8 @@ export function LoginPage() {
   };
 
   return (
-    <div className="w-full max-w-sm">
-      <div className="bg-bg-surface rounded-2xl border border-border p-8 shadow-2xl">
+    <div className="w-full sm:max-w-sm">
+      <div className="bg-bg-surface rounded-2xl border border-border p-6 sm:p-8 shadow-2xl">
         {/* Logo */}
         <div className="flex flex-col items-center mb-8">
           <div className="w-12 h-12 rounded-xl bg-brand flex items-center justify-center mb-3">

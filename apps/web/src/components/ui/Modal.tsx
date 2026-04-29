@@ -16,13 +16,15 @@ export function Modal({ open, onClose, title, children, footer, className }: Mod
   if (!open) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       <div
         className={clsx(
-          'relative z-10 w-full max-w-lg mx-4',
-          'bg-bg-elevated rounded-2xl border border-border shadow-2xl',
-          'flex flex-col max-h-[90vh]',
+          'relative z-10 w-full bg-bg-elevated border border-border shadow-2xl flex flex-col',
+          'rounded-t-2xl sm:rounded-2xl sm:rounded-b-2xl',
+          'max-h-[92dvh] sm:max-h-[90vh]',
+          'sm:max-w-lg sm:mx-4',
+          'pb-safe sm:pb-0',
           className,
         )}
       >
