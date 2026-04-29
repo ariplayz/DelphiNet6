@@ -26,12 +26,29 @@ import { DormsListPage } from './pages/dorms/DormsListPage';
 import { DormDetailPage } from './pages/dorms/DormDetailPage';
 import { DormRollCallListPage } from './pages/dorms/DormRollCallListPage';
 import { DormRollCallPage } from './pages/dorms/DormRollCallPage';
-import { ComingSoonPage } from './pages/ComingSoonPage';
 import { ClassSchedulesPage } from './pages/reports/ClassSchedulesPage';
 import { AttendanceReportPage } from './pages/reports/AttendanceReportPage';
 import { StudentLookupPage } from './pages/students/StudentLookupPage';
 import { ClassesOfferedPage } from './pages/rosters/ClassesOfferedPage';
 import { ChangePasswordPage } from './pages/ChangePasswordPage';
+import { AfternoonRostersPage } from './pages/rosters/AfternoonRostersPage';
+import { StudentServiceRostersPage } from './pages/rosters/StudentServiceRostersPage';
+import { NightRostersPage } from './pages/rosters/NightRostersPage';
+import { HardToFindWordsPage } from './pages/tools/HardToFindWordsPage';
+import { ByTermReportPage } from './pages/reports/ByTermReportPage';
+import { PhotoDisplayPage } from './pages/reports/PhotoDisplayPage';
+import { PlusMinusReportPage } from './pages/reports/PlusMinusReportPage';
+import { PlusMinus5WkReportPage } from './pages/reports/PlusMinus5WkReportPage';
+import { WriteEthicsPage } from './pages/ethics/WriteEthicsPage';
+import { EthicsHistoryPage } from './pages/ethics/EthicsHistoryPage';
+import { CampusEthicsPage } from './pages/ethics/CampusEthicsPage';
+import { MyProgramPage } from './pages/programs/MyProgramPage';
+import { CramPage } from './pages/standards/CramPage';
+import { SuccessStoriesPage } from './pages/standards/SuccessStoriesPage';
+import { RoutingInboxPage } from './pages/routing/RoutingInboxPage';
+import { StartRoutePage } from './pages/routing/StartRoutePage';
+import { RoutingLookupPage } from './pages/routing/RoutingLookupPage';
+import { CollegeApplicationsPage } from './pages/college/CollegeApplicationsPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
@@ -165,31 +182,29 @@ export default function App() {
         />
 
         {/* Legacy DN5 menu placeholders — full pages land in later releases */}
-        <Route path="/programs" element={<ComingSoonPage title="My Program" />} />
-        <Route path="/ethics" element={<ComingSoonPage title="Write/Review Ethics Reports" />} />
-        <Route path="/ethics/history" element={<ComingSoonPage title="My Ethics Report History" />} />
-        <Route path="/ethics/campus" element={<ComingSoonPage title="Campus Ethics Reports" />} />
-        <Route path="/tools/math-facts" element={<ComingSoonPage title="Math Facts" />} />
-        <Route path="/tools/htfw" element={<ComingSoonPage title="Hard to Find Words" />} />
+        <Route path="/programs" element={<MyProgramPage />} />
+        <Route path="/ethics" element={<WriteEthicsPage />} />
+        <Route path="/ethics/history" element={<EthicsHistoryPage />} />
+        <Route path="/ethics/campus" element={<CampusEthicsPage />} />
+        <Route path="/tools/htfw" element={<HardToFindWordsPage />} />
         <Route path="/students/lookup" element={<StudentLookupPage />} />
-        <Route path="/reports/by-term" element={<ComingSoonPage title="Report Generator (Students By Term)" />} />
+        <Route path="/reports/by-term" element={<ByTermReportPage />} />
         <Route path="/reports/class-schedules" element={<ClassSchedulesPage />} />
         <Route path="/reports/attendance" element={<AttendanceReportPage />} />
-        <Route path="/reports/photos" element={<ComingSoonPage title="Photo Display" />} />
-        <Route path="/reports/plus-minus" element={<ComingSoonPage title="+/- Days Report" />} />
-        <Route path="/reports/plus-minus-5wk" element={<ComingSoonPage title="Five Week +/- Days Report" />} />
+        <Route path="/reports/photos" element={<PhotoDisplayPage />} />
+        <Route path="/reports/plus-minus" element={<PlusMinusReportPage />} />
+        <Route path="/reports/plus-minus-5wk" element={<PlusMinus5WkReportPage />} />
         <Route path="/rosters/seminars" element={<SeminarsListPage />} />
-        <Route path="/rosters/afternoon" element={<ComingSoonPage title="Afternoon Class Rosters" />} />
-        <Route path="/rosters/student-service" element={<ComingSoonPage title="Student Service Rosters" />} />
-        <Route path="/rosters/night" element={<ComingSoonPage title="Night Class / Activity Rosters" />} />
+        <Route path="/rosters/afternoon" element={<AfternoonRostersPage />} />
+        <Route path="/rosters/student-service" element={<StudentServiceRostersPage />} />
+        <Route path="/rosters/night" element={<NightRostersPage />} />
         <Route path="/rosters/offered" element={<ClassesOfferedPage />} />
-        <Route path="/college-applications" element={<ComingSoonPage title="College Applications" />} />
-        <Route path="/standards/cram" element={<ComingSoonPage title="Off Course Correction Assignments" />} />
-        <Route path="/standards/success-stories" element={<ComingSoonPage title="My Success Story Entry" />} />
-        <Route path="/routing/inbox" element={<ComingSoonPage title="My Routes To Handle" />} />
-        <Route path="/routing/start" element={<ComingSoonPage title="Start Route" />} />
-        <Route path="/routing/lookup" element={<ComingSoonPage title="Route Lookup By Student" />} />
-        <Route path="/parents/student-info" element={<ComingSoonPage title="Student Info (Parent View)" />} />
+        <Route path="/college-applications" element={<CollegeApplicationsPage />} />
+        <Route path="/standards/cram" element={<CramPage />} />
+        <Route path="/standards/success-stories" element={<SuccessStoriesPage />} />
+        <Route path="/routing/inbox" element={<RoutingInboxPage />} />
+        <Route path="/routing/start" element={<StartRoutePage />} />
+        <Route path="/routing/lookup" element={<RoutingLookupPage />} />
       </Route>
 
       <Route path="*" element={<NotFoundPage />} />

@@ -25,7 +25,7 @@ export const TOP_MENUS: TopMenu[] = [
           },
         ],
       },
-      { kind: 'link', label: 'Math Facts', to: '/tools/math-facts' },
+      { kind: 'link', label: 'Math Facts', to: 'https://mfc.delphian.org', external: true },
       { kind: 'link', label: 'Hard to Find Words', to: '/tools/htfw' },
       {
         kind: 'link',

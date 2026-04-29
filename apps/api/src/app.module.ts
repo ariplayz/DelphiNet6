@@ -27,6 +27,11 @@ import { DormsModule } from './modules/dorms/dorms.module';
 import { PreferencesModule } from './modules/preferences/preferences.module';
 import { MeModule } from './modules/me/me.module';
 import { SeminarsModule } from './modules/seminars/seminars.module';
+import { EthicsModule } from './modules/ethics/ethics.module';
+import { ProgramsModule } from './modules/programs/programs.module';
+import { StandardsModule } from './modules/standards/standards.module';
+import { RoutingModule } from './modules/routing/routing.module';
+import { CollegeAppsModule } from './modules/college-apps/college-apps.module';
 
 @Module({
   imports: [
@@ -49,6 +54,11 @@ import { SeminarsModule } from './modules/seminars/seminars.module';
     PreferencesModule,
     MeModule,
     SeminarsModule,
+    EthicsModule,
+    ProgramsModule,
+    StandardsModule,
+    RoutingModule,
+    CollegeAppsModule,
   ],
   controllers: [AppController],
   providers: [
