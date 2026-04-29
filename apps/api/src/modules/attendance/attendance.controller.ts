@@ -111,6 +111,14 @@ export class AttendanceController {
     return this.service.getUserSnapshots(userId);
   }
 
+  @Get('all-snapshots')
+  @RequirePermission('students.view_all')
+  allSnapshots(@Req() req: Request, @Query('weeks') weeksStr?: string) {
+    const schoolId = (req as any).schoolId as string;
+    const weeks = weeksStr ? Math.max(1, Math.min(52, parseInt(weeksStr, 10) || 12)) : 12;
+    return this.service.getAllStudentSnapshots(schoolId, weeks);
+  }
+
   @Post('admin/run-weekly-reset')
   @RequirePermission('attendance.amend')
   async runWeeklyReset() {

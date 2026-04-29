@@ -1,0 +1,27 @@
+=== App.tsx imports to add ===
+import { AfternoonRostersPage } from './pages/rosters/AfternoonRostersPage';
+import { StudentServiceRostersPage } from './pages/rosters/StudentServiceRostersPage';
+import { NightRostersPage } from './pages/rosters/NightRostersPage';
+import { MathFactsPage } from './pages/tools/MathFactsPage';
+import { HardToFindWordsPage } from './pages/tools/HardToFindWordsPage';
+
+=== App.tsx routes to replace ===
+REPLACE: <Route path="/rosters/afternoon" element={<ComingSoonPage title="Afternoon Class Rosters" />} />
+WITH:    <Route path="/rosters/afternoon" element={<AfternoonRostersPage />} />
+
+REPLACE: <Route path="/rosters/student-service" element={<ComingSoonPage title="Student Service Rosters" />} />
+WITH:    <Route path="/rosters/student-service" element={<StudentServiceRostersPage />} />
+
+REPLACE: <Route path="/rosters/night" element={<ComingSoonPage title="Night Class / Activity Rosters" />} />
+WITH:    <Route path="/rosters/night" element={<NightRostersPage />} />
+
+REPLACE: <Route path="/tools/math-facts" element={<ComingSoonPage title="Math Facts" />} />
+WITH:    <Route path="/tools/math-facts" element={<MathFactsPage />} />
+
+REPLACE: <Route path="/tools/htfw" element={<ComingSoonPage title="Hard to Find Words" />} />
+WITH:    <Route path="/tools/htfw" element={<HardToFindWordsPage />} />
+
+=== menu.ts changes ===
+Remove Parents TopMenu entry
+=== parents route to remove from App.tsx ===
+<Route path="/parents/student-info" element={<ComingSoonPage title="Student Info (Parent View)" />} />

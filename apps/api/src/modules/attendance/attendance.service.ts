@@ -487,6 +487,30 @@ export class AttendanceService {
     });
   }
 
+  async getAllStudentSnapshots(schoolId: string, weeks = 12) {
+    const since = new Date();
+    since.setUTCDate(since.getUTCDate() - weeks * 7);
+    const snapshots = await this.prisma.weeklyPointSnapshot.findMany({
+      where: {
+        schoolId,
+        weekStart: { gte: since },
+      },
+      include: {
+        student: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            form: true,
+          },
+        },
+      },
+      orderBy: [{ weekStart: 'desc' }, { student: { lastName: 'asc' } }],
+    });
+    return snapshots;
+  }
+
   // ─── Phase 11: verification ────────────────────────────────────────────────
 
   /**

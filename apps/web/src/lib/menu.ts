@@ -129,12 +129,6 @@ export const TOP_MENUS: TopMenu[] = [
     ],
   },
   {
-    label: 'Parents',
-    items: [
-      { kind: 'link', label: 'Student Info', to: '/parents/student-info', anyOf: ['parent.view'] },
-    ],
-  },
-  {
     label: 'Admin',
     items: [
       { kind: 'link', label: 'Users', to: '/admin/users', anyOf: ['users.manage'] },
