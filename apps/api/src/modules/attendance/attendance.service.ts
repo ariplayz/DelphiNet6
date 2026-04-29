@@ -320,10 +320,13 @@ export class AttendanceService {
 
     if (restricted.length === 0) return [];
 
-    const users = await this.prisma.user.findMany({
-      where: { id: { in: restricted.map((r: { studentUserId: string }) => r.studentUserId) } },
-      select: studentSelect,
-    });
+    const [users, pendingByStudent] = await Promise.all([
+      this.prisma.user.findMany({
+        where: { id: { in: restricted.map((r: { studentUserId: string }) => r.studentUserId) } },
+        select: studentSelect,
+      }),
+      this.countPendingVerificationByStudent(schoolId, weekStart),
+    ]);
     const byId = new Map(users.map((u: { id: string }) => [u.id, u]));
 
     return restricted
@@ -332,6 +335,7 @@ export class AttendanceService {
         points: r.points,
         restricted: true,
         weekStart: weekStart.toISOString(),
+        pendingVerificationCount: pendingByStudent.get(r.studentUserId) ?? 0,
       }))
       .filter((r: { student: unknown }) => r.student !== null)
       .sort(
@@ -401,6 +405,166 @@ export class AttendanceService {
         rollCallId: s.rollCalls[0]?.id ?? null,
         taken: s.rollCalls.length > 0,
       }),
+    );
+  }
+
+  // ─── Phase 10: snapshot history ────────────────────────────────────────────
+
+  async getUserSnapshots(userId: string, take = 26) {
+    return this.prisma.weeklyPointSnapshot.findMany({
+      where: { studentUserId: userId },
+      orderBy: { weekStart: 'desc' },
+      take,
+    });
+  }
+
+  // ─── Phase 11: verification ────────────────────────────────────────────────
+
+  /**
+   * List entries that a student-council verifier should review. Defaults to
+   * the current week and excludes already-verified rows.
+   */
+  async listEntriesForVerification(opts: {
+    schoolId: string;
+    weekStart?: Date;
+    weekEnd?: Date;
+    includeVerified?: boolean;
+    limit?: number;
+    offset?: number;
+  }) {
+    const weekStart = opts.weekStart ?? getCurrentWeekStart();
+    const weekEnd = opts.weekEnd ?? getNextWeekStart(weekStart);
+    const where: Prisma.AttendanceEntryWhereInput = {
+      createdAt: { gte: weekStart, lt: weekEnd },
+      student: { schoolId: opts.schoolId },
+    };
+    if (!opts.includeVerified) {
+      where.verificationStatus = 'unverified';
+    }
+
+    const entries = await this.prisma.attendanceEntry.findMany({
+      where,
+      include: {
+        student: { select: studentSelect },
+        verifier: { select: studentSelect },
+        rollCall: {
+          include: {
+            classSession: {
+              include: { class: { select: { id: true, name: true } } },
+            },
+            class: { select: { id: true, name: true } },
+            takenByUser: { select: studentSelect },
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: opts.limit ?? 100,
+      skip: opts.offset ?? 0,
+    });
+
+    return entries;
+  }
+
+  async verifyEntry(entryId: string, verifierId: string) {
+    const entry = await this.prisma.attendanceEntry.findUnique({
+      where: { id: entryId },
+    });
+    if (!entry) throw new NotFoundException(`Entry ${entryId} not found`);
+
+    const updated = await this.prisma.attendanceEntry.update({
+      where: { id: entryId },
+      data: {
+        verificationStatus: 'verified',
+        verifiedAt: new Date(),
+        verifiedBy: verifierId,
+      },
+      include: {
+        student: { select: studentSelect },
+        verifier: { select: studentSelect },
+      },
+    });
+
+    this.events.emit('attendance.entry.verified', {
+      entryId: updated.id,
+      verifierId,
+    });
+
+    return updated;
+  }
+
+  async excuseEntry(entryId: string, excuserId: string, reason: string) {
+    if (!reason || reason.trim() === '') {
+      throw new BadRequestException('reason is required');
+    }
+    const entry = await this.prisma.attendanceEntry.findUnique({
+      where: { id: entryId },
+    });
+    if (!entry) throw new NotFoundException(`Entry ${entryId} not found`);
+
+    const trimmed = reason.trim();
+    const updated = await this.prisma.attendanceEntry.update({
+      where: { id: entryId },
+      data: {
+        status: 'EXCUSED',
+        pointsAwarded: POINTS.EXCUSED,
+        excuseReason: trimmed,
+        councilExcuseReason: trimmed,
+        verificationStatus: 'excused_by_council',
+        verifiedAt: new Date(),
+        verifiedBy: excuserId,
+      },
+      include: {
+        student: { select: studentSelect },
+        verifier: { select: studentSelect },
+      },
+    });
+
+    this.events.emit('attendance.entry.excused', {
+      entryId: updated.id,
+      excuserId,
+      oldStatus: entry.status,
+      oldPoints: entry.pointsAwarded,
+      reason: trimmed,
+    });
+    // Also emit the generic change event so dashboards update.
+    this.events.emit('attendance.entry.changed', {
+      entryId: updated.id,
+      rollCallId: updated.rollCallId,
+      studentUserId: updated.studentUserId,
+      oldStatus: entry.status,
+      newStatus: updated.status,
+      oldPoints: entry.pointsAwarded,
+      newPoints: updated.pointsAwarded,
+      changedBy: excuserId,
+    });
+
+    return updated;
+  }
+
+  /**
+   * For the restriction list: count unverified entries per student in the
+   * current week. Returns a Map<studentUserId, number>.
+   */
+  async countPendingVerificationByStudent(
+    schoolId: string,
+    weekStart: Date = getCurrentWeekStart(),
+  ): Promise<Map<string, number>> {
+    const grouped = await this.prisma.attendanceEntry.groupBy({
+      by: ['studentUserId'],
+      _count: { _all: true },
+      where: {
+        createdAt: { gte: weekStart },
+        student: { schoolId },
+        verificationStatus: 'unverified',
+      },
+    });
+    return new Map(
+      grouped.map(
+        (g: { studentUserId: string; _count: { _all: number } }) => [
+          g.studentUserId,
+          g._count._all,
+        ],
+      ),
     );
   }
 }

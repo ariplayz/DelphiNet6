@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -11,14 +12,19 @@ import {
 import { Request } from 'express';
 import { RequirePermission } from '../auth/require-permission.decorator';
 import { AttendanceService } from './attendance.service';
+import { WeeklyResetService } from './weekly-reset.service';
 import {
   BulkSetEntriesDto,
   SetEntryStatusDto,
 } from './dto/set-entry-status.dto';
+import { getCurrentWeekStart } from './attendance.week';
 
 @Controller('attendance')
 export class AttendanceController {
-  constructor(private readonly service: AttendanceService) {}
+  constructor(
+    private readonly service: AttendanceService,
+    private readonly weeklyReset: WeeklyResetService,
+  ) {}
 
   @Get('sessions/:sessionId/roll-call')
   @RequirePermission('attendance.record')
@@ -90,5 +96,86 @@ export class AttendanceController {
   @RequirePermission('attendance.view_all')
   userWeek(@Param('userId') userId: string) {
     return this.service.getStudentRestrictionStatus(userId);
+  }
+
+  // ─── Phase 10: history snapshots ─────────────────────────────────────────
+
+  @Get('me/history/snapshots')
+  mySnapshots(@Req() req: Request) {
+    return this.service.getUserSnapshots(req.user!.id);
+  }
+
+  @Get('users/:userId/history/snapshots')
+  @RequirePermission('attendance.view_all')
+  userSnapshots(@Param('userId') userId: string) {
+    return this.service.getUserSnapshots(userId);
+  }
+
+  @Post('admin/run-weekly-reset')
+  @RequirePermission('attendance.amend')
+  async runWeeklyReset() {
+    const schools = await this.weeklyReset.runResetForCurrentWeek();
+    return { schools };
+  }
+
+  // ─── Phase 11: verification queue ────────────────────────────────────────
+
+  @Get('verification/queue')
+  @RequirePermission('attendance.verify')
+  async verificationQueue(
+    @Req() req: Request,
+    @Query('week') week?: 'current' | 'previous',
+    @Query('includeVerified') includeVerified?: string,
+    @Query('limit') limit?: string,
+    @Query('offset') offset?: string,
+  ) {
+    const schoolId = (req as any).schoolId as string;
+    let weekStart = getCurrentWeekStart();
+    if (week === 'previous') {
+      weekStart = new Date(weekStart);
+      weekStart.setUTCDate(weekStart.getUTCDate() - 7);
+    }
+    const weekEnd = new Date(weekStart);
+    weekEnd.setUTCDate(weekEnd.getUTCDate() + 7);
+
+    const include =
+      includeVerified === 'true' || includeVerified === '1';
+    const lim = limit ? Math.min(500, Math.max(1, parseInt(limit, 10))) : 100;
+    const off = offset ? Math.max(0, parseInt(offset, 10)) : 0;
+
+    const entries = await this.service.listEntriesForVerification({
+      schoolId,
+      weekStart,
+      weekEnd,
+      includeVerified: include,
+      limit: lim,
+      offset: off,
+    });
+
+    return {
+      weekStart: weekStart.toISOString(),
+      weekEnd: weekEnd.toISOString(),
+      includeVerified: include,
+      entries,
+    };
+  }
+
+  @Post('entries/:id/verify')
+  @RequirePermission('attendance.verify')
+  verify(@Req() req: Request, @Param('id') id: string) {
+    return this.service.verifyEntry(id, req.user!.id);
+  }
+
+  @Post('entries/:id/excuse')
+  @RequirePermission('attendance.verify')
+  excuse(
+    @Req() req: Request,
+    @Param('id') id: string,
+    @Body() body: { reason?: string },
+  ) {
+    if (!body?.reason) {
+      throw new BadRequestException('reason is required');
+    }
+    return this.service.excuseEntry(id, req.user!.id, body.reason);
   }
 }

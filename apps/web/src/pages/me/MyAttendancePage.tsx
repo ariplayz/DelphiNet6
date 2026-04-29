@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { ChevronDown, ChevronRight } from 'lucide-react';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { Spinner } from '../../components/ui/Spinner';
@@ -7,6 +9,7 @@ import {
   HistoryEntry,
   STATUS_LABELS,
   WeekStatus,
+  WeeklySnapshot,
   attendanceApi,
 } from '../../lib/api/attendance';
 
@@ -33,6 +36,8 @@ function formatDate(iso: string): string {
 }
 
 export function MyAttendancePage() {
+  const [snapshotsOpen, setSnapshotsOpen] = useState(false);
+
   const { data: week, isLoading: loadingWeek } = useQuery<WeekStatus>({
     queryKey: ['attendance', 'me', 'week'],
     queryFn: () => attendanceApi.myWeek(),
@@ -44,6 +49,12 @@ export function MyAttendancePage() {
   const { data: history = [], isLoading: loadingHistory } = useQuery<HistoryEntry[]>({
     queryKey: ['attendance', 'me', 'history', fromIso],
     queryFn: () => attendanceApi.myHistory(fromIso),
+  });
+
+  const { data: snapshots = [], isLoading: loadingSnapshots } = useQuery<WeeklySnapshot[]>({
+    queryKey: ['attendance', 'me', 'snapshots'],
+    queryFn: () => attendanceApi.mySnapshots(),
+    enabled: snapshotsOpen,
   });
 
   return (
@@ -172,6 +183,86 @@ export function MyAttendancePage() {
           </div>
         </>
       )}
+
+      <div className="mt-6">
+        <button
+          type="button"
+          onClick={() => setSnapshotsOpen((v) => !v)}
+          className="flex items-center gap-2 text-sm font-semibold text-text-primary hover:text-brand transition-colors min-h-[44px]"
+          aria-expanded={snapshotsOpen}
+        >
+          {snapshotsOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+          Past weeks
+        </button>
+
+        {snapshotsOpen && (
+          <div className="mt-3">
+            {loadingSnapshots ? (
+              <div className="flex justify-center py-6">
+                <Spinner size="md" />
+              </div>
+            ) : snapshots.length === 0 ? (
+              <Card className="p-4 text-center text-text-secondary text-sm">
+                No past-week snapshots yet.
+              </Card>
+            ) : (
+              <>
+                <div className="flex flex-col gap-2 sm:hidden">
+                  {snapshots.map((s) => (
+                    <Card key={s.id} className="p-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <div>
+                          <p className="text-sm font-medium text-text-primary">
+                            Week of {formatDate(s.weekStart)}
+                          </p>
+                          <p className="text-xs text-text-secondary mt-0.5">
+                            {s.points} pts
+                          </p>
+                        </div>
+                        {s.restricted ? (
+                          <Badge variant="danger">Restricted</Badge>
+                        ) : (
+                          <Badge variant="success">OK</Badge>
+                        )}
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+                <div className="hidden sm:block bg-bg-surface rounded-xl border border-border overflow-hidden">
+                  <table className="w-full text-sm">
+                    <thead className="bg-bg-elevated">
+                      <tr className="text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
+                        <th className="px-4 py-3">Week of</th>
+                        <th className="px-4 py-3 text-right">Points</th>
+                        <th className="px-4 py-3">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {snapshots.map((s) => (
+                        <tr key={s.id} className="border-t border-border">
+                          <td className="px-4 py-3 text-text-primary">
+                            {formatDate(s.weekStart)}
+                          </td>
+                          <td className="px-4 py-3 text-right text-text-primary">
+                            {s.points}
+                          </td>
+                          <td className="px-4 py-3">
+                            {s.restricted ? (
+                              <Badge variant="danger">Restricted</Badge>
+                            ) : (
+                              <Badge variant="success">OK</Badge>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

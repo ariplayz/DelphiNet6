@@ -15,6 +15,7 @@ import { ClassDetailPage } from './pages/classes/ClassDetailPage';
 import { RollCallListPage } from './pages/rollcall/RollCallListPage';
 import { RollCallPage } from './pages/rollcall/RollCallPage';
 import { MyAttendancePage } from './pages/me/MyAttendancePage';
+import { VerificationQueuePage } from './pages/verification/VerificationQueuePage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
@@ -78,6 +79,14 @@ export default function App() {
           }
         />
         <Route path="/me/attendance" element={<MyAttendancePage />} />
+        <Route
+          path="/verification"
+          element={
+            <PermissionRoute permission="attendance.verify">
+              <VerificationQueuePage />
+            </PermissionRoute>
+          }
+        />
         <Route
           path="/admin/users"
           element={

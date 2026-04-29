@@ -81,6 +81,59 @@ export interface RestrictedRow {
   points: number;
   restricted: boolean;
   weekStart: string;
+  pendingVerificationCount: number;
+}
+
+export interface WeeklySnapshot {
+  id: string;
+  schoolId: string;
+  studentUserId: string;
+  weekStart: string;
+  points: number;
+  restricted: boolean;
+  finalizedAt: string | null;
+}
+
+export interface VerificationEntryStudent {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  form: number | null;
+}
+
+export interface VerificationEntry {
+  id: string;
+  rollCallId: string;
+  studentUserId: string;
+  status: AttendanceStatus;
+  pointsAwarded: number;
+  excuseReason: string | null;
+  councilExcuseReason: string | null;
+  verificationStatus: 'unverified' | 'verified' | 'excused_by_council';
+  verifiedAt: string | null;
+  verifiedBy: string | null;
+  createdAt: string;
+  updatedAt: string;
+  student: VerificationEntryStudent;
+  verifier: VerificationEntryStudent | null;
+  rollCall: {
+    id: string;
+    takenAt: string;
+    takenByUser: VerificationEntryStudent | null;
+    classSession: {
+      startsAt: string;
+      class: { id: string; name: string };
+    } | null;
+    class: { id: string; name: string } | null;
+  };
+}
+
+export interface VerificationQueueResponse {
+  weekStart: string;
+  weekEnd: string;
+  includeVerified: boolean;
+  entries: VerificationEntry[];
 }
 
 export const attendanceApi = {
@@ -113,6 +166,46 @@ export const attendanceApi = {
     api.get<RestrictedRow[]>('/attendance/restricted').then((r) => r.data),
   userWeek: (userId: string) =>
     api.get<WeekStatus>(`/attendance/users/${userId}/week`).then((r) => r.data),
+
+  // Phase 10
+  mySnapshots: () =>
+    api
+      .get<WeeklySnapshot[]>('/attendance/me/history/snapshots')
+      .then((r) => r.data),
+  userSnapshots: (userId: string) =>
+    api
+      .get<WeeklySnapshot[]>(`/attendance/users/${userId}/history/snapshots`)
+      .then((r) => r.data),
+  runWeeklyReset: () =>
+    api
+      .post<{ schools: Array<{ schoolId: string; snapshotCount: number }> }>(
+        '/attendance/admin/run-weekly-reset',
+      )
+      .then((r) => r.data),
+
+  // Phase 11
+  verificationQueue: (params: {
+    week?: 'current' | 'previous';
+    includeVerified?: boolean;
+  } = {}) =>
+    api
+      .get<VerificationQueueResponse>('/attendance/verification/queue', {
+        params: {
+          ...(params.week ? { week: params.week } : {}),
+          ...(params.includeVerified ? { includeVerified: 'true' } : {}),
+        },
+      })
+      .then((r) => r.data),
+  verifyEntry: (entryId: string) =>
+    api
+      .post<VerificationEntry>(`/attendance/entries/${entryId}/verify`)
+      .then((r) => r.data),
+  excuseEntry: (entryId: string, reason: string) =>
+    api
+      .post<VerificationEntry>(`/attendance/entries/${entryId}/excuse`, {
+        reason,
+      })
+      .then((r) => r.data),
 };
 
 export const STATUS_LABELS: Record<AttendanceStatus, string> = {

@@ -35,6 +35,22 @@ export interface EventRegistry {
   };
   'attendance.entry_excused': { entryId: string; verifiedBy: string; reason: string };
   'attendance.weekly_reset': { schoolId: string; week: string; restrictedCount: number };
+  'attendance.weekly_reset.completed': {
+    schoolId: string;
+    weekStart: string;
+    snapshotCount: number;
+  };
+  'attendance.entry.verified': {
+    entryId: string;
+    verifierId: string;
+  };
+  'attendance.entry.excused': {
+    entryId: string;
+    excuserId: string;
+    oldStatus: string;
+    oldPoints: number;
+    reason: string;
+  };
 
   // Dorms
   'dorm.created': { dormId: string; schoolId: string; createdBy: string };
